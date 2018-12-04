@@ -1,3 +1,14 @@
+Current Layout:
+	
+	Klasse Race:
+		
+		-enthaelt rassenunspezifische Variablen und Funktionen
+
+
+	Klasse Terran, Protoss, Zerg:
+
+		-erbt von Race
+		-enthaelt rassenspezifische Variablen und Funktionen
 
 
 Klasse Race_stat:
@@ -58,17 +69,3 @@ Variante 3:
 
 		-erbt von Race_func und Zerg_stat (fuer Zugriffe auf allg. Variablen/Funktionen und rassenspezifische Variablen)
 		-enthaelt rassenspezifische Funktionen
-
-
-Variante 4:
-	
-	Klasse Race:
-		
-		-enthaelt rassenunspezifische Variablen und Funktionen
-
-
-	Klasse Terran, Protoss, Zerg:
-
-		-erbt von Race
-		-enthaelt rassenspezifische Variablen und Funktionen
-
