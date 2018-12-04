@@ -1,0 +1,11 @@
+rassenunabhaengige Variablen:
+
+//worker
+	int workers
+	int max_workers
+	int workers_mainerals
+	int workers_vesp
+
+//listenartige Strukturen:
+	list<func> buildlist
+	list<int, func> eventlist
