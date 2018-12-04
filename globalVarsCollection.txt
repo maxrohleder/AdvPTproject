@@ -1,11 +1,31 @@
 rassenunabhaengige Variablen:
 
-//worker
-	int workers
-	int max_workers
-	int workers_mainerals
-	int workers_vesp
+//const:
+	double minerals_rate = 0.7
+	double versp_rate = 0.35
+	
+
+//worker:
+(?)	int workers = 3   ?
+	int workers_mainerals = 3
+	int workers_minerals_max = 16
+	int workers_vesp = 0
+	int workers_vesp_max = 0
+
 
 //listenartige Strukturen:
 	list<func> buildlist
-	list<int, func> eventlist
+	list<pair<int, func>> eventlist
+	list<pair<string, string>> printlist
+(?)	list<pair<int, int>> energylist  //pair oder nur aktueller wert und max extern?
+
+
+//resources:
+	int minerals = 5000
+	int vespene = 0
+	int supply = 3
+(?)	int supply_max = rassenspezifisch?
+	
+	
+//structures:
+(?)	int bases = 1
