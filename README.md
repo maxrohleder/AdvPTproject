@@ -10,6 +10,62 @@ Current Layout:
 		-erbt von Race
 		-enthaelt rassenspezifische Variablen und Funktionen
 
+	noetige Datenverwaltungsstrukturen:
+		- buildlist (Liste aus strings)
+		- eventlist (mapt zeiten t auf events)
+	
+		- 
+class race{
+protected:
+	virtual function* name_function_mapping( string name ) {}; // aus race
+	virtual update_resources();
+	###
+	all attributes of race
+	###
+
+	buildlist<strings, function>;	// baustart ereignisse
+	eventlist<int, function>;		// ruft funktion zur beendigung eines ereignisses auf
+	printlist<string, string>;		// beinhaltet strings die geprintet werden müssen
+	void run(){
+		for(	int i		){
+			if(	zerg.build( buildlist.pop() )	){
+				// in printlist einfügen
+				// entzeitpunkt mit zugehöriger function in der eventlist erstellen
+				builist.poll()
+			}
+
+			while ( find_if(eventlist == t) =! endptr ){
+				eventlist[t].execute()
+				printlist.add()
+			}
+
+			if(printlist.isnotempty()){
+				print();
+				printlist.clear();
+			}
+			update_resources();
+		}
+	}
+
+}
+
+class zerg : race {
+public:
+	zerg(string filename){
+		// read in lines
+		for( word in file){
+			buildlist<function> = name_function_mapping(word);
+		}
+	}
+protected:
+	function* name_function_mapping( string name ) {};	
+}
+
+
+
+
+
+
 
 Klasse Race_stat:
 
