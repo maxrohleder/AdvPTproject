@@ -1,7 +1,7 @@
 rassenunabhaengige Variablen:
 
 //const:
-	double minerals_rate = 70 //habs um Faktor 100 erhöht, wie unten bei Resources
+	double minerals_rate = 70 //habs um Faktor 100 erhaelt, wie unten bei Resources
 	double versp_rate = 35
 	
 

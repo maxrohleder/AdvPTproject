@@ -12,30 +12,30 @@ protected:
 
 	//rassenunspezifische Funktionen
 protected:
-	list<pair<string, string>> event_list; //list fuer alles, was in diesem Zeitschritt passiert ()
-	print(int time, int workers_m, int workers_v,int minerals, int vespene, int sup_used, int sup) {
+	list<pair<string, string>> event_list; //list fuer alles, was in diesem Zeitschritt passiert (alte print_list)
+	void print(int time, int workers_m, int workers_v,int minerals, int vespene, int sup_used, int sup) {
 		//mit allen uebergebenen Parametern printen
 		//liste entsprechend printen
 		cout << "\t\t{" << endl;
-		cout << '\t\t\t"time": ' << time << "," << endl;
-		cout << '\t\t\t"status": {\n\t\t\t\t"workers": {\n\t\t\t\t\t"minerals": ' << workers_m << "," << endl;
-		cout << '\t\t\t\t\t"vespene": ' << workers_v << endl;
-		cout << '\t\t\t\t},\n\t\t\t\t"recources": {\n\t\t\t\t\t"minerals": ' << minerals << "," << endl;
-		cout << '\t\t\t\t\t"vespene": ' << vespene << "," << endl;
-		cout << '\t\t\t\t\t"supply-used": ' << sup_used << "," << endl;
-		cout << '\t\t\t\t\t"supply": ' << sup << endl;
-		cout << '\t\t\t\t}\n\t\t\t},\n\t\t\t"events": [' << endl;
+		cout << "\t\t\t\"time\": " << time << "," << endl;
+		cout << "\t\t\t\"status\": {\n\t\t\t\t\"workers\": {\n\t\t\t\t\t\"minerals\": " << workers_m << "," << endl;
+		cout << "\t\t\t\t\t\"vespene\": " << workers_v << endl;
+		cout << "\t\t\t\t},\n\t\t\t\t\"recources\": {\n\t\t\t\t\t\"minerals\": " << minerals << "," << endl;
+		cout << "\t\t\t\t\t\"vespene\": " << vespene << "," << endl;
+		cout << "\t\t\t\t\t\"supply-used\": " << sup_used << "," << endl;
+		cout << "\t\t\t\t\t\"supply\": " << sup << endl;
+		cout << "\t\t\t\t}\n\t\t\t},\n\t\t\t\"events\": [" << endl;
 		//alle events printen
-		for (auto const& i : event_list) { 
-			cout << '\t\t\t\t{\n\t\t\t\t\t"type": "' << i.first << '",' << endl;
-			cout << '\t\t\t\t\t"name": "' << i.second << '"\n\t\t\t\t}';
-			if (i != event_list.end()) {
-				cout << ","
+		for (list<pair<string, string>>::iterator i : event_list) { 
+			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": " << i->first << "," << endl;
+			cout << "\t\t\t\t\t\"name\": " << i->second << "\n\t\t\t\t}";
+			if ( i != event_list.end()) {
+				cout << ",";
 			}
 			cout << endl;
 		}
 		
-		cout << '\t\t\t]\n\t\t},' << endl;
+		cout << "\t\t\t]\n\t\t}," << endl;
 		//liste leeren
 		event_list.clear();
 	}
@@ -54,13 +54,13 @@ public:
 	Zerg(string file_name){
 		//file in build_list lesen
 	}
-	Zerg(Zerg a) {}
+	Zerg(const Zerg& a) {}
 	~Zerg() {}
 	void run() {
 		for (int i = 1; i < 360; ++i) {
-			//Recourcen erhöhen
-			//etwas fertig geworden? -> in event_list einfügen
-			//was neues bauen? -> in event_list einfügen
+			//Recourcen erhï¿½hen
+			//etwas fertig geworden? -> in event_list einfï¿½gen
+			//was neues bauen? -> in event_list einfï¿½gen
 			//alles was passiert ist printen
 			print(0, 0, 0, 0, 0, 0, 0); //event_list wird nach printen geleert
 		}
