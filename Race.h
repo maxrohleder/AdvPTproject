@@ -37,6 +37,7 @@ class Race{
     int bases = 1;
     int geyser_max = 2;
 
+
     //raceindependent functions
 
     void print(int time) {
@@ -65,4 +66,6 @@ class Race{
 		//liste leeren
 		printlist.clear();
 	}
+
+    virtual void run();
 };

@@ -26,10 +26,10 @@ protected:
 		cout << "\t\t\t\t\t\"supply\": " << sup << endl;
 		cout << "\t\t\t\t}\n\t\t\t},\n\t\t\t\"events\": [" << endl;
 		//alle events printen
-		for (list<pair<string, string>>::iterator i : event_list) { 
-			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": " << i->first << "," << endl;
-			cout << "\t\t\t\t\t\"name\": " << i->second << "\n\t\t\t\t}";
-			if ( i != event_list.end()) {
+		for (const auto& i : event_list) { 
+			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": " << i.first << "," << endl;
+			cout << "\t\t\t\t\t\"name\": " << i.second << "\n\t\t\t\t}";
+			if ( i != *event_list.end()) {
 				cout << ",";
 			}
 			cout << endl;
