@@ -1,14 +1,13 @@
 rassenunabhaengige Variablen:
 
 //const:
-	double minerals_rate = 70 //habs um Faktor 100 erhaelt, wie unten bei Resources
+	double minerals_rate = 70 //habs um Faktor 100 erhoeht, wie unten bei Resources
 	double versp_rate = 35
 	
 
 //worker:
-(?)	int workers = 3   ?
+(?)	int workers = 6   ?
 	int workers_minerals = 3
-	int workers_minerals_max = 16
 	int workers_vesp = 0
 	int workers_vesp_max = 0
 
@@ -23,6 +22,7 @@ rassenunabhaengige Variablen:
 //resources:
 	int minerals = 5000
 	int vespene = 0
+	int vespene_max = 0
 	int supply = 3
 (?)	int supply_max = rassenspezifisch?
 	
