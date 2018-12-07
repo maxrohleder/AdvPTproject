@@ -27,6 +27,7 @@ class Race{
 
 
     //list-structures
+    
     list<pair<string, string>> printlist;
     list<pair<int, int>> energylist;
 
@@ -65,5 +66,4 @@ class Race{
 		//liste leeren
 		printlist.clear();
 	}
-
 };
