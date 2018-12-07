@@ -26,8 +26,7 @@ class Race{
 
 
     //list-structures
-    list<function<bool(void)>> buildlist;
-    list<pair<int, function<void(void)>>> eventlist;
+    
     list<pair<string, string>> printlist;
     list<pair<int, int>> energylist;
 
@@ -56,7 +55,7 @@ class Race{
 		for (const auto& i : printlist) { 
 			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": " << i.first << "," << endl;
 			cout << "\t\t\t\t\t\"name\": " << i.second << "\n\t\t\t\t}";
-			if ( i != *printlist.end()) {
+			if ( i != printlist.back()) {
 				cout << ",";
 			}
 			cout << endl;
@@ -66,6 +65,4 @@ class Race{
 		//liste leeren
 		printlist.clear();
 	}
-
-    virtual int run();
 };

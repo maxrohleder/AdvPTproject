@@ -5,8 +5,8 @@
 using namespace std;
 
 int main(){
-    Terran ter = Terran();
-    int i = ter.testRun(5);
+    Terran ter("test");
+    int i = ter.testRun(50);
     cout << i <<endl;
     return 0;
 }
