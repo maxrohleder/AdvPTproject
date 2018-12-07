@@ -45,6 +45,7 @@ struct zerg_unit : public base_unit{
 	bool hive = 0;
 
 	//Variablen aenderung nach bau
+
 };
 
 
