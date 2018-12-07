@@ -5,6 +5,20 @@
 
 using namespace std;
 
+//struct fuer kosten von einheiten
+struct unit{
+	//cost variables
+	int minerals = 0;
+	int vespene = 0;
+	int buildtime = 0;
+	int supply_cost = 0;
+	
+	//Variablen, die nach dem Bau mehr sind
+	int supply_provided = 0;
+
+
+};
+
 
 class Race{
 	//rassenunspezifische Variablen
