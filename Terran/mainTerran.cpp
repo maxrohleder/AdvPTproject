@@ -5,6 +5,8 @@
 using namespace std;
 
 int main(){
-    cout << "Teest";
+    Terran ter = Terran();
+    int i = ter.testRun(5);
+    cout << i <<endl;
     return 0;
 }

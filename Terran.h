@@ -26,6 +26,7 @@ public:
     int testRun (int time){
         for(int timestep = 1; timestep < time; ++timestep){
             updateResources();
+            cout << "1" << endl;
         }
         return 1;
     }
