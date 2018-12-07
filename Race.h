@@ -67,5 +67,5 @@ class Race{
 		printlist.clear();
 	}
 
-    virtual void run();
+    virtual int run();
 };
