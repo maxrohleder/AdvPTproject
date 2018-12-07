@@ -262,3 +262,6 @@ __pycache__/
 
 # ignore build for cmake
 build/
+
+#ignore .vscode
+.vscode/
