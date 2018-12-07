@@ -6,7 +6,7 @@
 using namespace std;
 
 //struct fuer kosten von einheiten
-struct unit{
+struct base_unit{
 	//cost variables
 	int minerals = 0;
 	int vespene = 0;
@@ -17,6 +17,34 @@ struct unit{
 	int supply_provided = 0;
 
 
+};
+
+struct zerg_unit : public base_unit{
+	//produced by
+	bool larva = 0;
+	bool drone = 0;
+	bool overlord = 0;
+	bool base = 0;
+	bool zergling = 0;
+	bool nydus_network = 0;
+	bool corruptor = 0;
+	bool hatchary = 0;
+	bool lair = 0;
+	bool spire = 0;
+
+	//dependency
+	bool lair_hive = 0;
+	bool hydralisc_den = 0;
+	bool spawning_pool = 0;
+	bool baneling_nest = 0;
+	bool roach_warren = 0;
+	bool infestation_pit = 0;
+	bool ultralisk_cavern = 0;
+	bool greater_spire = 0;
+	bool evolution_chamber = 0;
+	bool hive = 0;
+
+	//Variablen aenderung nach bau
 };
 
 
