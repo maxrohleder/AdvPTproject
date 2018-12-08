@@ -54,8 +54,8 @@ class Race{
 		cout << "\t\t\t\t}\n\t\t\t},\n\t\t\t\"events\": [" << endl;
 		//alle events printen
 		for (const auto& i : printlist) { 
-			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": " << i.first << "," << endl;
-			cout << "\t\t\t\t\t\"name\": " << i.second << "\n\t\t\t\t}";
+			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": \"" << i.first << "\"," << endl;
+			cout << "\t\t\t\t\t\"name\": \"" << i.second << "\"\n\t\t\t\t}";
 			if ( i != printlist.back()) {
 				cout << ",";
 			}

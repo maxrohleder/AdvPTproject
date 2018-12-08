@@ -32,7 +32,7 @@ class Zerg : public Zerg_header{
         }else{
             minerals -= 5000;
             ++supply_used;
-            printlist.push_front(make_pair("\"build-start\"", "\"drone\""));
+            printlist.push_front(make_pair("build-start", "drone"));
             eventlist.push_front(make_pair(time + 17, &Zerg::droneFinish));
             return true;
         }
@@ -41,7 +41,7 @@ class Zerg : public Zerg_header{
     void droneFinish(){
         ++workers;
         ++workers_minerals;
-        printlist.push_front(make_pair("\"build-end\"", "\"drone\""));
+        printlist.push_front(make_pair("build-end", "drone"));
     }
 
     bool overloredBuild(){
@@ -49,7 +49,7 @@ class Zerg : public Zerg_header{
             return false;
         }else{
             minerals -= 10000;
-            printlist.push_front(make_pair("\"build-start\"", "\"overlord\""));
+            printlist.push_front(make_pair("build-start", "overlord"));
             eventlist.push_front(make_pair(time + 25, &Zerg::overlordFinish));
             return true;
         }
@@ -57,7 +57,8 @@ class Zerg : public Zerg_header{
 
     void overlordFinish(){
         ++overlords;
-        printlist.push_front(make_pair("\"build-end\"", "\"overlord\""));
+        supply_max += 8;
+        printlist.push_front(make_pair("build-end", "overlord"));
     }
 
     //update functions
@@ -112,11 +113,9 @@ class Zerg : public Zerg_header{
 
     Zerg(const string filename){
         buildBuildmap();
+        supply_max = 200;
         buildBuildlist(filename);
         //test purpose
-        supply_max = 200;
-        buildTest();
-        cout << "Test with 5 drones" << endl; 
     }
     Zerg(const Zerg& z){}
     ~Zerg(){}
