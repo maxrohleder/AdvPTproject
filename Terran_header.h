@@ -42,13 +42,13 @@ protected:
 
     //buildslots
     int command_center_buildslots = 1;
-    int orbital_command_buildslots = 0;
-    int planetary_fortress_buildslots = 0;
-    int barracks_buildslot = 0;
-    int barracks_with_teck_lab_buildslot = 0;
+    //int orbital_command_buildslots = 0; //TODO notwendig?
+    //int planetary_fortress_buildslots = 0; //TODO notwendig?
+    int barracks_buildslots = 0;
+    int barracks_with_teck_lab_buildslots = 0;
     //int barracks_with_reactor_buildslot = 0; //TODO wirklich notwendig?
-    int factory_buildslot = 0;
-    int factory_with_teck_lab_buildslot = 0;
+    int factory_buildslots = 0;
+    int factory_with_teck_lab_buildslots = 0;
     //int factory_with_reactor_buildslot = 0; //TODO wirklich notwendig?
     
 

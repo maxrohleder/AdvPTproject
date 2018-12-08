@@ -65,12 +65,12 @@ private:
     }
 
     bool scvBuild(){
-        //TODO Base & buildslot verfügbarkeit prüfen
-        if(minerals < 5000 || ( supply_max - supply_used < 1 ) ){
+        if(minerals < 5000 || ( supply_max - supply_used ) < 1 || command_center_buildslots < 1 ){
             return false;
         }else{
             minerals -= 5000;
             ++supply_used;
+            --command_center_buildslots; 
             printlist.push_front(make_pair("build-start","scv"));
             eventlist.push_front(make_pair(timestep + 17, &Terran::scvFinish));
             return true;
@@ -78,27 +78,55 @@ private:
     }
 
     void scvFinish(){
+        ++command_center_buildslots; 
         ++workers;
         ++workers_minerals;
         printlist.push_front(make_pair("build-finished", "scv"));
     }
     
     bool marineBuild(){
-        if(minerals < 50000 || ( supply_max -supply_used < 1 )){
+        if(minerals < 50000 || ( supply_max -supply_used ) < 1 || (barracks_buildslots < 1 && barracks_with_teck_lab_buildslots < 1 ) ){
             return false;
         }else{
             minerals -= 5000;
             ++supply_used;
+            // checks normal barrack first, if full then into barrack with teck lab
+            // if(barracks_buildslot > 0){
+            //     --barracks_buildslot;
+            // }else{  
+            //     --barracks_with_teck_lab_buildslot;
+            // }
             printlist.push_front(make_pair("build-start","marine"));
-            eventlist.push_front(make_pair(timestep + 25, &Terran::marineFinish));
+            eventlist.push_front(make_pair(timestep + 25, &Terran::marineFinish)); 
             return true; 
         }
     }
 
     void marineFinish(){
+        //TODO wie weiß ich ob ich standard buildslot freigeben muss oder einen speziellen?
         ++marines;
         printlist.push_front(make_pair("build-finished", "marine"));
     }
+
+    bool barracksBuild(){
+        if(minerals < 15000 || supply_depot < 1 || workers < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            --workers_minerals; //TODO Vllt im wechsel mit Vesp worker?
+            printlist.push_front(make_pair("build-start", "barracks"));
+            eventlist.push_front(make_pair(timestep + 65, &Terran::barracksFinish));
+            return true;
+        }
+    }
+
+    void barracksFinish(){
+        ++barracks;
+        ++barracks_buildslots; 
+        ++workers_minerals;
+        printlist.push_front(make_pair("build-finished", "barracks"));
+    }
+
 
 
 
@@ -114,9 +142,19 @@ public:
 
 
     int run (){
-        for(; timestep < 1000; ++timestep){
+        for(; timestep < 10000; ++timestep){
             updateResources();
-            return 0;
+            updateEventlist();
+            if(!buildlist.empty()){
+                updateBuildlist(); 
+            }
+            if(!printlist.empty()){
+                print(timestep);
+            }
+
+            if(buildlist.empty() && eventlist.empty()){
+                return 0; 
+            }
         }
         return 1;
     }
