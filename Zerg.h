@@ -1,15 +1,16 @@
-#include "Race.h"
+#include "Zerg_header.h"
 #include <list>
 #include <map>
 #include <string>
 #include <algorithm>
+#include <map>
+#include <fstream>
 
 
 using namespace std;
-//using unitprint = pair<string, string>;
 
 
-class Zerg : public Race{
+class Zerg : public Zerg_header{
 
     private:
     //typedef 
@@ -20,30 +21,47 @@ class Zerg : public Race{
 
     list<funcBool> buildlist;
     list<pair<int, funcVoid>> eventlist;
+    map<string, funcBool> buildmap;
 
-    void droneBuild(){//missing larvae etc
+    
+    
+
+    bool droneBuild(){//missing larvae etc
         if (minerals < 5000 || (supply_max - supply_used) < 1){
-            return;
+            return false;
         }else{
             minerals -= 5000;
             ++supply_used;
-            printlist.push_front(make_pair("build-start", "drone"));
+            printlist.push_front(make_pair("\"build-start\"", "\"drone\""));
             eventlist.push_front(make_pair(time + 17, &Zerg::droneFinish));
+            return true;
         }
     }
 
     void droneFinish(){
         ++workers;
         ++workers_minerals;
-        printlist.push_front(make_pair("build-end", "drone"));
+        printlist.push_front(make_pair("\"build-end\"", "\"drone\""));
+    }
+
+    bool overloredBuild(){
+        if(minerals < 10000){
+            return false;
+        }else{
+            minerals -= 10000;
+            printlist.push_front(make_pair("\"build-start\"", "\"overlord\""));
+            eventlist.push_front(make_pair(time + 25, &Zerg::overlordFinish));
+            return true;
+        }
+    }
+
+    void overlordFinish(){
+        ++overlords;
+        printlist.push_front(make_pair("\"build-end\"", "\"overlord\""));
     }
 
     //update functions
-    void updateRecources(){
-        minerals += workers_minerals * minerals_rate;
-        vespene += workers_vesp * vesp_rate;
-        //larvae update
-    }
+    
 
     void updateEventlist(){
         while(1){
@@ -55,13 +73,50 @@ class Zerg : public Race{
                 eventlist.erase(i);
             }
 
-        };
+        }
+    }
+
+    void updateBuildlist(){
+        if((this->*(*buildlist.begin()))()){
+            buildlist.pop_front();
+        }
+    }
+
+    void buildBuildlist(string filename){
+        ifstream file;
+        string unit_name;
+        file.open(filename);
+        if(file.is_open()){
+            while(getline(file, unit_name)){
+                buildlist.push_back(buildmap[unit_name]);
+            }
+            file.close();
+        }else{
+            cerr << "could not read file" << endl;
+            exit(-1);
+        }
+    }
+
+    void buildTest(){
+        for(int i = 0;i < 5;++i){
+            buildlist.push_back(&Zerg::droneBuild);
+        }
+    }
+
+    void buildBuildmap(){
+        buildmap["drone"] = &Zerg::droneBuild;
+        buildmap["overlord"] = &Zerg::overloredBuild;
     }
 
     public:
 
     Zerg(const string filename){
-        supply_max = 200; //testpurpose
+        buildBuildmap();
+        buildBuildlist(filename);
+        //test purpose
+        supply_max = 200;
+        buildTest();
+        cout << "Test with 5 drones" << endl; 
     }
     Zerg(const Zerg& z){}
     ~Zerg(){}
@@ -77,13 +132,19 @@ class Zerg : public Race{
     int runTest(int endTime) {
         for(;time < endTime;++time){
             updateRecources();
-            droneBuild();
             updateEventlist();
+            if(!buildlist.empty()){
+                updateBuildlist();
+            }
+            
             if(!printlist.empty()){
                     print(time);
             }
+            if(buildlist.empty() && eventlist.empty()){
+                return 0;
+            }
         }
-        return 0;
+        return 1;
     }
 
 

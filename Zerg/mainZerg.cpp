@@ -5,8 +5,7 @@ using namespace std;
 
 int main(){
     Zerg z("somefile");
-    int i = z.runTest(50);
+    int i = z.runTest(200);
     cout << i << endl;
-    cout << "This is Sparta!" << endl;
     return 0;
 }
