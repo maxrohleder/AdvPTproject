@@ -5,8 +5,10 @@
 using namespace std;
 
 int main(){
-    Terran ter("test");
-    int i = ter.testRun(50);
+    string a;
+    cin >> a;
+    Terran ter(a);
+    int i = ter.testRun(500);
     cout << i <<endl;
     return 0;
 }
