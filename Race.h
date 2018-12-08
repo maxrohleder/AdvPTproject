@@ -47,7 +47,7 @@ class Race{
 		cout << "\t\t\t\"time\": " << time << "," << endl;
 		cout << "\t\t\t\"status\": {\n\t\t\t\t\"workers\": {\n\t\t\t\t\t\"minerals\": " << workers_minerals << "," << endl;
 		cout << "\t\t\t\t\t\"vespene\": " << workers_vesp << endl;
-		cout << "\t\t\t\t},\n\t\t\t\t\"recources\": {\n\t\t\t\t\t\"minerals\": " << (int)(minerals / 100) << "," << endl;
+		cout << "\t\t\t\t},\n\t\t\t\t\"resources\": {\n\t\t\t\t\t\"minerals\": " << (int)(minerals / 100) << "," << endl;
 		cout << "\t\t\t\t\t\"vespene\": " << (int)(vespene / 100) << "," << endl;
 		cout << "\t\t\t\t\t\"supply-used\": " << supply_used << "," << endl;
 		cout << "\t\t\t\t\t\"supply\": " << supply_max << endl;

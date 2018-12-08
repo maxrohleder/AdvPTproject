@@ -24,6 +24,8 @@ private:
     void buildBuildmap(){
         buildmap["scv"] = &Terran::scvBuild; 
         buildmap["marine"] = &Terran::marineBuild;
+        buildmap["supply_Depot"] = &Terran::supplyDepotBuild;
+        buildmap["barracks"] = &Terran::barracksBuild;
     }
 
     void updateResources(){
@@ -81,7 +83,7 @@ private:
         ++command_center_buildslots; 
         ++workers;
         ++workers_minerals;
-        printlist.push_front(make_pair("build-finished", "scv"));
+        printlist.push_front(make_pair("build-end", "scv"));
     }
     
     bool marineBuild(){
@@ -105,7 +107,7 @@ private:
     void marineFinish(){
         //TODO wie weiß ich ob ich standard buildslot freigeben muss oder einen speziellen?
         ++marines;
-        printlist.push_front(make_pair("build-finished", "marine"));
+        printlist.push_front(make_pair("build-end", "marine"));
     }
 
     bool barracksBuild(){
@@ -124,9 +126,27 @@ private:
         ++barracks;
         ++barracks_buildslots; 
         ++workers_minerals;
-        printlist.push_front(make_pair("build-finished", "barracks"));
+        printlist.push_front(make_pair("build-end", "barracks"));
     }
 
+    bool supplyDepotBuild(){
+        if(minerals < 10000){
+            return false;
+        }else{
+            minerals -= 10000;
+            --workers_minerals;
+            printlist.push_front(make_pair("build-start", "supply_Depot"));
+            eventlist.push_front(make_pair(timestep + 30, &Terran::supplyDepotFinish));
+            return true;
+        }
+    }
+
+    void supplyDepotFinish(){
+        ++workers_minerals;
+        ++supply_depot;
+        supply_max += 8;
+        printlist.push_front(make_pair("build-end", "supply_Depot"));
+    }
 
 
 
@@ -171,13 +191,11 @@ public:
             if(!printlist.empty()){
                 print(timestep);
             }
-
             if(buildlist.empty() && eventlist.empty()){
                 return 0; 
             }
         }
         return 1;
     }
-
 
 };

@@ -1,0 +1,4 @@
+scv
+scv
+supply_depot
+barracks
