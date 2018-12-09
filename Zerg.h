@@ -128,7 +128,7 @@ class Zerg : public Zerg_header{
     //overseer
 
     bool overseerBuild(){
-        if (checkResources(5000, 0, 5000) || overlord < 1 || (lair < 1 && hive < 0)){
+        if (checkResources(5000, 0, 5000) || overlord < 1 || lair_hive < 1){
             return false;
         }else{
             if(!getLarvae()){
@@ -325,7 +325,7 @@ class Zerg : public Zerg_header{
     //corruptor
 
     bool corruptorBuild(){
-        if(checkResources(15000, 2, 10000) || (spire < 1 && greater_spire < 1)){
+        if(checkResources(15000, 2, 10000) || spire_greater_spire < 1){
             return false;
         }else{
             if(!getLarvae()){
@@ -348,7 +348,7 @@ class Zerg : public Zerg_header{
     //mutalisk
 
     bool mutaliskBuild(){
-        if(checkResources(10000, 2, 10000) || (spire < 1 && greater_spire < 1)){
+        if(checkResources(10000, 2, 10000) || spire_greater_spire < 1){
             return false;
         }else{
             if(!getLarvae()){
@@ -456,6 +456,7 @@ class Zerg : public Zerg_header{
 
     void lairFinish(){
         ++lair;
+        ++lair_hive;
         addToPrintlist("build-end", "lair");
     }
 
@@ -569,7 +570,7 @@ class Zerg : public Zerg_header{
     //hydralisk_den
 
     bool hydraliskDenBuild(){
-        if(checkResources(10000, 0, 10000) || (lair < 1 && hive < 1)){
+        if(checkResources(10000, 0, 10000) || lair_hive < 1){
             return false;
         }else{
             if(!getWorker()){
@@ -591,7 +592,7 @@ class Zerg : public Zerg_header{
     //infestation_pit
 
     bool infestationPitBuild(){
-        if(checkResources(10000, 0, 10000) || (lair < 1 && hive < 1)){
+        if(checkResources(10000, 0, 10000) || lair_hive < 1){
             return false;
         }else{
             if(!getWorker()){
@@ -633,7 +634,7 @@ class Zerg : public Zerg_header{
     //nydus_network
 
     bool nydusNetworkBuild(){
-        if(checkResources(15000, 0, 20000) || (lair < 1 && hive < 1)){
+        if(checkResources(15000, 0, 20000) || lair_hive < 1){
             return false;
         }else{
             if(!getWorker()){
@@ -655,9 +656,67 @@ class Zerg : public Zerg_header{
     //ultralisk_cavern
 
     bool ultraliskCavernBuild(){
-        
+        if(checkResources(15000, 0, 20000) || hive < 1){
+            return true;
+        }else{
+            if(!getWorker()){
+                return false;
+            }
+            minerals -= 15000;
+            vespene -= 20000;
+            addToPrintlist("build-start", "ultralisk_cavern");
+            addToEventlist(65, &Zerg::ultraliskCavernFinish);
+            return true;
+        }
     }
 
+    void ultraliskCavernFinish(){
+        ++ultralisk_cavern;
+        addToPrintlist("build-end", "ultralisk_cavern");
+    }
+
+    //greater_spire
+
+    bool greaterSpireBuild(){
+        if(checkResources(10000, 0, 15000) || hive < 1 || spire < 1){
+            return false;
+        }else{
+            minerals -= 10000;
+            vespene -= 15000;
+            --spire;
+            addToPrintlist("build-start", "greater_spire");
+            addToEventlist(100, &Zerg::greaterSpireFinish);
+            return true;
+        }
+    }
+
+    void greaterSpireFinish(){
+        ++greater_spire;
+        addToPrintlist("build-end", "greater_spire");
+    }
+
+    //spire
+
+    bool spireBuild(){
+        if(checkResources(20000, 0, 20000) || lair_hive < 1){
+            return false;
+        }else{
+            if(!getWorker()){
+                return false;
+            }
+            minerals -= 20000;
+            vespene -= 20000;
+            addToPrintlist("build-start", "spire");
+            addToEventlist(100, &Zerg::spireFinish);
+            return true;
+        }
+    }
+
+    void spireFinish(){
+        ++spire;
+        ++spire_greater_spire;
+        addToPrintlist("build-end", "spire");
+    }
 
 
     //update functions
@@ -704,6 +763,29 @@ class Zerg : public Zerg_header{
         buildmap["hydralisk"] = &Zerg::hydraliskBuild;
         buildmap["zergling"] = &Zerg::zerglingBuild;
         buildmap["baneling"] = &Zerg::banelingBuild;
+        buildmap["roach"] = &Zerg::roachBuild;
+        buildmap["infestor"] = &Zerg::infestorBuild;
+        buildmap["nydus_worm"] = &Zerg::NydusWormBuild;
+        buildmap["ultralisk"] = &Zerg::ultraliskBuild;
+        buildmap["brood_lord"] = &Zerg::broodLordBuild;
+        buildmap["corruptor"] = &Zerg::corruptorBuild;
+        buildmap["mutalisk"] = &Zerg::mutaliskBuild;
+        buildmap["hatchary"] = &Zerg::hatcharyBuild;
+        buildmap["evolution_chamber"] = &Zerg::evolutionChamberBuild;
+        buildmap["spore_crawler"] = &Zerg::sporeCrawlerBuild;
+        buildmap["lair"] = &Zerg::lairBuild;
+        buildmap["spawning_pool"] = &Zerg::spawningPoolBuild;
+        buildmap["extractor"] = &Zerg::extractorBuild;
+        buildmap["spine_crawler"] = &Zerg::spineCrawlerBuild;
+        buildmap["roach_warren"] = &Zerg::roachWarrenBuild;
+        buildmap["baneling_nest"] = &Zerg::banelingNestBuild;
+        buildmap["hydralisk_den"] = &Zerg::hydraliskDenBuild;
+        buildmap["infestion_pit"] = &Zerg::infestationPitBuild;
+        buildmap["hive"] = &Zerg::infestationPitBuild;
+        buildmap["nydus_network"] = &Zerg::nydusNetworkBuild;
+        buildmap["ultralisk_cavern"] = &Zerg::ultraliskCavernBuild;
+        buildmap["greater_spire"] = &Zerg::greaterSpireBuild;
+        buildmap["spire"] = &Zerg::spireBuild;
     }
 
     public:

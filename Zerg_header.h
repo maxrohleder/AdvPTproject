@@ -21,7 +21,7 @@ class Zerg_header : public Race{
         larvaelist.push_back(larvae_pool(0));
     }
 
-    void updateLarvaelist(){
+    void updateLarvae(){
         for(auto& i :larvaelist ){
             if(i.larvae < 3){
                 --(i.larvae_timer);
@@ -78,6 +78,10 @@ class Zerg_header : public Race{
     int greater_spire = 0;
     int spire = 0;
 
+    //check for existing(morpging) structures
+    int spire_greater_spire = 0;
+    int lair_hive = 0;
+
     //build-slots for queen
     int queen_slot = 1;
 
@@ -109,6 +113,6 @@ class Zerg_header : public Race{
     void updateRecources(){
         minerals += workers_minerals * minerals_rate;
         vespene += workers_vesp * vesp_rate;
-        updateLarvaelist();
+        updateLarvae();
     }
 };
