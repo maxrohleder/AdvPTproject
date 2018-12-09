@@ -17,49 +17,180 @@ class Zerg : public Zerg_header{
     typedef bool (Zerg::*funcBool) (void);
     typedef void (Zerg::*funcVoid) (void);
 
+    //struct for eventlist
+    struct end_event{
+        end_event(int i, funcVoid function) : end_time(i), func(function){}
+        end_event(const end_event* e) : end_time(e->end_time), func(e->func){}
+        ~end_event(){}
+        int end_time;
+        funcVoid func;
+    };
+
+    //global time
     int time = 1;
 
+    //needed list structures
     list<funcBool> buildlist;
-    list<pair<int, funcVoid>> eventlist;
+    list<end_event> eventlist;
     map<string, funcBool> buildmap;
 
-    
-    
 
-    bool droneBuild(){//missing larvae etc
-        if (minerals < 5000 || (supply_max - supply_used) < 1){
+    //helpers
+    //helper for printlist
+    void addToPrintlist(string type, string name){
+        printlist.push_back(make_pair(type, name));
+    }
+
+    //helper for eventlist
+    void addToEventlist(int t, funcVoid func){
+        eventlist.push_front(end_event(time + t, func));
+    }
+
+    //helper for resource-check
+    bool checkResources(int min, int supp, int vesp = 0){
+        if(minerals < min || vespene < vesp || (supply_max - supply_used) < supp ){
+            return false;
+        }
+        return true;
+    }
+    
+    
+    //build and finish functions
+
+    //drone
+
+    bool droneBuild(){
+        if (checkResources(5000, 1)){
             return false;
         }else{
+            if(!getLarvae()){
+                return false;
+            }
             minerals -= 5000;
             ++supply_used;
-            printlist.push_front(make_pair("build-start", "drone"));
-            eventlist.push_front(make_pair(time + 17, &Zerg::droneFinish));
+            addToPrintlist("build-start", "drone");
+            addToEventlist(17, &Zerg::droneFinish);
             return true;
         }
     }
 
     void droneFinish(){
         ++workers;
-        ++workers_minerals;
-        printlist.push_front(make_pair("build-end", "drone"));
+        distributeWorker();
+        addToPrintlist("build-end", "drone");
     }
 
+    //overlord
+
     bool overloredBuild(){
-        if(minerals < 10000){
+        if(checkResources(10000, 0)){
             return false;
         }else{
+            if(!getLarvae()){
+                return false;
+            }
             minerals -= 10000;
-            printlist.push_front(make_pair("build-start", "overlord"));
-            eventlist.push_front(make_pair(time + 25, &Zerg::overlordFinish));
+            addToPrintlist("build-start", "overlord");
+            addToEventlist(25, &Zerg::overlordFinish);
             return true;
         }
     }
 
     void overlordFinish(){
-        ++overlords;
+        ++overlord;
         supply_max += 8;
-        printlist.push_front(make_pair("build-end", "overlord"));
+        addToPrintlist("build-end", "overlord");
     }
+
+    //overseer
+
+    bool overseerBuild(){
+        if (checkResources(5000, 0, 5000) || overlord < 1 || (lair < 1 && hive < 0)){
+            return false;
+        }else{
+            if(!getLarvae()){
+                return false;
+            }
+            minerals -= 5000;
+            vespene -= 5000;
+            --overlord;
+            addToPrintlist("build-start", "overseer");
+            addToEventlist(17, &Zerg::overseerFinish);
+            return true;
+        }
+    }
+
+    void overseerFinish(){
+        ++overseer;
+        addToPrintlist("build-end", "overseer");
+    }
+
+    //hydralisk
+
+    bool hydraliskBuild() {
+        if(checkResources(10000, 2, 5000) || hydralisk_den < 1){
+            return false;
+        }else{
+            if(!getLarvae()){
+                return false;
+            }
+            minerals -= 10000;
+            vespene -= 5000;
+            supply_used += 2;
+            addToPrintlist("build-start", "hydralisk");
+            addToEventlist(33, &Zerg::hydraliskFinish);
+            return true;
+        }
+    }
+
+    void hydraliskFinish(){
+        ++hydralisk;
+        addToPrintlist("build-end", "hydralisk");
+    }
+
+    //zergling
+
+    bool zerglingBuild(){
+        if(checkResources(5000, 5) || spawning_pool < 1){
+            return false;
+        }else{
+            if(!getLarvae()){
+                return false;
+            }
+            minerals -= 5000;
+            supply_used += 10;
+            addToPrintlist("build-start", "zergling");
+            addToEventlist(24, &Zerg::zerglingFinish);
+            return true;
+        }
+    }
+
+    void zerglingFinish(){
+        zergling += 2;
+        addToPrintlist("build-end", "zergling");
+    }
+
+    //baneling
+
+    bool banelingBuild(){
+        if(checkResources(2500, 0, 2500) || zergling < 1 || baneling_nest < 1){
+            return false;
+        }else{
+            minerals -= 2500;
+            vespene -= 2500;
+            --zergling;
+            addToPrintlist("build-start", "baneling");
+            addToEventlist(20, &Zerg::banelingFinish);
+            return true;
+        }
+    }
+
+    void banelingFinish(){
+        ++baneling;
+        addToPrintlist("build-end", "baneling");
+    }
+
+
 
     //update functions
     
@@ -70,7 +201,7 @@ class Zerg : public Zerg_header{
             if(i == eventlist.end()){
                 return;
             }else{
-                (this->*(i->second))(); //TODO ?
+                (this->*(i->func))(); //TODO ?
                 eventlist.erase(i);
             }
 
@@ -98,22 +229,21 @@ class Zerg : public Zerg_header{
         }
     }
 
-    void buildTest(){
-        for(int i = 0;i < 5;++i){
-            buildlist.push_back(&Zerg::droneBuild);
-        }
-    }
-
     void buildBuildmap(){
         buildmap["drone"] = &Zerg::droneBuild;
         buildmap["overlord"] = &Zerg::overloredBuild;
+        buildmap["overseer"] = &Zerg::overseerBuild;
+        buildmap["hydralisk"] = &Zerg::hydraliskBuild;
+        buildmap["zergling"] = &Zerg::zerglingBuild;
+        buildmap["baneling"] = &Zerg::banelingBuild;
     }
 
     public:
 
     Zerg(const string filename){
         buildBuildmap();
-        supply_max = 200;
+        initLarvaelist();
+        supply_max = 10;
         buildBuildlist(filename);
         //test purpose
     }
