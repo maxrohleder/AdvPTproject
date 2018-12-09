@@ -78,11 +78,32 @@ class Zerg_header : public Race{
     int greater_spire = 0;
     int spire = 0;
 
+    //build-slots for queen
+    int queen_slot = 1;
+
 
     void distributeWorker(){
-        ++workers_minerals;
+        if((workers_vesp_max - workers_vesp) > 0){
+            ++workers_vesp;
+        }else{
+          ++workers_minerals;
+        }
     }
 
+    bool getWorker(){
+        if(workers_minerals < 1){
+            if(workers_vesp < 1){
+                return false;
+            }else{
+                --workers_vesp;
+                --workers;
+            }
+        }else{
+            --workers_minerals;
+            --workers;
+        }
+        return true;
+    }
 
 
     void updateRecources(){
