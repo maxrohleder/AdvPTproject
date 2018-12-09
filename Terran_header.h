@@ -22,7 +22,7 @@ protected:
     int orbital_command = 0;
     int planetary_fortress = 0;
     int refinery = 0;
-    int egineering_bay = 0;
+    int engineering_bay = 0;
     int missile_turret = 0;
     int sensor_tower = 0;
     int barracks = 0;
