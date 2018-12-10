@@ -15,18 +15,23 @@ private:
     int timestep = 1;
 
     typedef bool (Terran::*funcBool) (void);
-    typedef void (Terran::*funcVoid) (void);
+    typedef void (Terran::*funcInt) (int);
 
-    // struct test{ //TODO in eventlist einfügen
-    //     funcBool function;
-    //     int buildslot;
-    // }test;
+    struct finishInformation{
+        int finishTime;
+        int buildslot;
+        funcInt function;
+        finishInformation(int time, int build, funcInt func): finishTime(time), buildslot(build), function(func){
 
+        }
+    };
 
-    
+/*
+    lists and map
+*/
 
     list<funcBool> buildlist;
-    list<pair<int, funcVoid>> eventlist;
+    list<finishInformation> eventlist;
     map<string, funcBool> buildmap;
 
     void buildBuildmap(){
@@ -34,25 +39,21 @@ private:
         buildmap["marine"] = &Terran::marineBuild;
         buildmap["hellion"] = &Terran::hellionBuild;
 
+        buildmap["orbital_command"] = &Terran::orbitalCommandBuild;
         buildmap["supply_depot"] = &Terran::supplyDepotBuild;
         buildmap["barracks"] = &Terran::barracksBuild;
         buildmap["factory"] = &Terran::factoryBuild;
         buildmap["refinery"] = &Terran::refineryBuild;
         buildmap["engineering_bay"] = &Terran::engineeringBayBuild;
-    }
-
-    void updateResources(){
-        minerals += workers_minerals * minerals_rate;
-        vespene += workers_vesp * vesp_rate;
-    }
+    } 
 
     void updateEventlist(){
         while(1){
-            auto i = find_if(eventlist.begin(), eventlist.end(), [this](const pair<int, funcVoid> p){return p.first == timestep;});
+            auto i = find_if(eventlist.begin(), eventlist.end(), [this](const finishInformation p){return p.finishTime == timestep;});
             if(i == eventlist.end()){
                 return;
             }else{
-                (this->*(i->second))();
+                (this->*((*i).function))((*i).buildslot);
                 eventlist.erase(i);
             }
         }
@@ -79,6 +80,17 @@ private:
         }
     }
 
+//###############################end lists##################################
+
+    void updateResources(){
+        minerals += workers_minerals * minerals_rate;
+        vespene += workers_vesp * vesp_rate;
+    }
+
+/*
+    units
+*/
+
     bool scvBuild(){
         if(minerals < 5000 || ( supply_max - supply_used ) < 1 || command_center_buildslots < 1 ){
             return false;
@@ -87,12 +99,13 @@ private:
             ++supply_used;
             --command_center_buildslots; 
             printlist.push_back(make_pair("build-start","scv"));
-            eventlist.push_front(make_pair(timestep + 17, &Terran::scvFinish));
+            finishInformation struct_scv(timestep + 17, NULL, &Terran::scvFinish);
+            eventlist.push_front(struct_scv);
             return true;
         }
     }
 
-    void scvFinish(){
+    void scvFinish(int slot){
         ++command_center_buildslots; 
         ++workers;
         ++workers_minerals;
@@ -105,24 +118,28 @@ private:
         }else{
             minerals -= 5000;
             ++supply_used;
+            int slot_variable = 0;
             // checks normal barrack first, if full then into barrack with teck lab
             if(barracks_buildslots > 0){
-                --barracks_buildslots; 
-                //test.function = &Terran::marineFinish;
-                //test.buildslot = 0;
+                --barracks_buildslots;
             }else{  
                 --barracks_with_teck_lab_buildslots;
+                slot_variable = 1;
             }
             printlist.push_back(make_pair("build-start","marine"));
-            eventlist.push_front(make_pair(timestep + 25, &Terran::marineFinish)); 
+            finishInformation struct_marine(timestep + 25, slot_variable, &Terran::marineFinish);
+            eventlist.push_front(struct_marine); 
             return true; 
         }
     }
 
-    void marineFinish(){
-        //TODO wie weiß ich ob ich standard buildslot freigeben muss oder einen speziellen?
+    void marineFinish(int slot){
+        if(slot == 0){
+            ++barracks_buildslots;
+        }else{
+            ++barracks_with_teck_lab_buildslots;
+        }
         ++marines;
-        ++barracks_buildslots;
         printlist.push_back(make_pair("build-end", "marine"));
     }
 
@@ -131,31 +148,54 @@ private:
             return false;
         }else{
             minerals -= 10000;
+            int slot_variable = 0;
             if(factory_buildslots > 0){
-                --factory_buildslots; 
-                //test.function = &Terran::marineFinish;
-                //test.buildslot = 0;
+                --factory_buildslots;
             }else{  
                 --factory_with_teck_lab_buildslots;
+                slot_variable = 1;
             }
             printlist.push_back(make_pair("build-start", "hellion"));
-            eventlist.push_front(make_pair(timestep + 30, &Terran::hellionFinish));
+            finishInformation struct_hellion(timestep + 30, slot_variable, &Terran::hellionFinish);
+            eventlist.push_front(struct_hellion);
             return true;
         }
     }
 
-    void hellionFinish(){
+    void hellionFinish(int slot){
         ++hellion;
-        //TODO wie weiß ich ob ich standard buildslot freigeben muss oder einen speziellen?
-        ++factory_buildslots;
+        if(slot == 0){
+            ++factory_buildslots;;
+        }else{
+            ++factory_with_teck_lab_buildslots;
+        }
         printlist.push_back(make_pair("build-end", "hellion"));
     }
 
-
+// ####################### end units ####################
 
 /*
     Functions for buildings
 */
+
+    //TODO energie eigenschaften hinzufügen
+    bool orbitalCommandBuild(){
+        if(minerals < 15000 || workers < 1 || command_center < 1 || (barracks < 1 && barracks_with_reactor < 1 && barracks_with_teck_lab < 1) ){
+            return false;
+        }else{
+            minerals -= 15000;
+            printlist.push_back(make_pair("build-start", "orbital_command"));
+            finishInformation struct_orbital_command(timestep + 35, NULL, &Terran::orbitalCommandFinish);
+            eventlist.push_front(struct_orbital_command);
+            return true;
+        }
+    }
+
+    void orbitalCommandFinish(int useless){
+        ++orbital_command;
+        --command_center;
+        printlist.push_back(make_pair("build-end","orbital_command"));
+    }
 
     bool barracksBuild(){
         if(minerals < 15000 || supply_depot < 1 || workers < 1){
@@ -165,12 +205,13 @@ private:
             --workers;
             --workers_minerals; //TODO Vllt im wechsel mit Vesp worker?
             printlist.push_back(make_pair("build-start", "barracks"));
-            eventlist.push_front(make_pair(timestep + 65, &Terran::barracksFinish));
+            finishInformation struct_barracks(timestep + 65, NULL, &Terran::barracksFinish);
+            eventlist.push_front(struct_barracks);
             return true;
         }
     }
 
-    void barracksFinish(){
+    void barracksFinish(int useless){
         ++barracks;
         ++barracks_buildslots; 
         ++workers_minerals;
@@ -186,12 +227,13 @@ private:
             --workers_minerals;
             --workers;
             printlist.push_back(make_pair("build-start", "supply_depot"));
-            eventlist.push_front(make_pair(timestep + 30, &Terran::supplyDepotFinish));
+            finishInformation struct_supply_depot(timestep + 30, NULL, &Terran::supplyDepotFinish);
+            eventlist.push_front(struct_supply_depot);
             return true;
         }
     }
 
-    void supplyDepotFinish(){
+    void supplyDepotFinish(int useless){
         ++workers_minerals;
         ++workers;
         ++supply_depot;
@@ -207,12 +249,13 @@ private:
             --workers;
             --workers_minerals;
             printlist.push_back(make_pair("build-start","refinery"));
-            eventlist.push_front(make_pair(timestep + 30, &Terran::refineryFinish));
+            finishInformation struct_refinery(timestep + 30, NULL, &Terran::refineryFinish);
+            eventlist.push_front(struct_refinery);
             return true;
         }
     }
 
-    void refineryFinish(){
+    void refineryFinish(int useless){
         ++workers_vesp; //worker der vorher bei minerals abgezogen wurde wird jetzt vespene zugewiesen
         ++workers;
         ++refinery;
@@ -227,12 +270,13 @@ private:
             --workers;
             --workers_minerals;
             printlist.push_back(make_pair("build-start","engineering_bay"));
-            eventlist.push_front(make_pair(timestep + 35, &Terran::engineeringBayFinish));
+            finishInformation struct_engineering_bay(timestep + 35, NULL, &Terran::engineeringBayFinish);
+            eventlist.push_front(struct_engineering_bay);
             return true;
         }
     }
 
-    void engineeringBayFinish(){
+    void engineeringBayFinish(int useless){
         ++workers;
         ++workers_minerals;
         ++engineering_bay;
@@ -248,17 +292,21 @@ private:
             --workers;
             --workers_minerals;
             printlist.push_back(make_pair("build-start", "factory"));
-            eventlist.push_front(make_pair(timestep + 60, &Terran::factoryFinish));
+            finishInformation struct_factory(timestep + 60, NULL, &Terran::factoryFinish);
+            eventlist.push_front(struct_factory);
             return true;
         }
     }
 
-    void factoryFinish(){
+    void factoryFinish(int useless){
         ++workers;
         ++workers_minerals;
         ++factory;
+        ++factory_buildslots;
         printlist.push_back(make_pair("build-end", "factory"));
     }
+
+//##################### end buildings #############################
 
 
 public:
@@ -270,7 +318,6 @@ public:
     }
 
     ~Terran() {}
-
 
     int run (){
         for(; timestep < 10000; ++timestep){
@@ -291,8 +338,6 @@ public:
     }
 
     int testRun (int time){
-        //buildlist.push_back(&Terran::supplyDepotBuild);
-        //buildlist.push_back(&Terran::marineBuild); 
         for(; timestep < time; ++timestep){
             updateResources();
             updateEventlist();
