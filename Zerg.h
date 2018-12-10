@@ -728,7 +728,7 @@ class Zerg : public Zerg_header{
             if(i == eventlist.end()){
                 return;
             }else{
-                (this->*(i->func))(); 
+                (this->*(i->func))();
                 eventlist.erase(i);
             }
 
