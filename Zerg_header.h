@@ -8,9 +8,10 @@ class Zerg_header : public Race{
         larvae_pool(int l, int t = 15) : larvae_timer(t), larvae(l){}
         larvae_pool(const larvae_pool* p) : larvae_timer(p->larvae_timer), larvae(p->larvae){}
         ~larvae_pool(){}
-        int larvae = 0;
         int larvae_timer = 0;
+        int larvae = 0;
     };
+
     list<larvae_pool> larvaelist;
 
     void initLarvaelist(){
@@ -90,7 +91,7 @@ class Zerg_header : public Race{
         if((workers_vesp_max - workers_vesp) > 0){
             ++workers_vesp;
         }else{
-          ++workers_minerals;
+            ++workers_minerals;
         }
     }
 
@@ -101,10 +102,12 @@ class Zerg_header : public Race{
             }else{
                 --workers_vesp;
                 --workers;
+                --supply_used;
             }
         }else{
             --workers_minerals;
             --workers;
+            --supply_used;
         }
         return true;
     }
@@ -114,5 +117,17 @@ class Zerg_header : public Race{
         minerals += workers_minerals * minerals_rate;
         vespene += workers_vesp * vesp_rate;
         updateLarvae();
+    }
+
+    //header and finish printer
+
+    void printHeader(int val){
+        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
+        cout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
+        cout << "\t\"messages\": [" << endl;
+    }
+
+    void printFinish(){
+        cout << "\t]\n}" << endl;
     }
 };

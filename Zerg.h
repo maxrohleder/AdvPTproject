@@ -174,14 +174,14 @@ class Zerg : public Zerg_header{
     //zergling
 
     bool zerglingBuild(){
-        if(checkResources(5000, 5) || spawning_pool < 1){
+        if(checkResources(5000, 1) || spawning_pool < 1){
             return false;
         }else{
             if(!getLarvae()){
                 return false;
             }
             minerals -= 5000;
-            supply_used += 10;
+            supply_used += 1;
             addToPrintlist("build-start", "zergling");
             addToEventlist(24, &Zerg::zerglingFinish);
             return true;
@@ -724,11 +724,11 @@ class Zerg : public Zerg_header{
 
     void updateEventlist(){
         while(1){
-            auto i = find_if(eventlist.begin(), eventlist.end(), [this](const pair<int, funcVoid> p){return p.first == time;});
+            auto i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return p.end_time == time;});
             if(i == eventlist.end()){
                 return;
             }else{
-                (this->*(i->func))(); //TODO ?
+                (this->*(i->func))(); 
                 eventlist.erase(i);
             }
 
@@ -761,6 +761,7 @@ class Zerg : public Zerg_header{
         buildmap["overlord"] = &Zerg::overloredBuild;
         buildmap["overseer"] = &Zerg::overseerBuild;
         buildmap["hydralisk"] = &Zerg::hydraliskBuild;
+        buildmap["queen"] = &Zerg::queenBuild;
         buildmap["zergling"] = &Zerg::zerglingBuild;
         buildmap["baneling"] = &Zerg::banelingBuild;
         buildmap["roach"] = &Zerg::roachBuild;
@@ -795,7 +796,7 @@ class Zerg : public Zerg_header{
         initLarvaelist();
         supply_max = 10;
         buildBuildlist(filename);
-        //test purpose
+        printHeader(1);
     }
     Zerg(const Zerg& z){}
     ~Zerg(){}
@@ -815,14 +816,18 @@ class Zerg : public Zerg_header{
             if(!buildlist.empty()){
                 updateBuildlist();
             }
-            
             if(!printlist.empty()){
-                    print(time);
-            }
-            if(buildlist.empty() && eventlist.empty()){
-                return 0;
+                print(time);
+                if(buildlist.empty() && eventlist.empty()){
+                    cout << "\r\t\t}  " << endl;
+                    printFinish();
+                    return 0;
+                }else{
+                    cout << endl;
+                }
             }
         }
+        printFinish();
         return 1;
     }
 
