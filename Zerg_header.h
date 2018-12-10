@@ -113,7 +113,7 @@ class Zerg_header : public Race{
     }
 
 
-    void updateRecources(){
+    void updateResources(){
         minerals += workers_minerals * minerals_rate;
         vespene += workers_vesp * vesp_rate;
         updateLarvae();
