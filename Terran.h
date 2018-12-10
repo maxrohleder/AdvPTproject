@@ -345,6 +345,46 @@ private:
         addToPrintlist("build-end", "barracks");
     }
 
+    //TODO während upgrade buildslot gesperrt????
+    bool barracksWithReactorBuild(){
+        if(minerals < 5000 || vespene < 5000 || barracks < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 5000;
+            addToPrintlist("build-start", "barracks_with_reactor");
+            addToEventlist(timestep + 50, &Terran::barracksWithReactorFinish);
+            return true;
+        }
+    }
+
+    void barracksWithReactorFinish(int useless){
+        ++barracks_with_reactor;
+        --barracks;
+        ++barracks_buildslots;
+        addToPrintlist("build-end", "barracks_with_teck_lab");
+    }
+
+    bool barracksWithTeckLabBuild(){
+        if(minerals < 5000 || vespene < 2500 || barracks < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 2500;
+            addToPrintlist("build-start", "barracks_with_teck_lab");
+            addToEventlist(timestep + 25, &Terran::barracksWithTeckLabFinish);
+            return true;
+        }
+    }
+
+    void barracksWithTeckLabFinish(int useless){
+        ++barracks_with_teck_lab;
+        --barracks;
+        --barracks_buildslots;
+        ++barracks_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "barracks_with_teck_lab");
+    }
+
     bool factoryBuild(){
         if(minerals < 15000 || vespene < 10000 || workers < 1 || barracks_total < 1){
             return false;
@@ -367,6 +407,46 @@ private:
         ++factory_buildslots;
         addToPrintlist("build-end", "factory");
     }
+
+    //TODO buildslot sperren????
+    bool factoryWithReactorBuild(){
+        if(minerals < 5000 || vespene < 5000 || factory < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 5000;
+            addToPrintlist("build-start", "factory_with_reactor");
+            addToEventlist(timestep + 50, &Terran::factoryWithReactorFinish);
+            return true;
+        }
+    }
+
+    void factoryWithReactorFinish(int useless){
+        ++factory_with_reactor;
+        --factory;
+        ++factory_buildslots;
+        addToPrintlist("build-end", "factory_with_reactor");
+    }    
+
+    bool factoryWithTeckLabBuild(){
+        if(minerals < 5000 || vespene < 2500 || factory < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 2500;
+            addToPrintlist("build-start", "factory_with_teck_lab");
+            addToEventlist(timestep + 50, &Terran::factoryWithTeckLabFinish);
+            return true;
+        }
+    }
+
+    void factoryWithTeckLabFinish(int useless){
+        ++factory_with_tech_lab;
+        --factory;
+        --factory_buildslots;
+        ++factory_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "factory_with_teck_lab");
+    }       
 
     bool armoryBuild(){
         if(minerals < 15000 || vespene < 10000 || workers < 1 || factory_total < 1){
@@ -453,6 +533,45 @@ private:
         addToPrintlist("build-end", "starport");
     }    
 
+    bool starportWithReactorBuild(){
+        if(minerals < 5000 || vespene < 5000 || factory < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 5000;
+            addToPrintlist("build-start", "starport_with_reactor");
+            addToEventlist(timestep + 50, &Terran::starportWithReactorFinish);
+            return true;
+        }
+    }
+
+    void starportWithReactorFinish(int useless){
+        ++starport_with_reactor;
+        --starport;
+        ++starport_buildslots;
+        addToPrintlist("build-end", "starport_with_reactor");
+    }
+
+    bool starportWithTeckLabBuild(){
+        if(minerals < 5000 || vespene < 2500 || factory < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 2500;
+            addToPrintlist("build-start", "factory_with_teck_lab");
+            addToEventlist(timestep + 25, &Terran::starportWithTeckLabFinish);
+            return true;
+        }
+    }
+
+    void starportWithTeckLabFinish(int useless){
+        ++factory_with_tech_lab;
+        --factory;
+        --factory_buildslots;
+        ++factory_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "factory_with_teck_lab");
+    }
+
     bool fusionCoreBuild(){
         if(minerals < 15000 || vespene < 15000 || workers < 1 || starport_total < 1){
             return false;
@@ -494,11 +613,6 @@ private:
         supply_max += 8;
         addToPrintlist("build-end", "supply_depot");
     }
-
-    
-
-
-
 
 //##################### end buildings #############################
 
