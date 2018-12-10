@@ -4,7 +4,15 @@ class Terran_header : public Race{
 
 protected:
 //
+    void printFinish(){
+        cout << "\t]\n}" << endl;
+    }
 
+    void printHeader(int val){
+        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
+        cout << "\t\"game\": \"sc2-hots-terran\"," << endl;
+        cout << "\t\"messages\": [" << endl;
+    }
 
 // units
     int marines = 0;
@@ -60,6 +68,6 @@ protected:
     //int factory_with_reactor_buildslot = 0; //TODO wirklich notwendig?
     int starport_buildslots = 0;
     int starport_with_teck_lab_buildslots = 0;
-    
+
 
 };
