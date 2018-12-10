@@ -3,6 +3,9 @@
 class Terran_header : public Race{
 
 protected:
+//
+
+
 // units
     int marines = 0;
     int marauder = 0;
@@ -40,6 +43,11 @@ protected:
     int factory_with_reactor = 0;
     int factory_with_tech_lab = 0;
 
+    //counter for upgrades
+    int barracks_total = 0;
+    int factory_total = 0;
+    int starport_total = 0;
+
     //buildslots
     int command_center_buildslots = 1;
     //int orbital_command_buildslots = 0; //TODO notwendig?
@@ -50,6 +58,8 @@ protected:
     int factory_buildslots = 0;
     int factory_with_teck_lab_buildslots = 0;
     //int factory_with_reactor_buildslot = 0; //TODO wirklich notwendig?
+    int starport_buildslots = 0;
+    int starport_with_teck_lab_buildslots = 0;
     
 
 };

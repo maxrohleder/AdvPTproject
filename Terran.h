@@ -21,9 +21,9 @@ private:
         int finishTime;
         int buildslot;
         funcInt function;
-        finishInformation(int time, int build, funcInt func): finishTime(time), buildslot(build), function(func){
-
+        finishInformation(int time, funcInt func, int build): finishTime(time), buildslot(build), function(func){
         }
+        ~finishInformation(){}
     };
 
 /*
@@ -46,6 +46,15 @@ private:
         buildmap["refinery"] = &Terran::refineryBuild;
         buildmap["engineering_bay"] = &Terran::engineeringBayBuild;
     } 
+
+    void addToPrintlist(string type, string name){
+        printlist.push_back(make_pair(type, name));
+    }
+
+    void addToEventlist(int time, funcInt func, int build = NULL){
+        finishInformation fin(time, func, build);
+        eventlist.push_front(fin);
+    }
 
     void updateEventlist(){
         while(1){
@@ -98,9 +107,10 @@ private:
             minerals -= 5000;
             ++supply_used;
             --command_center_buildslots; 
-            printlist.push_back(make_pair("build-start","scv"));
-            finishInformation struct_scv(timestep + 17, NULL, &Terran::scvFinish);
-            eventlist.push_front(struct_scv);
+            addToPrintlist("build-start","scv");
+            //finishInformation struct_scv(timestep + 17, NULL, &Terran::scvFinish);
+            addToEventlist(timestep + 17, &Terran::scvFinish);
+            //eventlist.push_front(struct_scv);
             return true;
         }
     }
@@ -109,11 +119,11 @@ private:
         ++command_center_buildslots; 
         ++workers;
         ++workers_minerals;
-        printlist.push_back(make_pair("build-end", "scv"));
+        addToPrintlist("build-end", "scv");
     }
     
     bool marineBuild(){
-        if(minerals < 50000 || ( supply_max -supply_used ) < 1 || (barracks_buildslots < 1 && barracks_with_teck_lab_buildslots < 1 ) ){
+        if(minerals < 5000 || ( supply_max -supply_used ) < 1 || (barracks_buildslots < 1 && barracks_with_teck_lab_buildslots < 1 ) ){
             return false;
         }else{
             minerals -= 5000;
@@ -126,9 +136,8 @@ private:
                 --barracks_with_teck_lab_buildslots;
                 slot_variable = 1;
             }
-            printlist.push_back(make_pair("build-start","marine"));
-            finishInformation struct_marine(timestep + 25, slot_variable, &Terran::marineFinish);
-            eventlist.push_front(struct_marine); 
+            addToPrintlist("build-start","marine");
+            addToEventlist(timestep + 25, &Terran::marineFinish, slot_variable);
             return true; 
         }
     }
@@ -140,7 +149,7 @@ private:
             ++barracks_with_teck_lab_buildslots;
         }
         ++marines;
-        printlist.push_back(make_pair("build-end", "marine"));
+        addToPrintlist("build-end", "marine");
     }
 
     bool hellionBuild(){
@@ -155,9 +164,8 @@ private:
                 --factory_with_teck_lab_buildslots;
                 slot_variable = 1;
             }
-            printlist.push_back(make_pair("build-start", "hellion"));
-            finishInformation struct_hellion(timestep + 30, slot_variable, &Terran::hellionFinish);
-            eventlist.push_front(struct_hellion);
+            addToPrintlist("build-start", "hellion");
+            addToEventlist(timestep + 30, &Terran::hellionFinish, slot_variable);
             return true;
         }
     }
@@ -169,7 +177,7 @@ private:
         }else{
             ++factory_with_teck_lab_buildslots;
         }
-        printlist.push_back(make_pair("build-end", "hellion"));
+        addToPrintlist("build-end", "hellion");
     }
 
 // ####################### end units ####################
@@ -178,15 +186,34 @@ private:
     Functions for buildings
 */
 
+    bool commandCenterBuild(){
+        if(minerals < 40000 || workers < 1){
+            return false;
+        }else{
+            minerals -= 40000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "command_center");
+            addToEventlist(timestep + 100, &Terran::commandCenterFinish);
+            return true;
+        }
+    }
+
+    void commandCenterFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        supply_max += 11;
+        addToPrintlist("build-end", "command_center");
+    }
+
     //TODO energie eigenschaften hinzufügen
     bool orbitalCommandBuild(){
-        if(minerals < 15000 || workers < 1 || command_center < 1 || (barracks < 1 && barracks_with_reactor < 1 && barracks_with_teck_lab < 1) ){
+        if(minerals < 15000 || workers < 1 || command_center < 1 || barracks_total < 1 ){
             return false;
         }else{
             minerals -= 15000;
-            printlist.push_back(make_pair("build-start", "orbital_command"));
-            finishInformation struct_orbital_command(timestep + 35, NULL, &Terran::orbitalCommandFinish);
-            eventlist.push_front(struct_orbital_command);
+            addToPrintlist("build-start", "orbital_command");
+            addToEventlist(timestep + 35, &Terran::orbitalCommandFinish);
             return true;
         }
     }
@@ -194,51 +221,25 @@ private:
     void orbitalCommandFinish(int useless){
         ++orbital_command;
         --command_center;
-        printlist.push_back(make_pair("build-end","orbital_command"));
+        addToPrintlist("build-end","orbital_command");
     }
 
-    bool barracksBuild(){
-        if(minerals < 15000 || supply_depot < 1 || workers < 1){
+    bool planetaryFortressBuild(){
+        if(minerals < 15000 || vespene < 15000 || command_center < 1 || engineering_bay < 1){
             return false;
         }else{
             minerals -= 15000;
-            --workers;
-            --workers_minerals; //TODO Vllt im wechsel mit Vesp worker?
-            printlist.push_back(make_pair("build-start", "barracks"));
-            finishInformation struct_barracks(timestep + 65, NULL, &Terran::barracksFinish);
-            eventlist.push_front(struct_barracks);
+            vespene -= 15000;
+            addToPrintlist("build-start", "planetary_fortress");
+            addToEventlist(timestep + 50, &Terran::planetaryFortressFinish);
             return true;
         }
     }
 
-    void barracksFinish(int useless){
-        ++barracks;
-        ++barracks_buildslots; 
-        ++workers_minerals;
-        ++workers;
-        printlist.push_back(make_pair("build-end", "barracks"));
-    }
-
-    bool supplyDepotBuild(){
-        if(minerals < 10000 || workers < 1){
-            return false;
-        }else{
-            minerals -= 10000;
-            --workers_minerals;
-            --workers;
-            printlist.push_back(make_pair("build-start", "supply_depot"));
-            finishInformation struct_supply_depot(timestep + 30, NULL, &Terran::supplyDepotFinish);
-            eventlist.push_front(struct_supply_depot);
-            return true;
-        }
-    }
-
-    void supplyDepotFinish(int useless){
-        ++workers_minerals;
-        ++workers;
-        ++supply_depot;
-        supply_max += 8;
-        printlist.push_back(make_pair("build-end", "supply_depot"));
+    void planetaryFortressFinish(int useless){
+        ++planetary_fortress;
+        --command_center;
+        addToPrintlist("build-end", "planetary_fortress");
     }
 
     bool refineryBuild(){
@@ -248,9 +249,8 @@ private:
             minerals -= 7500;
             --workers;
             --workers_minerals;
-            printlist.push_back(make_pair("build-start","refinery"));
-            finishInformation struct_refinery(timestep + 30, NULL, &Terran::refineryFinish);
-            eventlist.push_front(struct_refinery);
+            addToPrintlist("build-start","refinery");
+            addToEventlist(timestep + 30, &Terran::refineryFinish);
             return true;
         }
     }
@@ -259,7 +259,7 @@ private:
         ++workers_vesp; //worker der vorher bei minerals abgezogen wurde wird jetzt vespene zugewiesen
         ++workers;
         ++refinery;
-        printlist.push_back(make_pair("build-end","refinery"));
+        addToPrintlist("build-end","refinery");
     }
 
     bool engineeringBayBuild(){
@@ -269,9 +269,8 @@ private:
             minerals -= 12500;
             --workers;
             --workers_minerals;
-            printlist.push_back(make_pair("build-start","engineering_bay"));
-            finishInformation struct_engineering_bay(timestep + 35, NULL, &Terran::engineeringBayFinish);
-            eventlist.push_front(struct_engineering_bay);
+            addToPrintlist("build-start","engineering_bay");
+            addToEventlist(timestep + 35, &Terran::engineeringBayFinish);
             return true;
         }
     }
@@ -280,20 +279,82 @@ private:
         ++workers;
         ++workers_minerals;
         ++engineering_bay;
-        printlist.push_back(make_pair("build-end","engineering_bay"));
+        addToPrintlist("build-end","engineering_bay");
+    }
+
+    bool missileTurretBuild(){
+        if(minerals < 10000 || workers < 1 || engineering_bay < 1){
+            return false;
+        }else{
+            minerals -= 10000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "missile_turret");
+            addToEventlist(timestep + 25, &Terran::missileTurretFinish);
+            return true;
+        }
+    }
+
+    void missileTurretFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++missile_turret;
+        addToPrintlist("build-start", "missile_turret");
+    }
+
+    bool sensorTowerBuild(){
+        if(minerals < 12500 || vespene < 10000 || workers < 1 || engineering_bay < 1){
+            return false;
+        }else{
+            minerals -= 12500;
+            vespene -= 10000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "sensor_tower");
+            addToEventlist(timestep + 25, &Terran::sensorTowerFinish);
+            return true;
+        }
+    }
+
+    void sensorTowerFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++sensor_tower;
+        addToPrintlist("build-start", "sensor_tower");
+    }
+
+    bool barracksBuild(){
+        if(minerals < 15000 || supply_depot < 1 || workers < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            --workers;
+            --workers_minerals; //TODO Vllt im wechsel mit Vesp worker?
+            addToPrintlist("build-start", "barracks");
+            addToEventlist(timestep + 65, &Terran::barracksFinish);
+            return true;
+        }
+    }
+
+    void barracksFinish(int useless){
+        ++barracks;
+        ++barracks_total;
+        ++barracks_buildslots; 
+        ++workers_minerals;
+        ++workers;
+        addToPrintlist("build-end", "barracks");
     }
 
     bool factoryBuild(){
-        if(minerals < 15000 || vespene < 10000 || workers < 1){
+        if(minerals < 15000 || vespene < 10000 || workers < 1 || barracks_total < 1){
             return false;
         }else{
             minerals -= 15000;
             vespene -= 10000;
             --workers;
             --workers_minerals;
-            printlist.push_back(make_pair("build-start", "factory"));
-            finishInformation struct_factory(timestep + 60, NULL, &Terran::factoryFinish);
-            eventlist.push_front(struct_factory);
+            addToPrintlist("build-start", "factory");
+            addToEventlist(timestep + 60, &Terran::factoryFinish);
             return true;
         }
     }
@@ -301,10 +362,143 @@ private:
     void factoryFinish(int useless){
         ++workers;
         ++workers_minerals;
+        ++factory_total;
         ++factory;
         ++factory_buildslots;
-        printlist.push_back(make_pair("build-end", "factory"));
+        addToPrintlist("build-end", "factory");
     }
+
+    bool armoryBuild(){
+        if(minerals < 15000 || vespene < 10000 || workers < 1 || factory_total < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            vespene -= 10000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "armory");
+            addToEventlist(timestep + 65, &Terran::armoryFinish);
+            return true;
+        }
+    }
+
+    void armoryFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++armory;
+        addToPrintlist("build-end", "armory");
+    }
+
+    bool bunkerBuild(){
+        if(minerals < 10000 || workers < 1 || barracks_total < 1){
+            return false;
+        }else{
+            minerals -= 10000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "bunker");
+            addToEventlist(timestep + 35, &Terran::bunkerFinish);
+            return true;
+        }
+    }
+
+    void bunkerFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++bunker;
+        addToPrintlist("build-end", "bunker");
+    }
+
+    bool ghostAcademyBuild(){
+        if(minerals < 15000 || vespene < 5000 || workers < 1 || barracks_total < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            vespene -= 5000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "ghost_academy");
+            addToEventlist(timestep + 40, &Terran::ghostAcademyFinish);
+            return true;
+        }
+    }
+
+    void ghostAcademyFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++ghost_academy;
+        addToPrintlist("build-end", "armory");
+    }
+
+    bool starportBuild(){
+        if(minerals < 15000 || vespene < 10000 || workers < 1 || factory_total < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            vespene -= 10000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "starport");
+            addToEventlist(timestep + 50, &Terran::starportFinish);
+            return true;
+        }
+    }
+
+    void starportFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++starport;
+        ++starport_total;
+        ++starport_buildslots;
+        addToPrintlist("build-end", "starport");
+    }    
+
+    bool fusionCoreBuild(){
+        if(minerals < 15000 || vespene < 15000 || workers < 1 || starport_total < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            vespene -= 10000;
+            --workers;
+            --workers_minerals;
+            addToPrintlist("build-start", "fusion_core");
+            addToEventlist(timestep + 65, &Terran::fusionCoreFinish);
+            return true;
+        }
+    }
+
+    void fusionCoreFinish(int useless){
+        ++workers;
+        ++workers_minerals;
+        ++fusion_core;
+        addToPrintlist("build-end", "fusion_core");
+    }    
+
+    bool supplyDepotBuild(){
+        if(minerals < 10000 || workers < 1){
+            return false;
+        }else{
+            minerals -= 10000;
+            --workers_minerals;
+            --workers;
+            addToPrintlist("build-start", "supply_depot");
+            addToEventlist(timestep + 30, &Terran::supplyDepotFinish);
+            return true;
+        }
+    }
+
+    void supplyDepotFinish(int useless){
+        ++workers_minerals;
+        ++workers;
+        ++supply_depot;
+        supply_max += 8;
+        addToPrintlist("build-end", "supply_depot");
+    }
+
+    
+
+
+
 
 //##################### end buildings #############################
 
