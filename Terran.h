@@ -509,6 +509,7 @@ public:
         supply_max = 11;
         buildBuildmap();
         buildBuildlist(filename);
+        printHeader(1);
     }
 
     ~Terran() {}
@@ -531,20 +532,25 @@ public:
         return 1;
     }
 
-    int testRun (int time){
-        for(; timestep < time; ++timestep){
+    int testRun(int endTime) {
+        for(;timestep < endTime;++timestep){
             updateResources();
             updateEventlist();
             if(!buildlist.empty()){
-                updateBuildlist(); 
+                updateBuildlist();
             }
             if(!printlist.empty()){
                 print(timestep);
-            }
-            if(buildlist.empty() && eventlist.empty()){
-                return 0; 
+                if(buildlist.empty() && eventlist.empty()){
+                    cout << "\r\t\t}  " << endl;
+                    printFinish();
+                    return 0;
+                }else{
+                    cout << endl;
+                }
             }
         }
+        printFinish();
         return 1;
     }
 
