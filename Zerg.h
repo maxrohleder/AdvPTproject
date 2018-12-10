@@ -802,7 +802,7 @@ class Zerg : public Zerg_header{
     ~Zerg(){}
     int run() {
         for(;time < 1000;++time){
-            updateRecources();
+            updateResources();
             print(time);
             return 0;
         }
@@ -811,7 +811,7 @@ class Zerg : public Zerg_header{
 
     int runTest(int endTime) {
         for(;time < endTime;++time){
-            updateRecources();
+            updateResources();
             updateEventlist();
             if(!buildlist.empty()){
                 updateBuildlist();
