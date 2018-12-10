@@ -533,6 +533,7 @@ private:
         addToPrintlist("build-end", "starport");
     }    
 
+    //TODO während upgrade buildslot gesperrt????
     bool starportWithReactorBuild(){
         if(minerals < 5000 || vespene < 5000 || factory < 1){
             return false;
