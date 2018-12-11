@@ -803,9 +803,23 @@ class Zerg : public Zerg_header{
     int run() {
         for(;time < 1000;++time){
             updateResources();
-            print(time);
-            return 0;
+            updateEventlist();
+            if(!buildlist.empty()){
+                updateBuildlist();
+            }
+            redistributeWorkers();
+            if(!printlist.empty()){
+                print(time);
+                if(buildlist.empty() && eventlist.empty()){
+                    cout << "\r\t\t}  " << endl;
+                    printFinish();
+                    return 0;
+                }else{
+                    cout << endl;
+                }
+            }
         }
+        printFinish();
         return 1;
     }
 
@@ -828,7 +842,6 @@ class Zerg : public Zerg_header{
                 }
             }
         }
-        cout << time << endl;
         printFinish();
         return 1;
     }
