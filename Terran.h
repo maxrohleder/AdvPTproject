@@ -108,9 +108,7 @@ private:
             ++supply_used;
             --command_center_buildslots; 
             addToPrintlist("build-start","scv");
-            //finishInformation struct_scv(timestep + 17, NULL, &Terran::scvFinish);
             addToEventlist(timestep + 17, &Terran::scvFinish);
-            //eventlist.push_front(struct_scv);
             return true;
         }
     }
@@ -121,7 +119,7 @@ private:
         ++workers_minerals;
         addToPrintlist("build-end", "scv");
     }
-    
+
     bool marineBuild(){
         if(minerals < 5000 || ( supply_max -supply_used ) < 1 || (barracks_buildslots < 1 && barracks_with_teck_lab_buildslots < 1 ) ){
             return false;
@@ -152,11 +150,69 @@ private:
         addToPrintlist("build-end", "marine");
     }
 
+    bool marauderBuild(){
+        if(minerals < 10000 || vespene < 2500 || (supply_max - supply_used) <2 || barracks_with_teck_lab_buildslots < 1){
+            return false;
+        }else{
+            minerals -= 10000;
+            vespene -= 2500;
+            supply_used += 2;
+            --barracks_with_teck_lab_buildslots;
+            addToPrintlist("build-start", "marauder");
+            addToEventlist(timestep + 30, &Terran::marauderFinish);
+            return true;
+        }
+    }
+
+    void marauderFinish(int useless){
+        ++barracks_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "marauder");
+    }
+    
+    bool reaperBuild(){
+        if(minerals < 5000 || vespene < 5000 || (supply_max - supply_used) < 1 || barracks_with_teck_lab_buildslots < 1){
+            return false;
+        }else{
+            minerals -= 5000;
+            vespene -= 5000;
+            ++supply_used;
+            --barracks_with_teck_lab_buildslots;
+            addToPrintlist("build-start", "reaper");
+            addToEventlist(timestep + 45, &Terran::reaperFinish);
+            return true;
+        }
+    }
+
+    void reaperFinish(int useless){
+        ++barracks_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "reaper");
+    }
+
+    bool ghostBuild(){
+        if(minerals < 20000 || vespene < 10000 || (supply_max - supply_used) < 2 || barracks_with_teck_lab_buildslots < 1 || ghost_academy < 1){
+            return false;
+        }else{
+            minerals -= 20000;
+            vespene -= 10000;
+            supply_used += 2;
+            --barracks_with_teck_lab_buildslots;
+            addToPrintlist("build-start", "ghost");
+            addToEventlist(timestep + 45, &Terran::ghostFinish);
+            return true;
+        }
+    }
+
+    void ghostFinish(int useless){
+        ++barracks_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "ghost");
+    }
+
     bool hellionBuild(){
         if(minerals < 10000 || (supply_max - supply_used) < 2 || (factory_buildslots < 1 && factory_with_teck_lab_buildslots < 1)){
             return false;
         }else{
             minerals -= 10000;
+            supply_used += 2;
             int slot_variable = 0;
             if(factory_buildslots > 0){
                 --factory_buildslots;
@@ -179,6 +235,25 @@ private:
         }
         addToPrintlist("build-end", "hellion");
     }
+
+    bool siegeTankBuild(){
+        if(minerals < 15000 || vespene < 12500 || (supply_max - supply_used) < 3 || factory_with_teck_lab_buildslots < 1){
+            return false;
+        }else{
+            minerals -= 15000;
+            vespene -= 12500;
+            supply_used += 3;
+            --factory_with_teck_lab_buildslots;
+            addToPrintlist("build-start", "siege_tank");
+            addToEventlist(timestep + 45, &Terran::siegeTankFinish);
+            return true;
+        }
+    }
+
+    void siegeTankFinish(int useless){
+        ++factory_with_teck_lab_buildslots;
+        addToPrintlist("build-end", "siege_tank");
+    }    
 
 // ####################### end units ####################
 
