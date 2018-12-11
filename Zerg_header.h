@@ -65,7 +65,7 @@ class Zerg_header : public Race{
     int mutalisk = 0;
 
     //buildings
-    int hatchary = 1;
+    int hatchery = 1;
     int evolution_chamber = 0;
     int spore_crawler = 0;
     int lair = 0;
@@ -103,7 +103,7 @@ class Zerg_header : public Race{
             if(workers_vesp > 0){
                 --workers_vesp;
                 ++workers_minerals;
-                relation = workers_minerals / workers;
+                relation = (double) workers_minerals / (double) workers;
             }else{
                 addToPrintlist("", "");
                 return;
@@ -118,7 +118,7 @@ class Zerg_header : public Race{
             }else{
                 --workers_minerals;
                 ++workers_vesp;
-                relation = workers_minerals / workers;
+                relation = (double) workers_minerals / (double) workers;
             }
         }
         printlist.push_front(make_pair("", ""));
