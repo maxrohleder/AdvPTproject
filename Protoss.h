@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <fstream>
 
-#include "Protoss_header.h"
+#include "Protoss/Protoss_header.h"
 
 using namespace std;
 
@@ -40,8 +40,15 @@ class Protoss : public Protoss_header{
     ~Protoss(){};
 
     int runTest(int endtime){
+        
+        for(; time < endtime; ++time)
+        {
+            /* code */
+        }
+        
         cout << "would simulate max of " << endtime << "seconds now" << endl;
+        return 0;
     }
 
 
-}
+};
