@@ -1,6 +1,6 @@
-#include "Race.h"
+#include "../Race.h"
 
 class Protoss_header : public Race{
 
 
-}
+};
