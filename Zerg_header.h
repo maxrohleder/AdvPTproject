@@ -88,11 +88,38 @@ class Zerg_header : public Race{
 
 
     void distributeWorker(){
-        if((workers_vesp_max - workers_vesp) > 0){
-            ++workers_vesp;
-        }else{
-            ++workers_minerals;
+        ++workers_minerals;
+    }
+
+    void redistributeWorkers(){
+        double relation = (double) workers_minerals / (double) workers;
+        if(workers_vesp_max < 1 || (relation < (2.0 / 3.0) && relation > (1.0 / 3.0))){
+            return;
         }
+        while(relation < (1.0 / 3.0)){
+            if(workers_vesp > 0){
+                --workers_vesp;
+                ++workers_minerals;
+                relation = workers_minerals / workers;
+            }else{
+                addToPrintlist("", "");
+                return;
+            }
+        }
+        if((workers_vesp_max - workers_vesp) < 1){
+            return;
+        }
+        while (relation > (2.0 / 3.0)){
+            if((workers_vesp_max - workers_vesp) < 1 ){
+                break;
+            }else{
+                --workers_minerals;
+                ++workers_vesp;
+                relation = workers_minerals / workers;
+            }
+        }
+        addToPrintlist("", "");
+        return;
     }
 
     bool getWorker(){
@@ -129,5 +156,11 @@ class Zerg_header : public Race{
 
     void printFinish(){
         cout << "\t]\n}" << endl;
+    }
+
+    //helpers
+    //helper for printlist
+    void addToPrintlist(string type, string name){
+        printlist.push_back(make_pair(type, name));
     }
 };

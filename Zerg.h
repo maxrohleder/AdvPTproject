@@ -36,11 +36,6 @@ class Zerg : public Zerg_header{
 
 
     //helpers
-    //helper for printlist
-    void addToPrintlist(string type, string name){
-        printlist.push_back(make_pair(type, name));
-    }
-
     //helper for eventlist
     void addToEventlist(int t, funcVoid func){
         eventlist.push_front(end_event(time + t, func));
@@ -816,6 +811,7 @@ class Zerg : public Zerg_header{
             if(!buildlist.empty()){
                 updateBuildlist();
             }
+            redistributeWorkers();
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
