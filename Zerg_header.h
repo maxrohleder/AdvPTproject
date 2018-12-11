@@ -3,6 +3,9 @@
 class Zerg_header : public Race{
     protected:
 
+    double upper_relation = 1.0/2.0;
+    double lower_relation = 1.0/3.0;
+
     //larvae management
     struct larvae_pool{
         larvae_pool(int l, int t = 15) : larvae_timer(t), larvae(l){}
@@ -93,10 +96,10 @@ class Zerg_header : public Race{
 
     void redistributeWorkers(){
         double relation = (double) workers_minerals / (double) workers;
-        if(workers_vesp_max < 1 || (relation < (2.0 / 3.0) && relation > (1.0 / 3.0))){
+        if(workers_vesp_max < 1 || (relation <= upper_relation && relation >= lower_relation)){
             return;
         }
-        while(relation < (1.0 / 3.0)){
+        while(relation < lower_relation){
             if(workers_vesp > 0){
                 --workers_vesp;
                 ++workers_minerals;
@@ -109,7 +112,7 @@ class Zerg_header : public Race{
         if((workers_vesp_max - workers_vesp) < 1){
             return;
         }
-        while (relation > (2.0 / 3.0)){
+        while (relation > upper_relation){
             if((workers_vesp_max - workers_vesp) < 1 ){
                 break;
             }else{
@@ -118,7 +121,7 @@ class Zerg_header : public Race{
                 relation = workers_minerals / workers;
             }
         }
-        addToPrintlist("", "");
+        printlist.push_front(make_pair("", ""));
         return;
     }
 
