@@ -1,3 +1,17 @@
+Status:
+- Layout structure done 
+- Zerg implemented roughly done
+- missing:
+	- Protoss implementation
+	- Terran a few functions
+	- buildlist validator
+	- energy management
+	- id management
+- pack project into project.zip (final)
+	- should contain build.sh and forwardSim.sh <race> <buildlistFile>
+	- sc2-hots-terran/protoss/zerg are valid args for <race>
+	- print to stdout
+
 Current Layout:
 	
 	Klasse Race:
@@ -14,7 +28,7 @@ Current Layout:
 		- buildlist (Liste aus strings)
 		- eventlist (mapt zeiten t auf events)
 	
-		- 
+
 class race{
 protected:
 	virtual function* name_function_mapping( string name ) {}; // aus race
