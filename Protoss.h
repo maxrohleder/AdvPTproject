@@ -27,6 +27,9 @@ class Protoss : public Protoss_header{
     //global time
     int time = 1;
 
+    // only for debug prints
+    bool debug = 0;
+
     //needed list structures
     list<funcBool> buildlist;
     list<end_event> eventlist;
@@ -108,19 +111,19 @@ class Protoss : public Protoss_header{
 
     void distributeWorkers(){
         // TODO
-        cerr << "have to implement distributeWorkers" << endl;
+        if(debug) cerr << "have to implement distributeWorkers" << endl;
     }
 
     bool validateBuildlist(string filename){
         // TODO run through file and validate dependencies
         // return true if buildlist is valid; false if not
-        bool is_valid = false;
+        bool is_valid = true;
         //check list here
         if(is_valid){
             return true;
         }else{
-            cout << "{\t\"game\"\t: \"sc2-hots-protoss\"," << endl;           
-            cout << "\n\t\"buildlistValid\"\t: \"0\"" << endl;
+            cout << "{ \"game\"\t\t: \"sc2-hots-protoss\"," << endl;           
+            cout << "  \"buildlistValid\"\t: \"0\"" << endl;
             cout << "}" << endl;
             return false;   
         }
@@ -147,14 +150,12 @@ class Protoss : public Protoss_header{
 
     public:
     Protoss(const string filename) {
-        // if buildlist is invalid print and exit(0)
+        // if buildlist is invalid print json and exit(0)
         if(!validateBuildlist(filename)){
             exit(0);
-        } 
-        else { 
-            printHeader(1);
         }
-        buildBuildlist(filename);
+        buildBuildlist(filename); // inits hashmap and fills it
+        supply_max = 10;
     };
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
