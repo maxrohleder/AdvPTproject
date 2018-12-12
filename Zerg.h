@@ -385,11 +385,12 @@ class Zerg : public Zerg_header{
 
     void hatcheryFinish(){
         ++hatchery;
-        ++bases;
         geyser_max += 2;
         supply_max += 2;
         ++queen_slot;
+        addLarvaePool();
         addToPrintlist("build-end", "hatchery");
+        ++bases;
     }
 
     //evolution_chamber
@@ -731,10 +732,12 @@ class Zerg : public Zerg_header{
         }
     }
 
-    void updateBuildlist(){
+    bool updateBuildlist(){
         if((this->*(*buildlist.begin()))()){
             buildlist.pop_front();
+            return true;
         }
+        return false;
     }
 
     void buildBuildlist(string filename){
@@ -827,8 +830,12 @@ class Zerg : public Zerg_header{
         for(;time < endTime;++time){
             updateResources();
             updateEventlist();
+            bool new_building = false;
             if(!buildlist.empty()){
-                updateBuildlist();
+                new_building = updateBuildlist();
+            }
+            if(!new_building && queen > 0){
+                Injection();
             }
             redistributeWorkers();
             if(!printlist.empty()){
