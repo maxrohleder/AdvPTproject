@@ -69,8 +69,4 @@ class Race{
 		//liste leeren
 		printlist.clear();
 	}
-
-	void printFinish(){
-        cout << "\t]\n}" << endl;
-    }
 };

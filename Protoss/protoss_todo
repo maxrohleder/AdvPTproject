@@ -3,6 +3,7 @@
     - printing
 - implement unitBuild
 - implement unitFinish
+- check start supply and update constructor
 
 - implement buildingBuild
 - implement buildingFinish

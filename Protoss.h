@@ -70,11 +70,11 @@ class Protoss : public Protoss_header{
     }
 
     void addToPrintList(const string type, const string name){
-        // TODO
+        printlist.push_back(make_pair(type, name));
     }
 
-    void addToEventList(const int time, funcVoid func){
-        // TODO
+    void addToEventList(const int dt, funcVoid func){
+        eventlist.push_front(end_event(time + dt, func));
     }
 
     void updateEventlist(){
@@ -98,8 +98,32 @@ class Protoss : public Protoss_header{
 
     void printHeader(int val){
         cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
+        cout << "\t\"game\": \"sc2-hots-protoss\"," << endl;
         cout << "\t\"messages\": [" << endl;
+    }
+
+    void printFinish(){
+        cout << "\t]\n}" << endl;
+    }
+
+    void distributeWorkers(){
+        // TODO
+        cerr << "have to implement distributeWorkers" << endl;
+    }
+
+    bool validateBuildlist(string filename){
+        // TODO run through file and validate dependencies
+        // return true if buildlist is valid; false if not
+        bool is_valid = false;
+        //check list here
+        if(is_valid){
+            return true;
+        }else{
+            cout << "{\t\"game\"\t: \"sc2-hots-protoss\"," << endl;           
+            cout << "\n\t\"buildlistValid\"\t: \"0\"" << endl;
+            cout << "}" << endl;
+            return false;   
+        }
     }
 
     //build (funcbool) and finish (funcVoid) funtions
@@ -116,18 +140,27 @@ class Protoss : public Protoss_header{
     }
 
     void probeFinish(){
+        ++workers;
+        distributeWorkers();
         addToPrintList("build-end", "probe");
     }
 
     public:
     Protoss(const string filename) {
+        // if buildlist is invalid print and exit(0)
+        if(!validateBuildlist(filename)){
+            exit(0);
+        } 
+        else { 
+            printHeader(1);
+        }
         buildBuildlist(filename);
     };
-    Protoss(const Protoss& p){};
+    Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
 
-    int runTest(int endtime){
-        
+    int run(int endtime){
+        printHeader(1);
         for(; time < endtime; ++time)
         {
             updateResources();
