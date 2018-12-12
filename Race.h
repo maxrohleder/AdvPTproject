@@ -54,6 +54,9 @@ class Race{
 		cout << "\t\t\t\t}\n\t\t\t},\n\t\t\t\"events\": [" << endl;
 		//alle events printen
 		for (const auto& i : printlist) { 
+			if(i.first == ""){ //IMPORTANT: put in the empty string pair at FRONT of the printlist
+				continue;
+			}
 			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": \"" << i.first << "\"," << endl;
 			cout << "\t\t\t\t\t\"name\": \"" << i.second << "\"\n\t\t\t\t}";
 			if ( i != printlist.back()) {

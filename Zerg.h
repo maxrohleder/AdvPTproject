@@ -36,11 +36,6 @@ class Zerg : public Zerg_header{
 
 
     //helpers
-    //helper for printlist
-    void addToPrintlist(string type, string name){
-        printlist.push_back(make_pair(type, name));
-    }
-
     //helper for eventlist
     void addToEventlist(int t, funcVoid func){
         eventlist.push_front(end_event(time + t, func));
@@ -304,7 +299,7 @@ class Zerg : public Zerg_header{
     //brood_lord
 
     bool broodLordBuild(){
-        if(checkResources(15000, 2, 15000) || greater_spire < 1){
+        if(checkResources(15000, 2, 15000) || greater_spire < 1 || corruptor < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -372,9 +367,9 @@ class Zerg : public Zerg_header{
 
     //structures
 
-    //hatchary
+    //hatchery
 
-    bool hatcharyBuild(){
+    bool hatcheryBuild(){
         if(checkResources(30000)){
             return false;
         }else{
@@ -383,18 +378,18 @@ class Zerg : public Zerg_header{
             }
             minerals -= 30000;
             addToPrintlist("build-start", "hatchery");
-            addToEventlist(100, &Zerg::hatcharyFinish);
+            addToEventlist(100, &Zerg::hatcheryFinish);
             return true;
         }
     }
 
-    void hatcharyFinish(){
-        ++hatchary;
+    void hatcheryFinish(){
+        ++hatchery;
         ++bases;
         geyser_max += 2;
         supply_max += 2;
         ++queen_slot;
-        addToPrintlist("build-end", "hatchary");
+        addToPrintlist("build-end", "hatchery");
     }
 
     //evolution_chamber
@@ -442,12 +437,12 @@ class Zerg : public Zerg_header{
     //lair
 
     bool lairBuild(){
-        if(checkResources(15000, 0, 10000) || spawning_pool < 1 || hatchary < 1){
+        if(checkResources(15000, 0, 10000) || spawning_pool < 1 || hatchery < 1){
             return false;
         }else{
             minerals -= 15000;
             vespene -= 10000;
-            --hatchary;
+            --hatchery;
             addToPrintlist("build-start", "lair");
             addToEventlist(80, &Zerg::lairFinish);
             return true;
@@ -491,6 +486,7 @@ class Zerg : public Zerg_header{
                 return false;
             }
             minerals -= 2500;
+            --geyser_max;
             addToPrintlist("build-start", "extractor");
             addToEventlist(30, &Zerg::extractorFinish);
             return true;
@@ -557,7 +553,7 @@ class Zerg : public Zerg_header{
             minerals -= 10000;
             vespene -= 5000;
             addToPrintlist("build-start", "baneling_nest");
-            addToEventlist(50, &Zerg::banelingNestFinish);
+            addToEventlist(60, &Zerg::banelingNestFinish);
             return true;
         }
     }
@@ -578,7 +574,7 @@ class Zerg : public Zerg_header{
             }
             minerals -= 10000;
             vespene -= 10000;
-            addToPrintlist("build-start", "hydralisk_ban");
+            addToPrintlist("build-start", "hydralisk_den");
             addToEventlist(40, &Zerg::hydraliskDenFinish);
             return true;
         }
@@ -601,7 +597,7 @@ class Zerg : public Zerg_header{
             minerals -= 10000;
             vespene -= 10000;
             addToPrintlist("build-start", "infestation_pit");
-            addToEventlist(40, &Zerg::infestationPitFinish);
+            addToEventlist(50, &Zerg::infestationPitFinish);
             return true;
         }
     }
@@ -657,7 +653,7 @@ class Zerg : public Zerg_header{
 
     bool ultraliskCavernBuild(){
         if(checkResources(15000, 0, 20000) || hive < 1){
-            return true;
+            return false;
         }else{
             if(!getWorker()){
                 return false;
@@ -747,6 +743,10 @@ class Zerg : public Zerg_header{
         file.open(filename);
         if(file.is_open()){
             while(getline(file, unit_name)){
+                if(buildmap.find(unit_name) == buildmap.end()){
+                    cerr << "bad unitname: " << unit_name << endl;
+                    exit(1);
+                }
                 buildlist.push_back(buildmap[unit_name]);
             }
             file.close();
@@ -771,7 +771,7 @@ class Zerg : public Zerg_header{
         buildmap["brood_lord"] = &Zerg::broodLordBuild;
         buildmap["corruptor"] = &Zerg::corruptorBuild;
         buildmap["mutalisk"] = &Zerg::mutaliskBuild;
-        buildmap["hatchary"] = &Zerg::hatcharyBuild;
+        buildmap["hatchery"] = &Zerg::hatcheryBuild;
         buildmap["evolution_chamber"] = &Zerg::evolutionChamberBuild;
         buildmap["spore_crawler"] = &Zerg::sporeCrawlerBuild;
         buildmap["lair"] = &Zerg::lairBuild;
@@ -781,8 +781,8 @@ class Zerg : public Zerg_header{
         buildmap["roach_warren"] = &Zerg::roachWarrenBuild;
         buildmap["baneling_nest"] = &Zerg::banelingNestBuild;
         buildmap["hydralisk_den"] = &Zerg::hydraliskDenBuild;
-        buildmap["infestion_pit"] = &Zerg::infestationPitBuild;
-        buildmap["hive"] = &Zerg::infestationPitBuild;
+        buildmap["infestation_pit"] = &Zerg::infestationPitBuild;
+        buildmap["hive"] = &Zerg::hiveBuild;
         buildmap["nydus_network"] = &Zerg::nydusNetworkBuild;
         buildmap["ultralisk_cavern"] = &Zerg::ultraliskCavernBuild;
         buildmap["greater_spire"] = &Zerg::greaterSpireBuild;
@@ -803,9 +803,23 @@ class Zerg : public Zerg_header{
     int run() {
         for(;time < 1000;++time){
             updateResources();
-            print(time);
-            return 0;
+            updateEventlist();
+            if(!buildlist.empty()){
+                updateBuildlist();
+            }
+            redistributeWorkers();
+            if(!printlist.empty()){
+                print(time);
+                if(buildlist.empty() && eventlist.empty()){
+                    cout << "\r\t\t}  " << endl;
+                    printFinish();
+                    return 0;
+                }else{
+                    cout << endl;
+                }
+            }
         }
+        printFinish();
         return 1;
     }
 
@@ -816,6 +830,7 @@ class Zerg : public Zerg_header{
             if(!buildlist.empty()){
                 updateBuildlist();
             }
+            redistributeWorkers();
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){

@@ -3,6 +3,9 @@
 class Zerg_header : public Race{
     protected:
 
+    double upper_relation = 1.0/2.0;
+    double lower_relation = 1.0/3.0;
+
     //larvae management
     struct larvae_pool{
         larvae_pool(int l, int t = 15) : larvae_timer(t), larvae(l){}
@@ -62,7 +65,7 @@ class Zerg_header : public Race{
     int mutalisk = 0;
 
     //buildings
-    int hatchary = 1;
+    int hatchery = 1;
     int evolution_chamber = 0;
     int spore_crawler = 0;
     int lair = 0;
@@ -88,11 +91,38 @@ class Zerg_header : public Race{
 
 
     void distributeWorker(){
-        if((workers_vesp_max - workers_vesp) > 0){
-            ++workers_vesp;
-        }else{
-            ++workers_minerals;
+        ++workers_minerals;
+    }
+
+    void redistributeWorkers(){
+        double relation = (double) workers_minerals / (double) workers;
+        if(workers_vesp_max < 1 || (relation <= upper_relation && relation >= lower_relation)){
+            return;
         }
+        while(relation < lower_relation){
+            if(workers_vesp > 0){
+                --workers_vesp;
+                ++workers_minerals;
+                relation = (double) workers_minerals / (double) workers;
+            }else{
+                addToPrintlist("", "");
+                return;
+            }
+        }
+        if((workers_vesp_max - workers_vesp) < 1){
+            return;
+        }
+        while (relation > upper_relation){
+            if((workers_vesp_max - workers_vesp) < 1 ){
+                break;
+            }else{
+                --workers_minerals;
+                ++workers_vesp;
+                relation = (double) workers_minerals / (double) workers;
+            }
+        }
+        printlist.push_front(make_pair("", ""));
+        return;
     }
 
     bool getWorker(){
@@ -129,5 +159,11 @@ class Zerg_header : public Race{
 
     void printFinish(){
         cout << "\t]\n}" << endl;
+    }
+
+    //helpers
+    //helper for printlist
+    void addToPrintlist(string type, string name){
+        printlist.push_back(make_pair(type, name));
     }
 };
