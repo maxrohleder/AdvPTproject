@@ -27,6 +27,9 @@ class Protoss : public Protoss_header{
     //global time
     int time = 1;
 
+    // only for debug prints
+    bool debug = 0;
+
     //needed list structures
     list<funcBool> buildlist;
     list<end_event> eventlist;
@@ -70,11 +73,11 @@ class Protoss : public Protoss_header{
     }
 
     void addToPrintList(const string type, const string name){
-        // TODO
+        printlist.push_back(make_pair(type, name));
     }
 
-    void addToEventList(const int time, funcVoid func){
-        // TODO
+    void addToEventList(const int dt, funcVoid func){
+        eventlist.push_front(end_event(time + dt, func));
     }
 
     void updateEventlist(){
@@ -98,8 +101,32 @@ class Protoss : public Protoss_header{
 
     void printHeader(int val){
         cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
+        cout << "\t\"game\": \"sc2-hots-protoss\"," << endl;
         cout << "\t\"messages\": [" << endl;
+    }
+
+    void printFinish(){
+        cout << "\t]\n}" << endl;
+    }
+
+    void distributeWorkers(){
+        // TODO
+        if(debug) cerr << "have to implement distributeWorkers" << endl;
+    }
+
+    bool validateBuildlist(string filename){
+        // TODO run through file and validate dependencies
+        // return true if buildlist is valid; false if not
+        bool is_valid = true;
+        //check list here
+        if(is_valid){
+            return true;
+        }else{
+            cout << "{ \"game\"\t\t: \"sc2-hots-protoss\"," << endl;           
+            cout << "  \"buildlistValid\"\t: \"0\"" << endl;
+            cout << "}" << endl;
+            return false;   
+        }
     }
 
     //build (funcbool) and finish (funcVoid) funtions
@@ -116,18 +143,25 @@ class Protoss : public Protoss_header{
     }
 
     void probeFinish(){
+        ++workers;
+        distributeWorkers();
         addToPrintList("build-end", "probe");
     }
 
     public:
     Protoss(const string filename) {
-        buildBuildlist(filename);
+        // if buildlist is invalid print json and exit(0)
+        if(!validateBuildlist(filename)){
+            exit(0);
+        }
+        buildBuildlist(filename); // inits hashmap and fills it
+        supply_max = 10;
     };
-    Protoss(const Protoss& p){};
+    Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
 
-    int runTest(int endtime){
-        
+    int run(int endtime){
+        printHeader(1);
         for(; time < endtime; ++time)
         {
             updateResources();
