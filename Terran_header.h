@@ -3,6 +3,9 @@
 class Terran_header : public Race{
 
 protected:
+
+    double upper_relation = 1.0/2.0;
+    double lower_relation = 1.0/3.0;
 //
     void printFinish(){
         cout << "\t]\n}" << endl;
@@ -12,6 +15,41 @@ protected:
         cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
         cout << "\t\"game\": \"sc2-hots-terran\"," << endl;
         cout << "\t\"messages\": [" << endl;
+    }
+
+    void addToPrintlist(string type, string name){
+        printlist.push_back(make_pair(type, name));
+    }
+
+    void redistributeWorkers(){
+        double relation = (double) workers_minerals / (double) workers;
+        if(workers_vesp_max < 1 || (relation <= upper_relation && relation >= lower_relation)){
+            return;
+        }
+        while(relation < lower_relation){
+            if(workers_vesp > 0){
+                --workers_vesp;
+                ++workers_minerals;
+                relation = (double) workers_minerals / (double) workers;
+            }else{
+                addToPrintlist("", "");
+                return;
+            }
+        }
+        if((workers_vesp_max - workers_vesp) < 1){
+            return;
+        }
+        while (relation > upper_relation){
+            if((workers_vesp_max - workers_vesp) < 1 ){
+                break;
+            }else{
+                --workers_minerals;
+                ++workers_vesp;
+                relation = (double) workers_minerals / (double) workers;
+            }
+        }
+        printlist.push_front(make_pair("", ""));
+        return;
     }
 
 // units

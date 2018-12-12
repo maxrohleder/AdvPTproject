@@ -35,6 +35,7 @@ private:
     map<string, funcBool> buildmap;
 
     void buildBuildmap(){
+        //units
         buildmap["scv"] = &Terran::scvBuild; 
         buildmap["marine"] = &Terran::marineBuild;
         buildmap["marauder"] = &Terran::marauderBuild;
@@ -48,7 +49,7 @@ private:
         buildmap["raven"] = &Terran::ravenBuild;
         buildmap["banshee"] = &Terran::bansheeBuild;
         buildmap["battlecruiser"] = &Terran::battlecruiserBuild;
-
+        //buildings
         buildmap["command_center"] = &Terran::commandCenterBuild;
         buildmap["orbital_command"] = &Terran::orbitalCommandBuild;
         buildmap["planetary_fortress"] = &Terran::planetaryFortressBuild;
@@ -71,10 +72,6 @@ private:
         buildmap["fusion_core"] = &Terran::fusionCoreBuild;
         buildmap["supply_depot"] = &Terran::supplyDepotBuild;
     } 
-
-    void addToPrintlist(string type, string name){
-        printlist.push_back(make_pair(type, name));
-    }
 
     void addToEventlist(int time, funcInt func, int build = NULL){
         finishInformation fin(time, func, build);
@@ -898,6 +895,7 @@ public:
             if(!buildlist.empty()){
                 updateBuildlist();
             }
+            redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
                 if(buildlist.empty() && eventlist.empty()){
