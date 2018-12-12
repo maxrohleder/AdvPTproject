@@ -158,7 +158,11 @@ class Zerg_header : public Race{
     }
 
     void printFinish(){
-        cout << "\t]\n}" << endl;
+        cout << "\t]," << endl;
+        cout << "\t\"initialUnits\": {\"drone\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Max_Musterdrone\"]," << endl;
+        cout << "\t\t\t\"hatchery\": [\"hatchary_00\"]," << endl;
+        cout << "\t\t\t\"overlord\": [\"Bubblehead\"]\n\t\t}" << endl;
+        cout << "}" << endl;
     }
 
     //helpers
