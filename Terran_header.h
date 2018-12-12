@@ -45,7 +45,7 @@ protected:
     int fusion_core = 0;
     int supply_depot = 0;
     int barracks_with_reactor = 0;
-    int barracks_with_teck_lab = 0;
+    int barracks_with_tech_lab = 0;
     int starport_with_reactor = 0;
     int starport_with_tech_lab = 0;
     int factory_with_reactor = 0;
@@ -61,13 +61,13 @@ protected:
     //int orbital_command_buildslots = 0; //TODO notwendig?
     //int planetary_fortress_buildslots = 0; //TODO notwendig?
     int barracks_buildslots = 0;
-    int barracks_with_teck_lab_buildslots = 0;
+    int barracks_with_tech_lab_buildslots = 0;
     //int barracks_with_reactor_buildslot = 0; //TODO wirklich notwendig?
     int factory_buildslots = 0;
-    int factory_with_teck_lab_buildslots = 0;
+    int factory_with_tech_lab_buildslots = 0;
     //int factory_with_reactor_buildslot = 0; //TODO wirklich notwendig?
     int starport_buildslots = 0;
-    int starport_with_teck_lab_buildslots = 0;
+    int starport_with_tech_lab_buildslots = 0;
 
 
 };
