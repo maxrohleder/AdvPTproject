@@ -16,7 +16,7 @@ class Race{
     //resources
     int minerals = 5000;
     int vespene = 0;
-    double supply_used = 6;
+    int supply_used = 6;
     int supply_max = 20; //racedependent (change in constructor)
 
     //workers
