@@ -17,7 +17,7 @@ class Race{
     int minerals = 5000;
     int vespene = 0;
     double supply_used = 6;
-    int supply_max = 20; //racedependent
+    int supply_max = 20; //racedependent (change in constructor)
 
     //workers
     int workers = 6;
@@ -69,4 +69,8 @@ class Race{
 		//liste leeren
 		printlist.clear();
 	}
+
+	void printFinish(){
+        cout << "\t]\n}" << endl;
+    }
 };

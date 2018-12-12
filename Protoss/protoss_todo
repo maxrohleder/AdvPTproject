@@ -1,0 +1,10 @@
+- implement chronoboost
+    - idea 
+    - printing
+- implement unitBuild
+- implement unitFinish
+
+- implement buildingBuild
+- implement buildingFinish
+- implement hashmap (name, build_function)
+  
