@@ -443,6 +443,8 @@ private:
     void commandCenterFinish(int useless){
         ++workers;
         ++workers_minerals;
+        ++command_center;
+        ++command_center_buildslots;
         supply_max += 11;
         addToPrintlist("build-end", "command_center");
     }
@@ -561,7 +563,7 @@ private:
         ++workers;
         ++workers_minerals;
         ++sensor_tower;
-        addToPrintlist("build-start", "sensor_tower");
+        addToPrintlist("build-end", "sensor_tower");
     }
 
     bool barracksBuild(){
@@ -603,7 +605,7 @@ private:
         ++barracks_with_reactor;
         --barracks;
         ++barracks_buildslots;
-        addToPrintlist("build-end", "barracks_with_tech_lab");
+        addToPrintlist("build-end", "barracks_with_reactor");
     }
 
     bool barrackswithTechLabBuild(){
@@ -656,6 +658,7 @@ private:
         }else{
             minerals -= 5000;
             vespene -= 5000;
+            --factory;
             addToPrintlist("build-start", "factory_with_reactor");
             addToEventlist(timestep + 50, &Terran::factoryWithReactorFinish);
             return true;
@@ -664,7 +667,6 @@ private:
 
     void factoryWithReactorFinish(int useless){
         ++factory_with_reactor;
-        --factory;
         ++factory_buildslots;
         addToPrintlist("build-end", "factory_with_reactor");
     }    
@@ -675,6 +677,7 @@ private:
         }else{
             minerals -= 5000;
             vespene -= 2500;
+            --factory;
             addToPrintlist("build-start", "factory_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::factorywithTechLabFinish);
             return true;
@@ -683,7 +686,6 @@ private:
 
     void factorywithTechLabFinish(int useless){
         ++factory_with_tech_lab;
-        --factory;
         --factory_buildslots;
         ++factory_with_tech_lab_buildslots;
         addToPrintlist("build-end", "factory_with_tech_lab");
@@ -748,7 +750,7 @@ private:
         ++workers;
         ++workers_minerals;
         ++ghost_academy;
-        addToPrintlist("build-end", "armory");
+        addToPrintlist("build-end", "ghost_academy");
     }
 
     bool starportBuild(){
@@ -776,11 +778,12 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool starportWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || factory < 1){
+        if(minerals < 5000 || vespene < 5000 || starport < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
+            --starport;
             addToPrintlist("build-start", "starport_with_reactor");
             addToEventlist(timestep + 50, &Terran::starportWithReactorFinish);
             return true;
@@ -789,29 +792,28 @@ private:
 
     void starportWithReactorFinish(int useless){
         ++starport_with_reactor;
-        --starport;
         ++starport_buildslots;
         addToPrintlist("build-end", "starport_with_reactor");
     }
 
     bool starportwithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || factory < 1){
+        if(minerals < 5000 || vespene < 2500 || starport < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
-            addToPrintlist("build-start", "factory_with_tech_lab");
+            --starport;
+            addToPrintlist("build-start", "starport_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::starportwithTechLabFinish);
             return true;
         }
     }
 
     void starportwithTechLabFinish(int useless){
-        ++factory_with_tech_lab;
-        --factory;
-        --factory_buildslots;
-        ++factory_with_tech_lab_buildslots;
-        addToPrintlist("build-end", "factory_with_tech_lab");
+        ++starport_with_tech_lab;
+        --starport_buildslots;
+        ++starport_with_tech_lab_buildslots;
+        addToPrintlist("build-end", "starport_with_tech_lab");
     }
 
     bool fusionCoreBuild(){

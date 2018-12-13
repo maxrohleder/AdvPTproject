@@ -18,7 +18,7 @@ protected:
     }
 
     void addToPrintlist(string type, string name){
-        printlist.push_back(make_pair(type, name));
+        printlist.push_back(printstruct(type, name));
     }
 
     void redistributeWorkers(){
@@ -48,7 +48,7 @@ protected:
                 relation = (double) workers_minerals / (double) workers;
             }
         }
-        printlist.push_front(make_pair("", ""));
+        printlist.push_front(printstruct("", ""));
         return;
     }
 
