@@ -53,12 +53,12 @@ class Zerg_header : public Race{
         if(id_queen == ""){
             return;
         }
-        int id_hatch = injectLarvae();
-        if(id_hatch < 0){
+        string id_hatch = injectLarvae();
+        if(id_hatch == ""){
             return;
         }
         useQueen(id_queen);
-        addToPrintlist("special", "injectlarvae", id_queen, "hatchery_" + to_string(id_hatch));
+        addToPrintlist("special", "injectlarvae", id_queen, id_hatch);
     }
 
 
@@ -81,19 +81,23 @@ class Zerg_header : public Race{
         int larvae_timer = 0;
         int larvae = 0;
         bool injected_larvae_producing = false;
+        string type = "hatchery_";
         int id = 0;
         list<int> injectTimer;
     };
 
     list<larvae_pool> larvae_list;
 
+    
+
     void initLarvaelist(){
-        larvae_list.push_back(larvae_pool(3, bases));
+        larvae_list.push_back(larvae_pool(3, 0));
     }
 
     void addLarvaePool(){
         larvae_list.push_back(larvae_pool(0, bases));
     }
+
 
     void updateLarvae(){
         for(auto& i :larvae_list ){
@@ -124,13 +128,56 @@ class Zerg_header : public Race{
         return false;
     }
 
-    int injectLarvae(){
+    string injectLarvae(){
         for(auto& i : larvae_list){
             if(i.injectLarvae()){
+                return i.type + to_string(i.id);
+            }
+        }
+        return "";
+    }
+
+    //upgrade management
+    list<int> hive_update_list;
+    list<int> lair_update_list;
+
+    int getHatch(){
+        for(auto& i : larvae_list){
+            if(i.type == "hatchery_"){
+                i.type = "weird";
                 return i.id;
             }
         }
         return -1;
+    }
+
+    void upgradeToLair(int id){
+        for(auto& i : larvae_list){
+            if(i.id == id){
+                i.type = "lair_";
+                return;
+            }
+        }
+    }
+
+    int getLair(){
+        for(auto& i : larvae_list){
+            if(i.type == "lair_"){
+                i.type = "weird";
+                return i.id;
+            }
+        }
+        return -1;
+    }
+
+
+    void upgradeToHive(int id){
+        for(auto& i : larvae_list){
+            if(i.id == id){
+                i.type = "hive_";
+                return;
+            }
+        }
     }
    
 
@@ -257,20 +304,38 @@ class Zerg_header : public Race{
     //helpers
     //helper for printlist
     void addToPrintlist(string type, string name, string produced_id = "", string boosted_id = "") {
-        if(name != "queen" && name != "hatchery" && type != "special"){
+        if(name != "queen" && name != "hatchery" && type != "special" && name != "hive" && name != "lair"){
             printlist.push_back(printstruct(type, name));
         }else{
             if (type == "build-end"){
                 if(name == "hatchery"){
                     printlist.push_back(printstruct(type, name, "hatchery_" + to_string(bases))); //"producedIDs" : [ "hatchery_*bases*" ]
-                }else{
+                }else if(name == "queen"){
                     string id = addQueen();
                     printlist.push_back(printstruct(type, name, id));    //"producedIDs" : [ *id* ]
+                }else if(name == "lair"){
+                    int id = *lair_update_list.begin();
+                    lair_update_list.pop_front();
+                    upgradeToLair(id);
+                    printlist.push_back(printstruct(type, name, "hatchery_" + to_string(id), "lair_"+ to_string(id)));
+                }else{
+                    int id = *hive_update_list.begin();
+                    hive_update_list.pop_front();
+                    upgradeToHive(id);
+                    printlist.push_back(printstruct(type, name, "lair_" + to_string(id), "hive_" + to_string(id)));
                 }
-            }else{
+            }else if(type == "special"){
                 printlist.push_back(printstruct(type, name, produced_id, boosted_id));
-                //"triggeredBy" : "*produced_id*"
-                //"targetBuilding : "*boosted_id*"
+            }else if(name == "lair"){
+                int id = getHatch();
+                lair_update_list.push_back(id);
+                printlist.push_back(printstruct(type, name, "hatchery_" + to_string(id)));
+            }else if(name == "hive"){
+                int id = getLair();
+                hive_update_list.push_back(id);
+                printlist.push_back(printstruct(type, name, "lair_" + to_string(id)));
+            }else{
+                printlist.push_back(printstruct(type, name));
             }
         }
         
