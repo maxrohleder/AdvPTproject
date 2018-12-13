@@ -89,8 +89,8 @@ class Race{
 				}else if(i.boosted_id == ability_trigger){		//id set for terran ability trigger
 					cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
 				}else if(i.type == "build-end"){
-					cout << ",\n\t\t\t\t\t\"producerID\": \"" << i.produced_id << "\"," << endl;;
-					cout << "\t\t\t\t\t\"producedIDs\": [ \"" << i.boosted_id << "\" ]";
+					cout << ",\n\t\t\t\t\t\"producerID\": \"" << i.boosted_id << "\"," << endl;
+					cout << "\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
 				}else{ 		//id set for zerg or protoss building boost
 					cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"," << endl;
 					cout << "\t\t\t\t\t\"targetBuilding\": \"" << i.boosted_id << "\"";
