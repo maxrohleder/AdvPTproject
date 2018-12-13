@@ -85,7 +85,11 @@ class Race{
 			cout << "\t\t\t\t\t\"name\": \"" << i.name << "\"";
 			if(i.produced_id != ""){ 	//some kind of id needs to be set
 				if(i.boosted_id == ""){		//id set for building a building
-					cout << ",\n\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
+					if(i.type == "build-end"){
+						cout << ",\n\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
+					}else{
+						//cout << ",\n\t\t\t\t\t\"producerID\": \"" << i.produced_id << "\"";
+					}
 				}else if(i.boosted_id == ability_trigger){		//id set for terran ability trigger
 					cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
 				}else if(i.type == "build-end"){

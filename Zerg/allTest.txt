@@ -34,11 +34,12 @@ drone
 drone
 drone
 drone
-evolution_chamber
-spawning_pool
 hatchery
 extractor
 extractor
+evolution_chamber
+spawning_pool
+queen
 drone
 drone
 drone
@@ -58,7 +59,6 @@ hive
 ultralisk_cavern
 greater_spire
 hydralisk
-queen
 zergling
 roach
 infestor

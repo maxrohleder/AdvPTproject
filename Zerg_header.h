@@ -83,6 +83,7 @@ class Zerg_header : public Race{
         bool injected_larvae_producing = false;
         string type = "hatchery_";
         int id = 0;
+        bool notGettingUped = true;
         list<int> injectTimer;
     };
 
@@ -112,6 +113,7 @@ class Zerg_header : public Race{
                 --j;
                 if(j < 1){
                     i.larvae += 4;
+                    i.injected_larvae_producing = false;
                 }
             }
             i.injectTimer.remove(0);
@@ -143,8 +145,8 @@ class Zerg_header : public Race{
 
     int getHatch(){
         for(auto& i : larvae_list){
-            if(i.type == "hatchery_"){
-                i.type = "weird";
+            if(i.type == "hatchery_" && i.notGettingUped ){
+                i.notGettingUped = false;
                 return i.id;
             }
         }
@@ -155,6 +157,7 @@ class Zerg_header : public Race{
         for(auto& i : larvae_list){
             if(i.id == id){
                 i.type = "lair_";
+                i.notGettingUped = true;
                 return;
             }
         }
@@ -162,8 +165,8 @@ class Zerg_header : public Race{
 
     int getLair(){
         for(auto& i : larvae_list){
-            if(i.type == "lair_"){
-                i.type = "weird";
+            if(i.type == "lair_" && i.notGettingUped){
+                i.notGettingUped = false;
                 return i.id;
             }
         }
@@ -175,6 +178,7 @@ class Zerg_header : public Race{
         for(auto& i : larvae_list){
             if(i.id == id){
                 i.type = "hive_";
+                i.notGettingUped = true;
                 return;
             }
         }
@@ -296,7 +300,7 @@ class Zerg_header : public Race{
     void printFinish(){
         cout << "\t]," << endl;
         cout << "\t\"initialUnits\": {\"drone\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Max_Musterdrone\"]," << endl;
-        cout << "\t\t\t\"hatchery\": [\"hatchary_0\"]," << endl;
+        cout << "\t\t\t\"hatchery\": [\"hatchery_0\"]," << endl;
         cout << "\t\t\t\"overlord\": [\"Bubblehead\"]\n\t\t}" << endl;
         cout << "}" << endl;
     }
