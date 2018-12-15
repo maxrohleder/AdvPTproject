@@ -814,11 +814,11 @@ class Zerg : public Zerg_header{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    sout << "\r\t\t}  " << endl;
+                    sout << endl;
                     printFinish(true);
                     return 0;
                 }else{
-                    sout << endl;
+                    sout << "," << endl;
                 }
             }
         }
@@ -841,11 +841,11 @@ class Zerg : public Zerg_header{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    sout << "\r\t\t}  " << endl;
+                    sout << endl;
                     printFinish(true);
                     return 0;
                 }else{
-                    sout << endl;
+                    sout << "," << endl;
                 }
             }
         }

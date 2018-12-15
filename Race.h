@@ -110,7 +110,7 @@ class Race{
 			sout << endl;
 		}
 		
-		sout << "\t\t\t]\n\t\t},";
+		sout << "\t\t\t]\n\t\t}";
 		//liste leeren
 		printlist.clear();
 	}
