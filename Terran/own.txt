@@ -8,6 +8,7 @@ scv
 scv
 scv
 refinery
+refinery
 barracks
 barracks_with_reactor
 barracks

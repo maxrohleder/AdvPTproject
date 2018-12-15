@@ -25,6 +25,57 @@ private:
         }
         ~finishInformation(){}
     };
+    
+    struct orbital_command_id{
+        orbital_command_id(string i): energy(make_pair(500000, 2000000)), id(i){}
+        orbital_command_id(const orbital_command_id& i) : energy(i.energy), id(i.id){}
+        ~orbital_command_id(){}
+        void updateEnergy(){
+            energy.first += 5625;
+            if(energy.first > energy.second){
+                energy.first = energy.second;
+            }
+        }
+        bool triggerMule(Terran* t){
+            if(energy.first < 500000){
+                return false;
+            }else{
+                (t->mule_worker) += 4;
+                energy.first -= 500000;
+                t->addMuleToEventlist(t->timestep + 90, &Terran::muleFinish);
+                t->addToPrintlist("special", "mule", id);
+                return true;
+            }
+        }
+        pair<int, int> energy;
+        string id;
+    };
+
+    list<orbital_command_id> orbital_command_list;
+
+    string addOrbitalCommand(){
+        orbital_command_list.push_back(orbital_command_id("orbital_command_" + to_string(orbital_command)));
+        return "orbital_command_" + to_string(orbital_command);
+    }
+
+    void updateEnergy(){
+        for(auto& i : orbital_command_list){
+            i.updateEnergy();
+        }
+    }
+
+    void muleBuild(){
+        for(auto& i : orbital_command_list){
+            if(i.triggerMule(this)){
+                return;
+            }
+        }
+        return;
+    }
+
+    void muleFinish(int useless){
+        mule_worker -=4;
+    }
 
 /*
     lists and map
@@ -78,6 +129,11 @@ private:
         eventlist.push_front(fin);
     }
 
+    void addMuleToEventlist(int time, funcInt func, int build = NULL){
+        finishInformation fin(time, func, build);
+        eventlist.push_back(fin);
+    }
+
     void updateEventlist(){
         while(1){
             auto i = find_if(eventlist.begin(), eventlist.end(), [this](const finishInformation p){return p.finishTime == timestep;});
@@ -90,10 +146,12 @@ private:
         }
     }
 
-    void updateBuildlist(){
+    bool updateBuildlist(){
         if((this->*(*buildlist.begin()))()){
             buildlist.pop_front();
+            return true;
         }
+        return false;
     }
 
     void buildBuildlist(string filename){
@@ -114,7 +172,9 @@ private:
 //###############################end lists##################################
 
     void updateResources(){
+        updateEnergy();
         minerals += workers_minerals * minerals_rate;
+        minerals += mule_worker * minerals_rate;
         vespene += workers_vesp * vesp_rate;
     }
 
@@ -455,6 +515,7 @@ private:
             return false;
         }else{
             minerals -= 15000;
+            --command_center;
             addToPrintlist("build-start", "orbital_command");
             addToEventlist(timestep + 35, &Terran::orbitalCommandFinish);
             return true;
@@ -463,8 +524,8 @@ private:
 
     void orbitalCommandFinish(int useless){
         ++orbital_command;
-        --command_center;
-        addToPrintlist("build-end","orbital_command");
+        orbital_command_list.push_back("orbital_command_" + to_string(orbital_command));
+        addToPrintlist("build-end", "orbital_command", "orbital_command_" + to_string(orbital_command));
     }
 
     bool planetaryFortressBuild(){
@@ -473,6 +534,7 @@ private:
         }else{
             minerals -= 15000;
             vespene -= 15000;
+            --command_center;
             addToPrintlist("build-start", "planetary_fortress");
             addToEventlist(timestep + 50, &Terran::planetaryFortressFinish);
             return true;
@@ -481,7 +543,6 @@ private:
 
     void planetaryFortressFinish(int useless){
         ++planetary_fortress;
-        --command_center;
         addToPrintlist("build-end", "planetary_fortress");
     }
 
@@ -499,8 +560,9 @@ private:
     }
 
     void refineryFinish(int useless){
-        ++workers_vesp; //worker der vorher bei minerals abgezogen wurde wird jetzt vespene zugewiesen
+        ++workers_minerals;
         ++workers;
+        workers_vesp_max += 3;
         ++refinery;
         addToPrintlist("build-end","refinery");
     }
@@ -595,6 +657,7 @@ private:
         }else{
             minerals -= 5000;
             vespene -= 5000;
+            --barracks;
             addToPrintlist("build-start", "barracks_with_reactor");
             addToEventlist(timestep + 50, &Terran::barracksWithReactorFinish);
             return true;
@@ -603,7 +666,6 @@ private:
 
     void barracksWithReactorFinish(int useless){
         ++barracks_with_reactor;
-        --barracks;
         ++barracks_buildslots;
         addToPrintlist("build-end", "barracks_with_reactor");
     }
@@ -614,6 +676,7 @@ private:
         }else{
             minerals -= 5000;
             vespene -= 2500;
+            --barracks;
             addToPrintlist("build-start", "barracks_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::barrackswithTechLabFinish);
             return true;
@@ -622,7 +685,6 @@ private:
 
     void barrackswithTechLabFinish(int useless){
         ++barracks_with_tech_lab;
-        --barracks;
         --barracks_buildslots;
         ++barracks_with_tech_lab_buildslots;
         addToPrintlist("build-end", "barracks_with_tech_lab");
@@ -894,22 +956,26 @@ public:
         for(;timestep < endTime;++timestep){
             updateResources();
             updateEventlist();
+            bool forMule = false;
             if(!buildlist.empty()){
-                updateBuildlist();
+                forMule = updateBuildlist();
+            }
+            if(!forMule){
+                muleBuild();
             }
             redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
-                if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl;
-                    printFinish();
+                if((buildlist.empty() && eventlist.begin()->function == &Terran::muleFinish) || (buildlist.empty() && eventlist.empty())){
+                    sout << endl;
+                    printFinish(true);
                     return 0;
                 }else{
-                    cout << endl;
+                    sout << "," << endl;
                 }
             }
         }
-        printFinish();
+        printFinish(true);
         return 1;
     }
 

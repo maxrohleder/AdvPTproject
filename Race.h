@@ -53,11 +53,9 @@ class Race{
     int workers_vesp_max = 0;
 
 
-    //list-structures
-    
+    //list-structures    
     list<printstruct> printlist;
     list<pair<int, int>> energylist;
-
 
 
     //structures
