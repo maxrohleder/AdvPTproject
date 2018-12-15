@@ -333,11 +333,11 @@ class Zerg_header : public Race{
             }else if(name == "lair"){
                 int id = getHatch();
                 lair_update_list.push_back(id);
-                printlist.push_back(printstruct(type, name, "hatchery_" + to_string(id)));
+                printlist.push_back(printstruct(type, name));
             }else if(name == "hive"){
                 int id = getLair();
                 hive_update_list.push_back(id);
-                printlist.push_back(printstruct(type, name, "lair_" + to_string(id)));
+                printlist.push_back(printstruct(type, name));
             }else{
                 printlist.push_back(printstruct(type, name));
             }

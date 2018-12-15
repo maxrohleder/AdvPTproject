@@ -35,7 +35,6 @@ class Race{
     int minerals_rate = 70;
     int vesp_rate = 35;
 	int energy_rate = 5625;
-	string ability_trigger = "booooooooooost"; //string so terran can differ between building unit with id and activating boost
 
     //resources
     int minerals = 5000;
@@ -85,13 +84,11 @@ class Race{
 			cout << "\t\t\t\t\t\"name\": \"" << i.name << "\"";
 			if(i.produced_id != ""){ 	//some kind of id needs to be set
 				if(i.boosted_id == ""){		//id set for building a building
-					if(i.type == "build-end"){
+					if(i.type == "build-end"){	//build end with only produced ID here (one does not need producer ID at build-start!!!)
 						cout << ",\n\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
-					}else{
-						//cout << ",\n\t\t\t\t\t\"producerID\": \"" << i.produced_id << "\"";
+					}else{		//Terran ability here
+						cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
 					}
-				}else if(i.boosted_id == ability_trigger){		//id set for terran ability trigger
-					cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
 				}else if(i.type == "build-end"){
 					cout << ",\n\t\t\t\t\t\"producerID\": \"" << i.boosted_id << "\"," << endl;
 					cout << "\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
