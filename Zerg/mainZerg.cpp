@@ -1,6 +1,7 @@
 #include "../Zerg.h"
 #include <iostream>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -12,6 +13,5 @@ int main(){
     cin >> a;
     Zerg z(a);
     int i = z.runTest(1000);
-    cout << i << endl;
-    return 0;
+    return i;
 }

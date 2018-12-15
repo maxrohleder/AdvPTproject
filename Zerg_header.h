@@ -292,17 +292,23 @@ class Zerg_header : public Race{
     //header and finish printer
 
     void printHeader(int val){
-        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
-        cout << "\t\"messages\": [" << endl;
+        sout << "{\n\t\"buildlistValid\": " << val << "," << endl;
+        sout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
+        sout << "\t\"messages\": [" << endl;
     }
 
-    void printFinish(){
-        cout << "\t]," << endl;
-        cout << "\t\"initialUnits\": {\"drone\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Max_Musterdrone\"]," << endl;
-        cout << "\t\t\t\"hatchery\": [\"hatchery_0\"]," << endl;
-        cout << "\t\t\t\"overlord\": [\"Bubblehead\"]\n\t\t}" << endl;
-        cout << "}" << endl;
+    void printFinish(bool valid){
+        if(valid){
+            sout << "\t]," << endl;
+            sout << "\t\"initialUnits\": {\"drone\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Max_Musterdrone\"]," << endl;
+            sout << "\t\t\t\"hatchery\": [\"hatchery_0\"]," << endl;
+            sout << "\t\t\t\"overlord\": [\"Bubblehead\"]\n\t\t}" << endl;
+            sout << "}" << endl;
+        }else{
+            sout.str("");
+            sout << "{\n\t\"game\" : \"sc2-hots-zerg\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
+        }
+        cout << sout.str();
     }
 
     //helpers
