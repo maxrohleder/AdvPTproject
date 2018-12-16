@@ -281,7 +281,7 @@ private:
             supply_used += 2;
             --barracks_with_tech_lab_buildslots;
             addToPrintlist("build-start", "ghost");
-            addToEventlist(timestep + 45, &Terran::ghostFinish);
+            addToEventlist(timestep + 40, &Terran::ghostFinish);
             return true;
         }
     }
@@ -376,7 +376,7 @@ private:
                 slot_variable = 1;
             }
             addToPrintlist("build-start", "medivac");
-            addToEventlist(timestep + 42, &Terran::thorFinish, slot_variable);
+            addToEventlist(timestep + 42, &Terran::medivacFinish, slot_variable);
             return true;
         }
     }
@@ -511,10 +511,11 @@ private:
 
     //TODO energie eigenschaften hinzufügen
     bool orbitalCommandBuild(){
-        if(minerals < 15000 || workers < 1 || command_center < 1 || barracks_total < 1 ){
+        if(minerals < 15000 || workers < 1 || command_center < 1 || barracks_total < 1 || command_center_buildslots < 1 ){
             return false;
         }else{
             minerals -= 15000;
+            --command_center_buildslots;
             --command_center;
             addToPrintlist("build-start", "orbital_command");
             addToEventlist(timestep + 35, &Terran::orbitalCommandFinish);
@@ -524,17 +525,19 @@ private:
 
     void orbitalCommandFinish(int useless){
         ++orbital_command;
+        ++command_center_buildslots;
         orbital_command_list.push_back("orbital_command_" + to_string(orbital_command));
         addToPrintlist("build-end", "orbital_command", "orbital_command_" + to_string(orbital_command));
     }
 
     bool planetaryFortressBuild(){
-        if(minerals < 15000 || vespene < 15000 || command_center < 1 || engineering_bay < 1){
+        if(minerals < 15000 || vespene < 15000 || command_center < 1 || engineering_bay < 1 || command_center_buildslots < 1){
             return false;
         }else{
             minerals -= 15000;
             vespene -= 15000;
             --command_center;
+            --command_center_buildslots;
             addToPrintlist("build-start", "planetary_fortress");
             addToEventlist(timestep + 50, &Terran::planetaryFortressFinish);
             return true;
@@ -543,6 +546,7 @@ private:
 
     void planetaryFortressFinish(int useless){
         ++planetary_fortress;
+        ++command_center_buildslots;
         addToPrintlist("build-end", "planetary_fortress");
     }
 
@@ -604,7 +608,7 @@ private:
         ++workers;
         ++workers_minerals;
         ++missile_turret;
-        addToPrintlist("build-start", "missile_turret");
+        addToPrintlist("build-end", "missile_turret");
     }
 
     bool sensorTowerBuild(){
@@ -652,12 +656,13 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool barracksWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || barracks < 1){
+        if(minerals < 5000 || vespene < 5000 || barracks < 1 || barracks_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
             --barracks;
+            --barracks_buildslots;
             addToPrintlist("build-start", "barracks_with_reactor");
             addToEventlist(timestep + 50, &Terran::barracksWithReactorFinish);
             return true;
@@ -666,17 +671,18 @@ private:
 
     void barracksWithReactorFinish(int useless){
         ++barracks_with_reactor;
-        ++barracks_buildslots;
+        barracks_buildslots += 2;
         addToPrintlist("build-end", "barracks_with_reactor");
     }
 
     bool barrackswithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || barracks < 1){
+        if(minerals < 5000 || vespene < 2500 || barracks < 1 || barracks_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
             --barracks;
+            --barracks_buildslots;
             addToPrintlist("build-start", "barracks_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::barrackswithTechLabFinish);
             return true;
@@ -685,7 +691,6 @@ private:
 
     void barrackswithTechLabFinish(int useless){
         ++barracks_with_tech_lab;
-        --barracks_buildslots;
         ++barracks_with_tech_lab_buildslots;
         addToPrintlist("build-end", "barracks_with_tech_lab");
     }
