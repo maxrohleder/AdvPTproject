@@ -511,7 +511,7 @@ private:
 
     //TODO energie eigenschaften hinzufügen
     bool orbitalCommandBuild(){
-        if(minerals < 15000 || workers < 1 || command_center < 1 || barracks_total < 1 || command_center_buildslots < 1 ){
+        if(minerals < 15000 || command_center < 1 || barracks_total < 1 || command_center_buildslots < 1 ){
             return false;
         }else{
             minerals -= 15000;
@@ -720,12 +720,13 @@ private:
 
     //TODO buildslot sperren????
     bool factoryWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || factory < 1){
+        if(minerals < 5000 || vespene < 5000 || factory < 1 || factory_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
             --factory;
+            --factory_buildslots;
             addToPrintlist("build-start", "factory_with_reactor");
             addToEventlist(timestep + 50, &Terran::factoryWithReactorFinish);
             return true;
@@ -734,17 +735,18 @@ private:
 
     void factoryWithReactorFinish(int useless){
         ++factory_with_reactor;
-        ++factory_buildslots;
+        factory_buildslots += 2;
         addToPrintlist("build-end", "factory_with_reactor");
     }    
 
     bool factorywithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || factory < 1){
+        if(minerals < 5000 || vespene < 2500 || factory < 1 ||factory_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
             --factory;
+            --factory_buildslots;
             addToPrintlist("build-start", "factory_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::factorywithTechLabFinish);
             return true;
@@ -753,7 +755,6 @@ private:
 
     void factorywithTechLabFinish(int useless){
         ++factory_with_tech_lab;
-        --factory_buildslots;
         ++factory_with_tech_lab_buildslots;
         addToPrintlist("build-end", "factory_with_tech_lab");
     }       
@@ -845,12 +846,13 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool starportWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || starport < 1){
+        if(minerals < 5000 || vespene < 5000 || starport < 1 || starport_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
             --starport;
+            --starport_buildslots;
             addToPrintlist("build-start", "starport_with_reactor");
             addToEventlist(timestep + 50, &Terran::starportWithReactorFinish);
             return true;
@@ -859,17 +861,18 @@ private:
 
     void starportWithReactorFinish(int useless){
         ++starport_with_reactor;
-        ++starport_buildslots;
+        starport_buildslots += 2;
         addToPrintlist("build-end", "starport_with_reactor");
     }
 
     bool starportwithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || starport < 1){
+        if(minerals < 5000 || vespene < 2500 || starport < 1 || starport_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
             --starport;
+            --starport_buildslots;
             addToPrintlist("build-start", "starport_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::starportwithTechLabFinish);
             return true;
@@ -878,7 +881,6 @@ private:
 
     void starportwithTechLabFinish(int useless){
         ++starport_with_tech_lab;
-        --starport_buildslots;
         ++starport_with_tech_lab_buildslots;
         addToPrintlist("build-end", "starport_with_tech_lab");
     }
