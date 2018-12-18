@@ -299,10 +299,10 @@ private:
             minerals -= 10000;
             supply_used += 2;
             int slot_variable = 0;
-            if(factory_buildslots > 0){
-                --factory_buildslots;
-            }else{  
+            if(factory_with_tech_lab_buildslots > 0){
                 --factory_with_tech_lab_buildslots;
+            }else{  
+                --factory_buildslots;
                 slot_variable = 1;
             }
             addToPrintlist("build-start", "hellion");
@@ -313,7 +313,7 @@ private:
 
     void hellionFinish(int slot){
         ++hellion;
-        if(slot == 0){
+        if(slot == 1){
             ++factory_buildslots;;
         }else{
             ++factory_with_tech_lab_buildslots;
@@ -501,6 +501,7 @@ private:
     }
 
     void commandCenterFinish(int useless){
+        ++bases;
         ++workers;
         ++workers_minerals;
         ++command_center;
@@ -942,20 +943,33 @@ public:
     ~Terran() {}
 
     int run (){
-        for(; timestep < 10000; ++timestep){
+        for(;timestep < 1000; ++timestep){
             updateResources();
             updateEventlist();
+            bool forMule = false;
             if(!buildlist.empty()){
-                updateBuildlist(); 
+                forMule = updateBuildlist();
             }
+            if(!forMule){
+                muleBuild();
+            }
+            redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
-            }
-
-            if(buildlist.empty() && eventlist.empty()){
-                return 0; 
+                bool eventEmpty = false;
+                if(!eventlist.empty()){
+                    eventEmpty = eventlist.begin()->function == &Terran::muleFinish;
+                }
+                if((buildlist.empty() && eventEmpty) || (buildlist.empty() && eventlist.empty())){
+                    sout << endl;
+                    printFinish(true);
+                    return 0;
+                }else{
+                    sout << "," << endl;
+                }
             }
         }
+        printFinish(false);
         return 1;
     }
 
@@ -973,7 +987,11 @@ public:
             redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
-                if((buildlist.empty() && eventlist.begin()->function == &Terran::muleFinish) || (buildlist.empty() && eventlist.empty())){
+                bool eventEmpty = false;
+                if(!eventlist.empty()){
+                    eventEmpty = eventlist.begin()->function == &Terran::muleFinish;
+                }
+                if((buildlist.empty() && eventEmpty) || (buildlist.empty() && eventlist.empty())){
                     sout << endl;
                     printFinish(true);
                     return 0;
@@ -982,7 +1000,7 @@ public:
                 }
             }
         }
-        printFinish(false);
+        printFinish(true);
         return 1;
     }
 
