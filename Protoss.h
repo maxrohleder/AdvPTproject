@@ -26,6 +26,12 @@ class Protoss : public Protoss_status{
         buildmap["nexus"] = &Protoss::nexusBuild;
         buildmap["pylon"] = &Protoss::pylonBuild;
         buildmap["gateway"] = &Protoss::gatewayBuild;
+        buildmap["cybernetics_core"] = &Protoss::cyberneticscoreBuild;
+        buildmap["robotics_facility"] = &Protoss::roboticsfacilityBuild;
+        buildmap["robotics_bay"] = &Protoss::roboticsbayBuild;
+        buildmap["twilight_council"] = &Protoss::twilightcouncilBuild;
+        buildmap["templar_archives"] = &Protoss::templararchivesBuild;
+
     }
 
     void buildBuildlist(const string filename){

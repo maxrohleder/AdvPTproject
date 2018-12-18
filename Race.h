@@ -36,16 +36,9 @@ class Race{
 	};
 
     //consts
-<<<<<<< HEAD
-    int minerals_rate = 70;	// multiplied by 100
-    int vesp_rate = 35;		// multiplied by 100
-	int energy_rate = 5625; // multiplied by 1000
-	string ability_trigger = "booooooooooost"; //string so terran can differ between building unit with id and activating boost
-=======
     int minerals_rate = 70;
     int vesp_rate = 35;
 	int energy_rate = 5625;
->>>>>>> 49160f74f189be9f1f5351462d7a90aa19bca5b6
 
     //resources
     int minerals = 5000;

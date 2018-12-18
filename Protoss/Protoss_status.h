@@ -123,23 +123,6 @@ class Protoss_status : public Race{
         addToPrintList("build-end", "zealot");
     }
 
-    // gateway
-    bool gatewayBuild(){
-        if(checkResources(15000)){
-            if(pylon <= 0) return false;
-            minerals -= 15000;
-            addToEventList(65, &Protoss_status::gatewayFinish);
-            addToPrintList("build-start", "gateway");
-            return true;
-        }
-        return false;
-    }
-
-    void gatewayFinish(){
-        ++gateway;
-        addToPrintList("build-end", "gateway");
-    }
-
     //nexus
     bool nexusBuild(){
         if(checkResources(40000)){
@@ -173,4 +156,111 @@ class Protoss_status : public Race{
         supply_max += 8;
         addToPrintList("build-end", "pylon");
     }
+    // gateway
+    bool gatewayBuild(){
+        if(checkResources(15000)){
+            if(pylon <= 0) return false;
+            minerals -= 15000;
+            addToEventList(65, &Protoss_status::gatewayFinish);
+            addToPrintList("build-start", "gateway");
+            return true;
+        }
+        return false;
+    }
+
+    void gatewayFinish(){
+        ++gateway;
+        addToPrintList("build-end", "gateway");
+    }
+
+    // cybernetics core
+    bool cyberneticscoreBuild(){
+        if(checkResources(15000)){
+            if(gateway <= 0) return false;
+            minerals -= 15000;
+            addToEventList(50, &Protoss_status::cyberneticscoreFinish);
+            addToPrintList("build-start", "cybernetics_core");
+            return true;
+        }
+        return false;
+    }
+
+    void cyberneticscoreFinish(){
+        ++cybernetics_core;
+        addToPrintList("build-end", "cybernetics_core");
+    }
+
+    // robotics_facility
+    bool roboticsfacilityBuild(){
+        if(checkResources(20000, 0, 10000)){
+            if(cybernetics_core <= 0) return false;
+            minerals -= 20000;
+            vespene -= 10000;
+            addToEventList(65, &Protoss_status::roboticsfacilityFinish);
+            addToPrintList("build-start", "robotics_facility");
+            return true;
+        }
+        return false;
+    }
+
+    void roboticsfacilityFinish(){
+        ++robotics_facility;
+        addToPrintList("build-end", "robotics_facility");
+    }
+
+    // robotics_bay
+    bool roboticsbayBuild(){
+        if(checkResources(20000, 0, 20000)){
+            if(robotics_facility <= 0) return false;
+            minerals -= 20000;
+            vespene -= 20000;
+            addToEventList(65, &Protoss_status::roboticsbayFinish);
+            addToPrintList("build-start", "robotics_bay");
+            return true;
+        }
+        return false;
+    }
+
+    void roboticsbayFinish(){
+        ++robotics_bay;
+        addToPrintList("build-end", "robotics_bay");
+    }
+
+    // twilight_council
+    bool twilightcouncilBuild(){
+        if(checkResources(15000, 0, 10000)){
+            if(cybernetics_core <= 0) return false;
+            minerals -= 15000;
+            vespene -= 10000;
+            addToEventList(50, &Protoss_status::twilightcouncilFinish);
+            addToPrintList("build-start", "twilight_council");
+            return true;
+        }
+        return false;
+    }
+
+    void twilightcouncilFinish(){
+        ++twilight_council;
+        addToPrintList("build-end", "twilight_council");
+    }
+
+    // templar_archives
+    bool templararchivesBuild(){
+        if(checkResources(15000, 0, 20000)){
+            if(twilight_council <= 0) return false;
+            minerals -= 15000;
+            vespene -= 20000;
+            addToEventList(50, &Protoss_status::templararchivesFinish);
+            addToPrintList("build-start", "templar_archives");
+            return true;
+        }
+        return false;
+    }
+
+    void templararchivesFinish(){
+        ++templar_archives;
+        addToPrintList("build-end", "templar_archives");
+    }
+
+
 };
