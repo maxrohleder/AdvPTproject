@@ -1,5 +1,8 @@
+#!/bin/bash
+#TODO change to unix
 if [ "$#" -ne 2 ]; then
     echo "illegal number of arguments"
+    exit 1
 fi
 
 if [ "$1" == "sc2-hots-protoss" ]; then

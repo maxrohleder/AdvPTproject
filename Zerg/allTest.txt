@@ -11,6 +11,7 @@ overlord
 overlord
 drone
 drone
+hatchery
 drone
 drone
 drone
