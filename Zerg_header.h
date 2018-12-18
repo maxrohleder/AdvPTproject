@@ -83,6 +83,7 @@ class Zerg_header : public Race{
         bool injected_larvae_producing = false;
         string type = "hatchery_";
         int id = 0;
+        bool notGettingUped = true;
         list<int> injectTimer;
     };
 
@@ -112,6 +113,7 @@ class Zerg_header : public Race{
                 --j;
                 if(j < 1){
                     i.larvae += 4;
+                    i.injected_larvae_producing = false;
                 }
             }
             i.injectTimer.remove(0);
@@ -143,8 +145,8 @@ class Zerg_header : public Race{
 
     int getHatch(){
         for(auto& i : larvae_list){
-            if(i.type == "hatchery_"){
-                i.type = "weird";
+            if(i.type == "hatchery_" && i.notGettingUped ){
+                i.notGettingUped = false;
                 return i.id;
             }
         }
@@ -155,6 +157,7 @@ class Zerg_header : public Race{
         for(auto& i : larvae_list){
             if(i.id == id){
                 i.type = "lair_";
+                i.notGettingUped = true;
                 return;
             }
         }
@@ -162,8 +165,8 @@ class Zerg_header : public Race{
 
     int getLair(){
         for(auto& i : larvae_list){
-            if(i.type == "lair_"){
-                i.type = "weird";
+            if(i.type == "lair_" && i.notGettingUped){
+                i.notGettingUped = false;
                 return i.id;
             }
         }
@@ -175,6 +178,7 @@ class Zerg_header : public Race{
         for(auto& i : larvae_list){
             if(i.id == id){
                 i.type = "hive_";
+                i.notGettingUped = true;
                 return;
             }
         }
@@ -288,17 +292,23 @@ class Zerg_header : public Race{
     //header and finish printer
 
     void printHeader(int val){
-        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
-        cout << "\t\"messages\": [" << endl;
+        sout << "{\n\t\"buildlistValid\": " << val << "," << endl;
+        sout << "\t\"game\": \"sc2-hots-zerg\"," << endl;
+        sout << "\t\"messages\": [" << endl;
     }
 
-    void printFinish(){
-        cout << "\t]," << endl;
-        cout << "\t\"initialUnits\": {\"drone\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Max_Musterdrone\"]," << endl;
-        cout << "\t\t\t\"hatchery\": [\"hatchary_0\"]," << endl;
-        cout << "\t\t\t\"overlord\": [\"Bubblehead\"]\n\t\t}" << endl;
-        cout << "}" << endl;
+    void printFinish(bool valid){
+        if(valid){
+            sout << "\t]," << endl;
+            sout << "\t\"initialUnits\": {\"drone\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Max_Musterdrone\"]," << endl;
+            sout << "\t\t\t\"hatchery\": [\"hatchery_0\"]," << endl;
+            sout << "\t\t\t\"overlord\": [\"Bubblehead\"]\n\t\t}" << endl;
+            sout << "}" << endl;
+        }else{
+            sout.str("");
+            sout << "{\n\t\"game\" : \"sc2-hots-zerg\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
+        }
+        cout << sout.str();
     }
 
     //helpers
@@ -317,23 +327,23 @@ class Zerg_header : public Race{
                     int id = *lair_update_list.begin();
                     lair_update_list.pop_front();
                     upgradeToLair(id);
-                    printlist.push_back(printstruct(type, name, "hatchery_" + to_string(id), "lair_"+ to_string(id)));
+                    printlist.push_back(printstruct(type, name, "lair_" + to_string(id), "hatchery_"+ to_string(id)));
                 }else{
                     int id = *hive_update_list.begin();
                     hive_update_list.pop_front();
                     upgradeToHive(id);
-                    printlist.push_back(printstruct(type, name, "lair_" + to_string(id), "hive_" + to_string(id)));
+                    printlist.push_back(printstruct(type, name, "hive_" + to_string(id), "lair_" + to_string(id)));
                 }
             }else if(type == "special"){
                 printlist.push_back(printstruct(type, name, produced_id, boosted_id));
             }else if(name == "lair"){
                 int id = getHatch();
                 lair_update_list.push_back(id);
-                printlist.push_back(printstruct(type, name, "hatchery_" + to_string(id)));
+                printlist.push_back(printstruct(type, name));
             }else if(name == "hive"){
                 int id = getLair();
                 hive_update_list.push_back(id);
-                printlist.push_back(printstruct(type, name, "lair_" + to_string(id)));
+                printlist.push_back(printstruct(type, name));
             }else{
                 printlist.push_back(printstruct(type, name));
             }

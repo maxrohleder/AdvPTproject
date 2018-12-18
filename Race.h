@@ -4,12 +4,16 @@
 #include <iostream>
 #include <functional>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
 
 class Race{
     protected:
+
+	//stringstream for printing
+	stringstream sout;
 
 	//printstruct
 	struct printstruct{
@@ -32,10 +36,16 @@ class Race{
 	};
 
     //consts
+<<<<<<< HEAD
     int minerals_rate = 70;	// multiplied by 100
     int vesp_rate = 35;		// multiplied by 100
 	int energy_rate = 5625; // multiplied by 1000
 	string ability_trigger = "booooooooooost"; //string so terran can differ between building unit with id and activating boost
+=======
+    int minerals_rate = 70;
+    int vesp_rate = 35;
+	int energy_rate = 5625;
+>>>>>>> 49160f74f189be9f1f5351462d7a90aa19bca5b6
 
     //resources
     int minerals = 5000;
@@ -50,8 +60,7 @@ class Race{
     int workers_vesp_max = 0;
 
 
-    //list-structures
-    
+    //list-structures    
     list<printstruct> printlist;
     list<pair<int, int>> energylist;
 
@@ -66,45 +75,47 @@ class Race{
     void print(int time) {
 		//mit allen uebergebenen Parametern printen
 		//liste entsprechend printen
-		cout << "\t\t{" << endl;
-		cout << "\t\t\t\"time\": " << time << "," << endl;
-		cout << "\t\t\t\"status\": {\n\t\t\t\t\"workers\": {\n\t\t\t\t\t\"minerals\": " << workers_minerals << "," << endl;
-		cout << "\t\t\t\t\t\"vespene\": " << workers_vesp << endl;
-		cout << "\t\t\t\t},\n\t\t\t\t\"resources\": {\n\t\t\t\t\t\"minerals\": " << (int)(minerals / 100) << "," << endl;
-		cout << "\t\t\t\t\t\"vespene\": " << (int)(vespene / 100) << "," << endl;
-		cout << "\t\t\t\t\t\"supply-used\": " << supply_used << "," << endl;
-		cout << "\t\t\t\t\t\"supply\": " << supply_max << endl;
-		cout << "\t\t\t\t}\n\t\t\t},\n\t\t\t\"events\": [" << endl;
+		sout << "\t\t{" << endl;
+		sout << "\t\t\t\"time\": " << time << "," << endl;
+		sout << "\t\t\t\"status\": {\n\t\t\t\t\"workers\": {\n\t\t\t\t\t\"minerals\": " << workers_minerals << "," << endl;
+		sout << "\t\t\t\t\t\"vespene\": " << workers_vesp << endl;
+		sout << "\t\t\t\t},\n\t\t\t\t\"resources\": {\n\t\t\t\t\t\"minerals\": " << (int)(minerals / 100) << "," << endl;
+		sout << "\t\t\t\t\t\"vespene\": " << (int)(vespene / 100) << "," << endl;
+		sout << "\t\t\t\t\t\"supply-used\": " << supply_used << "," << endl;
+		sout << "\t\t\t\t\t\"supply\": " << supply_max << endl;
+		sout << "\t\t\t\t}\n\t\t\t},\n\t\t\t\"events\": [" << endl;
 		//alle events printen
 		for (const auto& i : printlist) { 
 			if(i.type == ""){ //IMPORTANT: put in the empty string pair at FRONT of the printlist
 				continue;
 			}
-			cout << "\t\t\t\t{\n\t\t\t\t\t\"type\": \"" << i.type << "\"," << endl;
-			cout << "\t\t\t\t\t\"name\": \"" << i.name << "\"";
+			sout << "\t\t\t\t{\n\t\t\t\t\t\"type\": \"" << i.type << "\"," << endl;
+			sout << "\t\t\t\t\t\"name\": \"" << i.name << "\"";
 			if(i.produced_id != ""){ 	//some kind of id needs to be set
 				if(i.boosted_id == ""){		//id set for building a building
-					cout << ",\n\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
-				}else if(i.boosted_id == ability_trigger){		//id set for terran ability trigger
-					cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
+					if(i.type == "build-end"){	//build end with only produced ID here (one does not need producer ID at build-start!!!)
+						sout << ",\n\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
+					}else{		//Terran ability here
+						sout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
+					}
 				}else if(i.type == "build-end"){
-					cout << ",\n\t\t\t\t\t\"producerID\": \"" << i.produced_id << "\"," << endl;;
-					cout << "\t\t\t\t\t\"producedIDs\": [ \"" << i.boosted_id << "\" ]";
+					sout << ",\n\t\t\t\t\t\"producerID\": \"" << i.boosted_id << "\"," << endl;
+					sout << "\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
 				}else{ 		//id set for zerg or protoss building boost
-					cout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"," << endl;
-					cout << "\t\t\t\t\t\"targetBuilding\": \"" << i.boosted_id << "\"";
+					sout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"," << endl;
+					sout << "\t\t\t\t\t\"targetBuilding\": \"" << i.boosted_id << "\"";
 				}
 			}
 			
 			if (i != printlist.back()) {
-				cout << "\n\t\t\t\t},";
+				sout << "\n\t\t\t\t},";
 			}else{
-				cout << "\n\t\t\t\t}";
+				sout << "\n\t\t\t\t}";
 			}
-			cout << endl;
+			sout << endl;
 		}
 		
-		cout << "\t\t\t]\n\t\t},";
+		sout << "\t\t\t]\n\t\t}";
 		//liste leeren
 		printlist.clear();
 	}

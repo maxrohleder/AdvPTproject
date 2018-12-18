@@ -6,19 +6,28 @@ protected:
 
     double upper_relation = 1.0/2.0;
     double lower_relation = 1.0/3.0;
-//
-    void printFinish(){
-        cout << "\t]\n}" << endl;
+
+    void printFinish(bool valid){
+        if(valid){
+            sout << "\t]," << endl;
+            sout << "\t\"initialUnits\": {\"scv\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Muserworker\"]," << endl;
+            sout << "\t\t\t\"command_center\": [\"command_center_0\"]\n\t\t}" << endl;
+            sout << "}" << endl;
+        }else{
+            sout.str("");
+            sout << "{\n\t\"game\" : \"sc2-hots-terran\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
+        }
+        cout << sout.str();
     }
 
     void printHeader(int val){
-        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-terran\"," << endl;
-        cout << "\t\"messages\": [" << endl;
+        sout << "{\n\t\"buildlistValid\": " << val << "," << endl;
+        sout << "\t\"game\": \"sc2-hots-terran\"," << endl;
+        sout << "\t\"messages\": [" << endl;
     }
 
-    void addToPrintlist(string type, string name){
-        printlist.push_back(make_pair(type, name));
+    void addToPrintlist(string type, string name, string produced_id = "", string boosted_id = "") {
+        printlist.push_back(printstruct(type, name, produced_id));
     }
 
     void redistributeWorkers(){
@@ -48,7 +57,7 @@ protected:
                 relation = (double) workers_minerals / (double) workers;
             }
         }
-        printlist.push_front(make_pair("", ""));
+        printlist.push_front(printstruct("", ""));
         return;
     }
 
@@ -65,6 +74,9 @@ protected:
     int raven = 0;
     int banshee = 0;
     int battlecruiser = 0;
+
+    int mule_worker = 0;
+
 
     // buildings
     int command_center = 1;
@@ -96,14 +108,10 @@ protected:
 
     //buildslots
     int command_center_buildslots = 1;
-    //int orbital_command_buildslots = 0; //TODO notwendig?
-    //int planetary_fortress_buildslots = 0; //TODO notwendig?
     int barracks_buildslots = 0;
     int barracks_with_tech_lab_buildslots = 0;
-    //int barracks_with_reactor_buildslot = 0; //TODO wirklich notwendig?
     int factory_buildslots = 0;
     int factory_with_tech_lab_buildslots = 0;
-    //int factory_with_reactor_buildslot = 0; //TODO wirklich notwendig?
     int starport_buildslots = 0;
     int starport_with_tech_lab_buildslots = 0;
 

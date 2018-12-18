@@ -814,15 +814,15 @@ class Zerg : public Zerg_header{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl;
-                    printFinish();
+                    sout << endl;
+                    printFinish(true);
                     return 0;
                 }else{
-                    cout << endl;
+                    sout << "," << endl;
                 }
             }
         }
-        printFinish();
+        printFinish(false);
         return 1;
     }
 
@@ -841,15 +841,15 @@ class Zerg : public Zerg_header{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl;
-                    printFinish();
+                    sout << endl;
+                    printFinish(true);
                     return 0;
                 }else{
-                    cout << endl;
+                    sout << "," << endl;
                 }
             }
         }
-        printFinish();
+        printFinish(false);
         return 1;
     }
 

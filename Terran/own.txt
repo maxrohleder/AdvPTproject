@@ -8,7 +8,11 @@ scv
 scv
 scv
 refinery
+refinery
 barracks
+barracks_with_reactor
+barracks
+barracks_with_tech_lab
 orbital_command
 engineering_bay
 factory
@@ -16,4 +20,7 @@ factory_with_reactor
 factory
 factory_with_tech_lab
 starport
+starport_with_reactor
+starport
+starport_with_tech_lab
 fusion_core

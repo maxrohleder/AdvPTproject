@@ -1,0 +1,17 @@
+drone
+drone
+drone
+overlord
+overlord
+overlord
+overlord
+hatchery
+hatchery
+extractor
+extractor
+spawning_pool
+queen
+lair
+drone
+drone
+drone
