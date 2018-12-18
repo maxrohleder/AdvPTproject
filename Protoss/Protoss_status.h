@@ -11,9 +11,11 @@ using namespace std;
 class Protoss_status : public Race{
     public:
     // only for debug prints
-    bool debug = 0;
+    bool debug = 1;
     int time = 1;
-
+    // 12950 / 7250 == total cost of min/vesp
+    // ideal ratio of workers is sum over all units costs ratio
+    double ratio = 1.78; 
 
     protected:
     // typedefs for compatability
@@ -32,14 +34,14 @@ class Protoss_status : public Race{
     list<end_event> eventlist;
     map<string, funcBool> buildmap;
     // forward declarations
-    //virtual bool checkResources(int min, int sup = 0, int ves = 0){};
-	//virtual void addToPrintList(string type, string name, string parent_id = "", string child_id = ""){};
-    //virtual void distributeWorkers();
-    //virtual void addToEventList(const int dt, funcVoid func){};
     void distributeWorkers() {
-        // TODO
-        ++workers_minerals;
-        if(debug) cerr << "have to implement distributeWorkers" << endl;
+        // 0.64 = 1 - (1/(ratio+1)) = workers_min/workers
+        workers_minerals = (int) (((double) workers)*0.64);
+        workers_vesp = workers-workers_minerals;
+        if(workers_vesp>workers_vesp_max){
+            workers_vesp = workers_vesp_max;
+            workers_minerals = workers-workers_vesp;
+        }
     }
 
     void addToEventList (const int dt, funcVoid func) {
@@ -52,6 +54,39 @@ class Protoss_status : public Race{
     
     void addToPrintList (string type, string name, string parent_id = "", string child_id = "") {
         printlist.push_back(printstruct(type, name, parent_id, child_id));
+    }
+
+    void initBuildmap(){
+        buildmap["probe"] = &Protoss_status::probeBuild;
+        buildmap["zealot"] = &Protoss_status::zealotBuild;
+        buildmap["stalker"] = &Protoss_status::stalkerBuild;
+        buildmap["sentry"] = &Protoss_status::sentryBuild;
+        buildmap["warp_prism"] = &Protoss_status::warpprismBuild;
+        buildmap["immortal"] = &Protoss_status::immortalBuild;
+        buildmap["observer"] = &Protoss_status::observerBuild;
+        buildmap["colossus"] = &Protoss_status::colossusBuild;
+        buildmap["high_templar"] = &Protoss_status::hightemplarBuild;
+        buildmap["dark_templar"] = &Protoss_status::darktemplarBuild;
+        buildmap["mothership"] = &Protoss_status::mothershipBuild;
+        buildmap["phoenix"] = &Protoss_status::phoenixBuild;
+        buildmap["void_ray"] = &Protoss_status::voidrayBuild;
+        buildmap["carrier"] = &Protoss_status::carrierBuild;
+
+        buildmap["nexus"] = &Protoss_status::nexusBuild;
+        buildmap["pylon"] = &Protoss_status::pylonBuild;
+        buildmap["gateway"] = &Protoss_status::gatewayBuild;
+        buildmap["cybernetics_core"] = &Protoss_status::cyberneticscoreBuild;
+        buildmap["robotics_facility"] = &Protoss_status::roboticsfacilityBuild;
+        buildmap["robotics_bay"] = &Protoss_status::roboticsbayBuild;
+        buildmap["twilight_council"] = &Protoss_status::twilightcouncilBuild;
+        buildmap["templar_archives"] = &Protoss_status::templararchivesBuild;
+        buildmap["dark_shrine"] = &Protoss_status::darkshrineBuild;
+        buildmap["stargate"] = &Protoss_status::stargateBuild;
+        buildmap["fleet_beacon"] = &Protoss_status::fleetbeaconBuild;
+        buildmap["assimilator"] = &Protoss_status::assimilatorBuild;
+        buildmap["forge"] = &Protoss_status::forgeBuild;
+        buildmap["photon_cannon"] = &Protoss_status::photoncannonBuild;
+
     }
 
     //units execept for probes (in Race as worker)
@@ -84,6 +119,7 @@ class Protoss_status : public Race{
     int assimilator = 0;
     int forge = 0;
     int photon_cannon = 0;
+
     // --------------------- units --------------------- 
     // probe 
     bool probeBuild(){
@@ -572,6 +608,8 @@ class Protoss_status : public Race{
 
     void assimilatorFinish(){
         ++assimilator;
+        workers_vesp_max += 3;
+        distributeWorkers();
         addToPrintList("build-end", "assimilator");
     }
 

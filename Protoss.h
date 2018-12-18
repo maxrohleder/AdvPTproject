@@ -26,39 +26,6 @@ class Protoss : public Protoss_status{
         vespene += vesp_rate*workers_vesp;
     }
 
-    void initBuildmap(){
-        buildmap["probe"] = &Protoss::probeBuild;
-        buildmap["zealot"] = &Protoss::zealotBuild;
-        buildmap["stalker"] = &Protoss::stalkerBuild;
-        buildmap["sentry"] = &Protoss::sentryBuild;
-        buildmap["warp_prism"] = &Protoss::warpprismBuild;
-        buildmap["immortal"] = &Protoss::immortalBuild;
-        buildmap["observer"] = &Protoss::observerBuild;
-        buildmap["colossus"] = &Protoss::colossusBuild;
-        buildmap["high_templar"] = &Protoss::hightemplarBuild;
-        buildmap["dark_templar"] = &Protoss::darktemplarBuild;
-        buildmap["mothership"] = &Protoss::mothershipBuild;
-        buildmap["phoenix"] = &Protoss::phoenixBuild;
-        buildmap["void_ray"] = &Protoss::voidrayBuild;
-        buildmap["carrier"] = &Protoss::carrierBuild;
-
-        buildmap["nexus"] = &Protoss::nexusBuild;
-        buildmap["pylon"] = &Protoss::pylonBuild;
-        buildmap["gateway"] = &Protoss::gatewayBuild;
-        buildmap["cybernetics_core"] = &Protoss::cyberneticscoreBuild;
-        buildmap["robotics_facility"] = &Protoss::roboticsfacilityBuild;
-        buildmap["robotics_bay"] = &Protoss::roboticsbayBuild;
-        buildmap["twilight_council"] = &Protoss::twilightcouncilBuild;
-        buildmap["templar_archives"] = &Protoss::templararchivesBuild;
-        buildmap["dark_shrine"] = &Protoss::darkshrineBuild;
-        buildmap["stargate"] = &Protoss::stargateBuild;
-        buildmap["fleet_beacon"] = &Protoss::fleetbeaconBuild;
-        buildmap["assimilator"] = &Protoss::assimilatorBuild;
-        buildmap["forge"] = &Protoss::forgeBuild;
-        buildmap["photon_cannon"] = &Protoss::photoncannonBuild;
-
-    }
-
     void buildBuildlist(const string filename){
         // first init buildmap
         initBuildmap();
@@ -101,14 +68,22 @@ class Protoss : public Protoss_status{
         }
     }
 
-    void printHeader(int val){
-        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-protoss\"," << endl;
-        cout << "\t\"messages\": [" << endl;
+    void printHeader(){
+        sout << "{\n\t\"buildlistValid\": \"1\"," << endl;
+        sout << "\t\"game\": \"sc2-hots-protoss\"," << endl;
+        sout << "\t\"messages\": [" << endl;
     }
 
-    void printFinish(){
-        cout << "\t]\n}" << endl;
+    /*does final printing from stringstream sout*/
+    void printFinish(bool valid){
+        if(valid){
+            sout << "\t]\n}" << endl;
+        }else{
+            if(debug) cout << sout.str() << "\n\n\nnow real output:\n\n\n";
+            sout.str("");
+            sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
+        }
+        cout << sout.str();
     }
 
     void validateBuildlist(string filename){
@@ -130,16 +105,14 @@ class Protoss : public Protoss_status{
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
 
-    int run(int endtime){
-        // print header for invalid game
+    int run(int endtime = 1000){
+        // print all invalid game
         if(!is_valid){
-            cout << "{ \"game\"\t\t: \"sc2-hots-protoss\"," << endl;           
-            cout << "  \"buildlistValid\"\t: \"0\"" << endl;
-            cout << "}" << endl;
+            printFinish(false);
             return simulation_invalid;   
         }
         // print header for valid game (checked in constructor)
-        printHeader(1);
+        printHeader();
         for(; time < endtime; ++time)
         {
             updateResources();  //reevealuates resources
@@ -148,14 +121,16 @@ class Protoss : public Protoss_status{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl; // get rid of ,
-                    printFinish();  // end json
+                    sout << "\r\t\t}  " << endl; // get rid of ,
+                    printFinish(true);  // end json
                     return simulation_success; // simulation success
                 }else{
-                    cout << endl;
+                    sout << "," << endl;
                 }
             }
         }
+        // print invalid if timeout
+        printFinish(false);
         return simulation_timeout; // timelimit reached; no successful simulation
     }
 };

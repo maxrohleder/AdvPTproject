@@ -59,12 +59,11 @@ class Race{
 
 
     //structures
-    int bases = 1;
-    int geyser_max = 2;
+    int bases = 1; // deprecated??
+    int geyser_max = 2; // deprecated??
 
 
     //raceindependent functions
-
     void print(int time) {
 		//mit allen uebergebenen Parametern printen
 		//liste entsprechend printen
