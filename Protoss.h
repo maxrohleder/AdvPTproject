@@ -5,48 +5,27 @@
 #include <algorithm>
 #include <fstream>
 
-#include "Protoss/Protoss_header.h"
+#include "Protoss/Protoss_status.h"
 
 using namespace std;
 
-class Protoss : public Protoss_header{
-    private:
-    //typedef 
-    typedef bool (Protoss::*funcBool) (void);
-    typedef void (Protoss::*funcVoid) (void);
-
-    //struct for eventlist
-    struct end_event{
-        end_event(int i, funcVoid function) : end_time(i), func(function){}
-        end_event(const end_event* e) : end_time(e->end_time), func(e->func){}
-        ~end_event(){}
-        int end_time;
-        funcVoid func;
-    };
-
+// main class handling the forward of a buildlist
+class Protoss : public Protoss_status{
+    protected:
     //global time
-    int time = 1;
-
-    // only for debug prints
-    bool debug = 0;
-
-    //needed list structures
-    list<funcBool> buildlist;
-    list<end_event> eventlist;
-    map<string, funcBool> buildmap;
-
     // helper functions
     void updateResources(){
         minerals += minerals_rate*workers_minerals;
         vespene += vesp_rate*workers_vesp;
     }
-    bool checkResources(int min, int sup = 0, int ves = 0){
-        return min<=minerals && sup<=supply_max-supply_used && ves<=vespene;
-    }
 
     void initBuildmap(){
         buildmap["probe"] = &Protoss::probeBuild;
+        buildmap["zealot"] = &Protoss::zealotBuild;
 
+        buildmap["nexus"] = &Protoss::nexusBuild;
+        buildmap["pylon"] = &Protoss::pylonBuild;
+        buildmap["gateway"] = &Protoss::gatewayBuild;
     }
 
     void buildBuildlist(const string filename){
@@ -70,14 +49,6 @@ class Protoss : public Protoss_header{
             cerr << "could not read file" << endl;
             exit(-1);
         }
-    }
-
-    void addToPrintList(const string type, const string name){
-        printlist.push_back(make_pair(type, name));
-    }
-
-    void addToEventList(const int dt, funcVoid func){
-        eventlist.push_front(end_event(time + dt, func));
     }
 
     void updateEventlist(){
@@ -109,11 +80,6 @@ class Protoss : public Protoss_header{
         cout << "\t]\n}" << endl;
     }
 
-    void distributeWorkers(){
-        // TODO
-        if(debug) cerr << "have to implement distributeWorkers" << endl;
-    }
-
     bool validateBuildlist(string filename){
         // TODO run through file and validate dependencies
         // return true if buildlist is valid; false if not
@@ -129,31 +95,10 @@ class Protoss : public Protoss_header{
         }
     }
 
-    //build (funcbool) and finish (funcVoid) funtions
-    
-    bool probeBuild(){
-        if(checkResources(5000, 1)){
-            minerals -= 5000;
-            ++supply_used;
-            addToPrintList("build-start", "probe");
-            addToEventList(17, &Protoss::probeFinish);
-            return true;
-        }
-        return false;
-    }
-
-    void probeFinish(){
-        ++workers;
-        distributeWorkers();
-        addToPrintList("build-end", "probe");
-    }
-
     public:
     Protoss(const string filename) {
         // if buildlist is invalid print json and exit(0)
-        if(!validateBuildlist(filename)){
-            exit(0);
-        }
+        if(!validateBuildlist(filename)) exit(0);
         buildBuildlist(filename); // inits hashmap and fills it
         supply_max = 10;
     };
@@ -161,30 +106,24 @@ class Protoss : public Protoss_header{
     ~Protoss(){};
 
     int run(int endtime){
+        // print header for valid game (checked in constructor)
         printHeader(1);
         for(; time < endtime; ++time)
         {
-            updateResources();
-            updateEventlist();
-            // check buildlist
-            if(!buildlist.empty()){
-                updateBuildlist();
-            }
+            updateResources();  //reevealuates resources
+            updateEventlist();  //checks eventlist for events
+            if(!buildlist.empty()) updateBuildlist();  //checks if we can build some
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl;
-                    printFinish();
+                    cout << "\r\t\t}  " << endl; // get rid of ,
+                    printFinish();  // end json
                     return 0;
                 }else{
                     cout << endl;
                 }
             }
-
-
         }
         return 0;
     }
-
-
 };

@@ -32,9 +32,9 @@ class Race{
 	};
 
     //consts
-    int minerals_rate = 70;
-    int vesp_rate = 35;
-	int energy_rate = 5625;
+    int minerals_rate = 70;	// multiplied by 100
+    int vesp_rate = 35;		// multiplied by 100
+	int energy_rate = 5625; // multiplied by 1000
 	string ability_trigger = "booooooooooost"; //string so terran can differ between building unit with id and activating boost
 
     //resources
@@ -54,7 +54,6 @@ class Race{
     
     list<printstruct> printlist;
     list<pair<int, int>> energylist;
-
 
 
     //structures
