@@ -31,6 +31,12 @@ class Protoss : public Protoss_status{
         buildmap["robotics_bay"] = &Protoss::roboticsbayBuild;
         buildmap["twilight_council"] = &Protoss::twilightcouncilBuild;
         buildmap["templar_archives"] = &Protoss::templararchivesBuild;
+        buildmap["dark_shrine"] = &Protoss::darkshrineBuild;
+        buildmap["stargate"] = &Protoss::stargateBuild;
+        buildmap["fleet_beacon"] = &Protoss::fleetbeaconBuild;
+        buildmap["assimilator"] = &Protoss::assimilatorBuild;
+        buildmap["forge"] = &Protoss::forgeBuild;
+        buildmap["photon_cannon"] = &Protoss::photoncannonBuild;
 
     }
 

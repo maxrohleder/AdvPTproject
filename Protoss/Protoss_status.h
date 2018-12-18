@@ -262,5 +262,107 @@ class Protoss_status : public Race{
         addToPrintList("build-end", "templar_archives");
     }
 
+    // dark_shrine
+    bool darkshrineBuild(){
+        if(checkResources(10000, 0, 15000)){
+            if(twilight_council <= 0) return false;
+            minerals -= 10000;
+            vespene -= 15000;
+            addToEventList(100, &Protoss_status::darkshrineFinish);
+            addToPrintList("build-start", "dark_shrine");
+            return true;
+        }
+        return false;
+    }
 
+    void darkshrineFinish(){
+        ++dark_shrine;
+        addToPrintList("build-end", "dark_shrine");
+    }
+
+    // stargate
+    bool stargateBuild(){
+        if(checkResources(15000, 0, 15000)){
+            if(cybernetics_core <= 0) return false;
+            minerals -= 15000;
+            vespene -= 15000;
+            addToEventList(60, &Protoss_status::stargateFinish);
+            addToPrintList("build-start", "stargate");
+            return true;
+        }
+        return false;
+    }
+
+    void stargateFinish(){
+        ++stargate;
+        addToPrintList("build-end", "stargate");
+    }
+
+    // fleet_beacon
+    bool fleetbeaconBuild(){
+        if(checkResources(30000, 0, 20000)){
+            if(stargate <= 0) return false;
+            minerals -= 30000;
+            vespene -= 20000;
+            addToEventList(60, &Protoss_status::fleetbeaconFinish);
+            addToPrintList("build-start", "fleet_beacon");
+            return true;
+        }
+        return false;
+    }
+
+    void fleetbeaconFinish(){
+        ++fleet_beacon;
+        addToPrintList("build-end", "fleet_beacon");
+    }
+       
+    // assimilator
+    bool assimilatorBuild(){
+        if(checkResources(7500)){
+            minerals -= 7500;
+            addToEventList(30, &Protoss_status::assimilatorFinish);
+            addToPrintList("build-start", "assimilator");
+            return true;
+        }
+        return false;
+    }
+
+    void assimilatorFinish(){
+        ++assimilator;
+        addToPrintList("build-end", "assimilator");
+    }
+
+    // forge
+    bool forgeBuild(){
+        if(checkResources(15000)){
+            if(pylon <= 0) return false;
+            minerals -= 15000;
+            addToEventList(45, &Protoss_status::forgeFinish);
+            addToPrintList("build-start", "forge");
+            return true;
+        }
+        return false;
+    }
+
+    void forgeFinish(){
+        ++forge;
+        addToPrintList("build-end", "forge");
+    }
+    
+    // photon_cannon
+    bool photoncannonBuild(){
+        if(checkResources(15000)){
+            if(forge <= 0) return false;
+            minerals -= 15000;
+            addToEventList(40, &Protoss_status::photoncannonFinish);
+            addToPrintList("build-start", "photon_cannon");
+            return true;
+        }
+        return false;
+    }
+
+    void photoncannonFinish(){
+        ++photon_cannon;
+        addToPrintList("build-end", "photon_cannon");
+    }
 };
