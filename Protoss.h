@@ -5,48 +5,25 @@
 #include <algorithm>
 #include <fstream>
 
-#include "Protoss/Protoss_header.h"
+#include "Protoss/Protoss_status.h"
 
 using namespace std;
 
-class Protoss : public Protoss_header{
-    private:
-    //typedef 
-    typedef bool (Protoss::*funcBool) (void);
-    typedef void (Protoss::*funcVoid) (void);
+enum sim_stat{
+    simulation_success = 0,
+    simulation_timeout = 1,
+    simulation_invalid = 2
+};
 
-    //struct for eventlist
-    struct end_event{
-        end_event(int i, funcVoid function) : end_time(i), func(function){}
-        end_event(const end_event* e) : end_time(e->end_time), func(e->func){}
-        ~end_event(){}
-        int end_time;
-        funcVoid func;
-    };
-
-    //global time
-    int time = 1;
-
-    // only for debug prints
-    bool debug = 0;
-
-    //needed list structures
-    list<funcBool> buildlist;
-    list<end_event> eventlist;
-    map<string, funcBool> buildmap;
-
+// main class handling the forward of a buildlist
+class Protoss : public Protoss_status{
+    protected:
+    //global variables
+    bool is_valid;
     // helper functions
     void updateResources(){
         minerals += minerals_rate*workers_minerals;
         vespene += vesp_rate*workers_vesp;
-    }
-    bool checkResources(int min, int sup = 0, int ves = 0){
-        return min<=minerals && sup<=supply_max-supply_used && ves<=vespene;
-    }
-
-    void initBuildmap(){
-        buildmap["probe"] = &Protoss::probeBuild;
-
     }
 
     void buildBuildlist(const string filename){
@@ -72,14 +49,6 @@ class Protoss : public Protoss_header{
         }
     }
 
-    void addToPrintList(const string type, const string name){
-        printlist.push_back(make_pair(type, name));
-    }
-
-    void addToEventList(const int dt, funcVoid func){
-        eventlist.push_front(end_event(time + dt, func));
-    }
-
     void updateEventlist(){
         while(1){
             auto i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return p.end_time == time;});
@@ -99,92 +68,69 @@ class Protoss : public Protoss_header{
         }
     }
 
-    void printHeader(int val){
-        cout << "{\n\t\"buildlistValid\": " << val << "," << endl;
-        cout << "\t\"game\": \"sc2-hots-protoss\"," << endl;
-        cout << "\t\"messages\": [" << endl;
+    void printHeader(){
+        sout << "{\n\t\"buildlistValid\": \"1\"," << endl;
+        sout << "\t\"game\": \"sc2-hots-protoss\"," << endl;
+        sout << "\t\"messages\": [" << endl;
     }
 
-    void printFinish(){
-        cout << "\t]\n}" << endl;
+    /*does final printing from stringstream sout*/
+    void printFinish(bool valid){
+        if(valid){
+            sout << "\t]\n}" << endl;
+        }else{
+            if(debug) cout << sout.str() << "\n\n\nnow real output:\n\n\n";
+            sout.str("");
+            sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
+        }
+        cout << sout.str();
     }
 
-    void distributeWorkers(){
-        // TODO
-        if(debug) cerr << "have to implement distributeWorkers" << endl;
-    }
-
-    bool validateBuildlist(string filename){
+    void validateBuildlist(string filename){
         // TODO run through file and validate dependencies
         // return true if buildlist is valid; false if not
-        bool is_valid = true;
+        is_valid = true;
         //check list here
-        if(is_valid){
-            return true;
-        }else{
-            cout << "{ \"game\"\t\t: \"sc2-hots-protoss\"," << endl;           
-            cout << "  \"buildlistValid\"\t: \"0\"" << endl;
-            cout << "}" << endl;
-            return false;   
-        }
-    }
-
-    //build (funcbool) and finish (funcVoid) funtions
-    
-    bool probeBuild(){
-        if(checkResources(5000, 1)){
-            minerals -= 5000;
-            ++supply_used;
-            addToPrintList("build-start", "probe");
-            addToEventList(17, &Protoss::probeFinish);
-            return true;
-        }
-        return false;
-    }
-
-    void probeFinish(){
-        ++workers;
-        distributeWorkers();
-        addToPrintList("build-end", "probe");
     }
 
     public:
     Protoss(const string filename) {
         // if buildlist is invalid print json and exit(0)
-        if(!validateBuildlist(filename)){
-            exit(0);
-        }
-        buildBuildlist(filename); // inits hashmap and fills it
-        supply_max = 10;
+        validateBuildlist(filename);
+        if (is_valid){
+            buildBuildlist(filename); // inits hashmap and fills it
+            supply_max = 10;
+        }        
     };
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
 
-    int run(int endtime){
-        printHeader(1);
+    int run(int endtime = 1000){
+        // print all invalid game
+        if(!is_valid){
+            printFinish(false);
+            return simulation_invalid;   
+        }
+        // print header for valid game (checked in constructor)
+        printHeader();
         for(; time < endtime; ++time)
         {
-            updateResources();
-            updateEventlist();
-            // check buildlist
-            if(!buildlist.empty()){
-                updateBuildlist();
-            }
+            updateResources();  //reevealuates resources
+            updateEventlist();  //checks eventlist for events
+            if(!buildlist.empty()) updateBuildlist();  //checks if we can build some
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl;
-                    printFinish();
-                    return 0;
+                    sout << "\r\t\t}  " << endl; // get rid of ,
+                    printFinish(true);  // end json
+                    return simulation_success; // simulation success
                 }else{
-                    cout << endl;
+                    sout << "," << endl;
                 }
             }
-
-
         }
-        return 0;
+        // print invalid if timeout
+        printFinish(false);
+        return simulation_timeout; // timelimit reached; no successful simulation
     }
-
-
 };

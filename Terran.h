@@ -25,6 +25,57 @@ private:
         }
         ~finishInformation(){}
     };
+    
+    struct orbital_command_id{
+        orbital_command_id(string i): energy(make_pair(500000, 2000000)), id(i){}
+        orbital_command_id(const orbital_command_id& i) : energy(i.energy), id(i.id){}
+        ~orbital_command_id(){}
+        void updateEnergy(){
+            energy.first += 5625;
+            if(energy.first > energy.second){
+                energy.first = energy.second;
+            }
+        }
+        bool triggerMule(Terran* t){
+            if(energy.first < 500000){
+                return false;
+            }else{
+                (t->mule_worker) += 4;
+                energy.first -= 500000;
+                t->addMuleToEventlist(t->timestep + 90, &Terran::muleFinish);
+                t->addToPrintlist("special", "mule", id);
+                return true;
+            }
+        }
+        pair<int, int> energy;
+        string id;
+    };
+
+    list<orbital_command_id> orbital_command_list;
+
+    string addOrbitalCommand(){
+        orbital_command_list.push_back(orbital_command_id("orbital_command_" + to_string(orbital_command)));
+        return "orbital_command_" + to_string(orbital_command);
+    }
+
+    void updateEnergy(){
+        for(auto& i : orbital_command_list){
+            i.updateEnergy();
+        }
+    }
+
+    void muleBuild(){
+        for(auto& i : orbital_command_list){
+            if(i.triggerMule(this)){
+                return;
+            }
+        }
+        return;
+    }
+
+    void muleFinish(int useless){
+        mule_worker -=4;
+    }
 
 /*
     lists and map
@@ -78,6 +129,11 @@ private:
         eventlist.push_front(fin);
     }
 
+    void addMuleToEventlist(int time, funcInt func, int build = NULL){
+        finishInformation fin(time, func, build);
+        eventlist.push_back(fin);
+    }
+
     void updateEventlist(){
         while(1){
             auto i = find_if(eventlist.begin(), eventlist.end(), [this](const finishInformation p){return p.finishTime == timestep;});
@@ -90,10 +146,12 @@ private:
         }
     }
 
-    void updateBuildlist(){
+    bool updateBuildlist(){
         if((this->*(*buildlist.begin()))()){
             buildlist.pop_front();
+            return true;
         }
+        return false;
     }
 
     void buildBuildlist(string filename){
@@ -114,7 +172,9 @@ private:
 //###############################end lists##################################
 
     void updateResources(){
+        updateEnergy();
         minerals += workers_minerals * minerals_rate;
+        minerals += mule_worker * minerals_rate;
         vespene += workers_vesp * vesp_rate;
     }
 
@@ -221,7 +281,7 @@ private:
             supply_used += 2;
             --barracks_with_tech_lab_buildslots;
             addToPrintlist("build-start", "ghost");
-            addToEventlist(timestep + 45, &Terran::ghostFinish);
+            addToEventlist(timestep + 40, &Terran::ghostFinish);
             return true;
         }
     }
@@ -239,10 +299,10 @@ private:
             minerals -= 10000;
             supply_used += 2;
             int slot_variable = 0;
-            if(factory_buildslots > 0){
-                --factory_buildslots;
-            }else{  
+            if(factory_with_tech_lab_buildslots > 0){
                 --factory_with_tech_lab_buildslots;
+            }else{  
+                --factory_buildslots;
                 slot_variable = 1;
             }
             addToPrintlist("build-start", "hellion");
@@ -253,7 +313,7 @@ private:
 
     void hellionFinish(int slot){
         ++hellion;
-        if(slot == 0){
+        if(slot == 1){
             ++factory_buildslots;;
         }else{
             ++factory_with_tech_lab_buildslots;
@@ -316,7 +376,7 @@ private:
                 slot_variable = 1;
             }
             addToPrintlist("build-start", "medivac");
-            addToEventlist(timestep + 42, &Terran::thorFinish, slot_variable);
+            addToEventlist(timestep + 42, &Terran::medivacFinish, slot_variable);
             return true;
         }
     }
@@ -441,6 +501,7 @@ private:
     }
 
     void commandCenterFinish(int useless){
+        ++bases;
         ++workers;
         ++workers_minerals;
         ++command_center;
@@ -451,10 +512,12 @@ private:
 
     //TODO energie eigenschaften hinzufügen
     bool orbitalCommandBuild(){
-        if(minerals < 15000 || workers < 1 || command_center < 1 || barracks_total < 1 ){
+        if(minerals < 15000 || command_center < 1 || barracks_total < 1 || command_center_buildslots < 1 ){
             return false;
         }else{
             minerals -= 15000;
+            --command_center_buildslots;
+            --command_center;
             addToPrintlist("build-start", "orbital_command");
             addToEventlist(timestep + 35, &Terran::orbitalCommandFinish);
             return true;
@@ -463,16 +526,19 @@ private:
 
     void orbitalCommandFinish(int useless){
         ++orbital_command;
-        --command_center;
-        addToPrintlist("build-end","orbital_command");
+        ++command_center_buildslots;
+        orbital_command_list.push_back("orbital_command_" + to_string(orbital_command));
+        addToPrintlist("build-end", "orbital_command", "orbital_command_" + to_string(orbital_command));
     }
 
     bool planetaryFortressBuild(){
-        if(minerals < 15000 || vespene < 15000 || command_center < 1 || engineering_bay < 1){
+        if(minerals < 15000 || vespene < 15000 || command_center < 1 || engineering_bay < 1 || command_center_buildslots < 1){
             return false;
         }else{
             minerals -= 15000;
             vespene -= 15000;
+            --command_center;
+            --command_center_buildslots;
             addToPrintlist("build-start", "planetary_fortress");
             addToEventlist(timestep + 50, &Terran::planetaryFortressFinish);
             return true;
@@ -481,7 +547,7 @@ private:
 
     void planetaryFortressFinish(int useless){
         ++planetary_fortress;
-        --command_center;
+        ++command_center_buildslots;
         addToPrintlist("build-end", "planetary_fortress");
     }
 
@@ -499,8 +565,9 @@ private:
     }
 
     void refineryFinish(int useless){
-        ++workers_vesp; //worker der vorher bei minerals abgezogen wurde wird jetzt vespene zugewiesen
+        ++workers_minerals;
         ++workers;
+        workers_vesp_max += 3;
         ++refinery;
         addToPrintlist("build-end","refinery");
     }
@@ -542,7 +609,7 @@ private:
         ++workers;
         ++workers_minerals;
         ++missile_turret;
-        addToPrintlist("build-start", "missile_turret");
+        addToPrintlist("build-end", "missile_turret");
     }
 
     bool sensorTowerBuild(){
@@ -590,11 +657,13 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool barracksWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || barracks < 1){
+        if(minerals < 5000 || vespene < 5000 || barracks < 1 || barracks_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
+            --barracks;
+            --barracks_buildslots;
             addToPrintlist("build-start", "barracks_with_reactor");
             addToEventlist(timestep + 50, &Terran::barracksWithReactorFinish);
             return true;
@@ -603,17 +672,18 @@ private:
 
     void barracksWithReactorFinish(int useless){
         ++barracks_with_reactor;
-        --barracks;
-        ++barracks_buildslots;
+        barracks_buildslots += 2;
         addToPrintlist("build-end", "barracks_with_reactor");
     }
 
     bool barrackswithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || barracks < 1){
+        if(minerals < 5000 || vespene < 2500 || barracks < 1 || barracks_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
+            --barracks;
+            --barracks_buildslots;
             addToPrintlist("build-start", "barracks_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::barrackswithTechLabFinish);
             return true;
@@ -622,8 +692,6 @@ private:
 
     void barrackswithTechLabFinish(int useless){
         ++barracks_with_tech_lab;
-        --barracks;
-        --barracks_buildslots;
         ++barracks_with_tech_lab_buildslots;
         addToPrintlist("build-end", "barracks_with_tech_lab");
     }
@@ -653,12 +721,13 @@ private:
 
     //TODO buildslot sperren????
     bool factoryWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || factory < 1){
+        if(minerals < 5000 || vespene < 5000 || factory < 1 || factory_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
             --factory;
+            --factory_buildslots;
             addToPrintlist("build-start", "factory_with_reactor");
             addToEventlist(timestep + 50, &Terran::factoryWithReactorFinish);
             return true;
@@ -667,17 +736,18 @@ private:
 
     void factoryWithReactorFinish(int useless){
         ++factory_with_reactor;
-        ++factory_buildslots;
+        factory_buildslots += 2;
         addToPrintlist("build-end", "factory_with_reactor");
     }    
 
     bool factorywithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || factory < 1){
+        if(minerals < 5000 || vespene < 2500 || factory < 1 ||factory_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
             --factory;
+            --factory_buildslots;
             addToPrintlist("build-start", "factory_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::factorywithTechLabFinish);
             return true;
@@ -686,7 +756,6 @@ private:
 
     void factorywithTechLabFinish(int useless){
         ++factory_with_tech_lab;
-        --factory_buildslots;
         ++factory_with_tech_lab_buildslots;
         addToPrintlist("build-end", "factory_with_tech_lab");
     }       
@@ -778,12 +847,13 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool starportWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || starport < 1){
+        if(minerals < 5000 || vespene < 5000 || starport < 1 || starport_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 5000;
             --starport;
+            --starport_buildslots;
             addToPrintlist("build-start", "starport_with_reactor");
             addToEventlist(timestep + 50, &Terran::starportWithReactorFinish);
             return true;
@@ -792,17 +862,18 @@ private:
 
     void starportWithReactorFinish(int useless){
         ++starport_with_reactor;
-        ++starport_buildslots;
+        starport_buildslots += 2;
         addToPrintlist("build-end", "starport_with_reactor");
     }
 
     bool starportwithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || starport < 1){
+        if(minerals < 5000 || vespene < 2500 || starport < 1 || starport_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
             vespene -= 2500;
             --starport;
+            --starport_buildslots;
             addToPrintlist("build-start", "starport_with_tech_lab");
             addToEventlist(timestep + 25, &Terran::starportwithTechLabFinish);
             return true;
@@ -811,7 +882,6 @@ private:
 
     void starportwithTechLabFinish(int useless){
         ++starport_with_tech_lab;
-        --starport_buildslots;
         ++starport_with_tech_lab_buildslots;
         addToPrintlist("build-end", "starport_with_tech_lab");
     }
@@ -873,20 +943,33 @@ public:
     ~Terran() {}
 
     int run (){
-        for(; timestep < 10000; ++timestep){
+        for(;timestep < 1000; ++timestep){
             updateResources();
             updateEventlist();
+            bool forMule = false;
             if(!buildlist.empty()){
-                updateBuildlist(); 
+                forMule = updateBuildlist();
             }
+            if(!forMule){
+                muleBuild();
+            }
+            redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
-            }
-
-            if(buildlist.empty() && eventlist.empty()){
-                return 0; 
+                bool eventEmpty = false;
+                if(!eventlist.empty()){
+                    eventEmpty = eventlist.begin()->function == &Terran::muleFinish;
+                }
+                if((buildlist.empty() && eventEmpty) || (buildlist.empty() && eventlist.empty())){
+                    sout << endl;
+                    printFinish(true);
+                    return 0;
+                }else{
+                    sout << "," << endl;
+                }
             }
         }
+        printFinish(false);
         return 1;
     }
 
@@ -894,22 +977,30 @@ public:
         for(;timestep < endTime;++timestep){
             updateResources();
             updateEventlist();
+            bool forMule = false;
             if(!buildlist.empty()){
-                updateBuildlist();
+                forMule = updateBuildlist();
+            }
+            if(!forMule){
+                muleBuild();
             }
             redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
-                if(buildlist.empty() && eventlist.empty()){
-                    cout << "\r\t\t}  " << endl;
-                    printFinish();
+                bool eventEmpty = false;
+                if(!eventlist.empty()){
+                    eventEmpty = eventlist.begin()->function == &Terran::muleFinish;
+                }
+                if((buildlist.empty() && eventEmpty) || (buildlist.empty() && eventlist.empty())){
+                    sout << endl;
+                    printFinish(true);
                     return 0;
                 }else{
-                    cout << endl;
+                    sout << "," << endl;
                 }
             }
         }
-        printFinish();
+        printFinish(true);
         return 1;
     }
 

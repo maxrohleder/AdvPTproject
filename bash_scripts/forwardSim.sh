@@ -1,7 +1,7 @@
 #!/bin/bash
 #TODO change to unix
 if [ "$#" -ne 2 ]; then
-    echo "illegal number of arguments"
+    echo "EINVAL-error! (usage: ./forwardSim.sh <race> <buildlistFile>)"
     exit 1
 fi
 

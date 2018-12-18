@@ -53,20 +53,17 @@ class Race{
     int workers_vesp_max = 0;
 
 
-    //list-structures
-    
+    //list-structures    
     list<printstruct> printlist;
     list<pair<int, int>> energylist;
 
 
-
     //structures
-    int bases = 1;
-    int geyser_max = 2;
+    int bases = 1; // deprecated??
+    int geyser_max = 2; // deprecated??
 
 
     //raceindependent functions
-
     void print(int time) {
 		//mit allen uebergebenen Parametern printen
 		//liste entsprechend printen

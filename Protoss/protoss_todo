@@ -1,11 +1,4 @@
 - implement chronoboost
     - idea 
     - printing
-- implement unitBuild
-- implement unitFinish
-- check start supply and update constructor
-
-- implement buildingBuild
-- implement buildingFinish
-- implement hashmap (name, build_function)
-  
+- implement energy
