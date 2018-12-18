@@ -1,0 +1,13 @@
+scv
+scv
+scv
+refinery
+supply_depot
+barracks
+command_center
+orbital_command
+orbital_command
+scv
+scv
+factory
+hellion

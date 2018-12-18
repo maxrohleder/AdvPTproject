@@ -4,8 +4,8 @@ class Terran_header : public Race{
 
 protected:
 
-    double upper_relation = 1.0/2.0;
-    double lower_relation = 1.0/3.0;
+    double upper_relation = 1.0/3.0;
+    double lower_relation = 1.0/4.0;
 
     void printFinish(bool valid){
         if(valid){
@@ -41,7 +41,7 @@ protected:
                 ++workers_minerals;
                 relation = (double) workers_minerals / (double) workers;
             }else{
-                addToPrintlist("", "");
+                printlist.push_front(printstruct("", ""));
                 return;
             }
         }
