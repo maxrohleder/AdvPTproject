@@ -1,5 +1,5 @@
 if [ "$#" -ne 2 ]; then
-    echo "illegal number of arguments"
+    echo "EINVAL-error! (usage: ./forwardSim.sh <race> <buildlistFile>)"
 fi
 
 if [ "$1" == "sc2-hots-protoss" ]; then

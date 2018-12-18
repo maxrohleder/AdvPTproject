@@ -9,10 +9,17 @@
 
 using namespace std;
 
+enum sim_stat{
+    simulation_success = 0,
+    simulation_timeout = 1,
+    simulation_invalid = 2
+};
+
 // main class handling the forward of a buildlist
 class Protoss : public Protoss_status{
     protected:
-    //global time
+    //global variables
+    bool is_valid;
     // helper functions
     void updateResources(){
         minerals += minerals_rate*workers_minerals;
@@ -104,32 +111,33 @@ class Protoss : public Protoss_status{
         cout << "\t]\n}" << endl;
     }
 
-    bool validateBuildlist(string filename){
+    void validateBuildlist(string filename){
         // TODO run through file and validate dependencies
         // return true if buildlist is valid; false if not
-        bool is_valid = true;
+        is_valid = true;
         //check list here
-        if(is_valid){
-            return true;
-        }else{
-            cout << "{ \"game\"\t\t: \"sc2-hots-protoss\"," << endl;           
-            cout << "  \"buildlistValid\"\t: \"0\"" << endl;
-            cout << "}" << endl;
-            return false;   
-        }
     }
 
     public:
     Protoss(const string filename) {
         // if buildlist is invalid print json and exit(0)
-        if(!validateBuildlist(filename)) exit(0);
-        buildBuildlist(filename); // inits hashmap and fills it
-        supply_max = 10;
+        validateBuildlist(filename);
+        if (is_valid){
+            buildBuildlist(filename); // inits hashmap and fills it
+            supply_max = 10;
+        }        
     };
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
 
     int run(int endtime){
+        // print header for invalid game
+        if(!is_valid){
+            cout << "{ \"game\"\t\t: \"sc2-hots-protoss\"," << endl;           
+            cout << "  \"buildlistValid\"\t: \"0\"" << endl;
+            cout << "}" << endl;
+            return simulation_invalid;   
+        }
         // print header for valid game (checked in constructor)
         printHeader(1);
         for(; time < endtime; ++time)
@@ -142,12 +150,12 @@ class Protoss : public Protoss_status{
                 if(buildlist.empty() && eventlist.empty()){
                     cout << "\r\t\t}  " << endl; // get rid of ,
                     printFinish();  // end json
-                    return 0;
+                    return simulation_success; // simulation success
                 }else{
                     cout << endl;
                 }
             }
         }
-        return 0;
+        return simulation_timeout; // timelimit reached; no successful simulation
     }
 };
