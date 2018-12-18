@@ -84,7 +84,7 @@ class Protoss_status : public Race{
     int assimilator = 0;
     int forge = 0;
     int photon_cannon = 0;
-
+    // --------------------- units --------------------- 
     // probe 
     bool probeBuild(){
         if(checkResources(5000, 1)){
@@ -123,6 +123,249 @@ class Protoss_status : public Race{
         addToPrintList("build-end", "zealot");
     }
 
+    // stalker
+    bool stalkerBuild(){
+        if(checkResources(12500, 2, 5000)){
+            if(gateway <= 0 || cybernetics_core <= 0) return false;
+            --gateway;  // occupie a place in gateway
+            minerals -= 12500;
+            vespene -= 5000;
+            supply_used += 2;
+            addToPrintList("build-start", "stalker");
+            addToEventList(42, &Protoss_status::stalkerFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void stalkerFinish(){
+        ++stalker;
+        ++gateway;  // give free gateway place
+        addToPrintList("build-end", "stalker");
+    }    
+    //sentry
+    bool sentryBuild(){
+        if(checkResources(5000, 2, 10000)){
+            if(gateway <= 0 || cybernetics_core <= 0) return false;
+            --gateway;  // occupie a place in gateway
+            minerals -= 5000;
+            vespene -= 10000;
+            supply_used += 2;
+            addToPrintList("build-start", "sentry");
+            addToEventList(37, &Protoss_status::sentryFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void sentryFinish(){
+        ++sentry;
+        ++gateway;  // give free gateway place
+        addToPrintList("build-end", "sentry");
+    }      
+
+    //warp_prism
+    bool warpprismBuild(){
+        if(checkResources(20000, 2)){
+            if(robotics_facility <= 0) return false;
+            --robotics_facility;  // occupie a place in robotics_facility
+            minerals -= 20000;
+            supply_used += 2;
+            addToPrintList("build-start", "warp_prism");
+            addToEventList(50, &Protoss_status::warpprismFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void warpprismFinish(){
+        ++warp_prism;
+        ++robotics_facility;  // give free robotics_facility place
+        addToPrintList("build-end", "warp_prism");
+    }     
+    //immortal
+    bool immortalBuild(){
+        if(checkResources(25000, 3, 10000)){
+            if(robotics_facility <= 0) return false;
+            --robotics_facility;  // occupie a place in robotics_facility
+            minerals -= 25000;
+            vespene -= 10000;
+            supply_used += 3;
+            addToPrintList("build-start", "immortal");
+            addToEventList(55, &Protoss_status::immortalFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void immortalFinish(){
+        ++immortal;
+        ++robotics_facility;  // give free robotics_facility place
+        addToPrintList("build-end", "immortal");
+    }  
+    //observer
+    bool observerBuild(){
+        if(checkResources(2500, 1, 7500)){
+            if(robotics_facility <= 0) return false;
+            --robotics_facility;  // occupie a place in robotics_facility
+            minerals -= 2500;
+            vespene -= 7500;
+            supply_used += 1;
+            addToPrintList("build-start", "observer");
+            addToEventList(30, &Protoss_status::observerFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void observerFinish(){
+        ++observer;
+        ++robotics_facility;  // give free robotics_facility place
+        addToPrintList("build-end", "observer");
+    }  
+    //colossus
+    bool colossusBuild(){
+        if(checkResources(30000, 6, 20000)){
+            if(robotics_facility <= 0 || robotics_bay <= 0) return false;
+            --robotics_facility;  // occupie a place in gateway
+            minerals -= 30000;
+            vespene -= 20000;
+            supply_used += 6;
+            addToPrintList("build-start", "colossus");
+            addToEventList(75, &Protoss_status::colossusFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void colossusFinish(){
+        ++colossus;
+        ++robotics_facility;  // give free gateway place
+        addToPrintList("build-end", "colossus");
+    }  
+    //high_templar
+    bool hightemplarBuild(){
+        if(checkResources(5000, 2, 15000)){
+            if(gateway <= 0 || templar_archives <= 0) return false;
+            --gateway;  // occupie a place in gateway
+            minerals -= 5000;
+            vespene -= 15000;
+            supply_used += 2;
+            addToPrintList("build-start", "high_templar");
+            addToEventList(55, &Protoss_status::hightemplarFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void hightemplarFinish(){
+        ++high_templar;
+        ++gateway;  // give free gateway place
+        addToPrintList("build-end", "high_templar");
+    }  
+    //dark_templar
+   bool darktemplarBuild(){
+        if(checkResources(12500, 2, 12500)){
+            if(gateway <= 0 || dark_shrine <= 0) return false;
+            --gateway;  // occupie a place in gateway
+            minerals -= 12500;
+            vespene -= 12500;
+            supply_used += 2;
+            addToPrintList("build-start", "dark_templar");
+            addToEventList(55, &Protoss_status::darktemplarFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void darktemplarFinish(){
+        ++dark_templar;
+        ++gateway;  // give free gateway place
+        addToPrintList("build-end", "dark_templar");
+    }  
+    //mothership
+   bool mothershipBuild(){
+        if(checkResources(40000, 8, 40000)){
+            if(nexus <= 0 || fleet_beacon <= 0) return false;
+            --nexus;  // occupie a place in gateway
+            minerals -= 40000;
+            vespene -= 40000;
+            supply_used += 8;
+            addToPrintList("build-start", "mothership");
+            addToEventList(160, &Protoss_status::mothershipFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void mothershipFinish(){
+        ++mothership;
+        ++nexus;  // give free gateway place
+        addToPrintList("build-end", "mothership");
+    }  
+    //phoenix
+    bool phoenixBuild(){
+        if(checkResources(15000, 2, 10000)){
+            if(stargate <= 0) return false;
+            --stargate;  // occupie a place in stargate
+            minerals -= 15000;
+            vespene -= 10000;
+            supply_used += 2;
+            addToPrintList("build-start", "phoenix");
+            addToEventList(35, &Protoss_status::phoenixFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void phoenixFinish(){
+        ++phoenix;
+        ++stargate;  // give free stargate place
+        addToPrintList("build-end", "phoenix");
+    }  
+    //void_ray
+    bool voidrayBuild(){
+        if(checkResources(25000, 3, 15000)){
+            if(stargate <= 0) return false;
+            --stargate;  // occupie a place in stargate
+            minerals -= 25000;
+            vespene -= 15000;
+            supply_used += 3;
+            addToPrintList("build-start", "void_ray");
+            addToEventList(60, &Protoss_status::phoenixFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void voidrayFinish(){
+        ++void_ray;
+        ++stargate;  // give free stargate place
+        addToPrintList("build-end", "void_ray");
+    }  
+    //carrier
+   bool carrierBuild(){
+        if(checkResources(35000, 6, 25000)){
+            if(stargate <= 0 || fleet_beacon <= 0) return false;
+            --stargate;  // occupie a place in stargate
+            minerals -= 35000;
+            vespene -= 25000;
+            supply_used += 6;
+            addToPrintList("build-start", "carrier");
+            addToEventList(120, &Protoss_status::carrierFinish);
+            return true;
+        }
+        return false;
+    }
+
+    void carrierFinish(){
+        ++carrier;
+        ++stargate;  // give free stargate place
+        addToPrintList("build-end", "carrier");
+    }  
+
+
+    // --------------------- buildings --------------------- 
     //nexus
     bool nexusBuild(){
         if(checkResources(40000)){

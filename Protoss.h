@@ -22,6 +22,18 @@ class Protoss : public Protoss_status{
     void initBuildmap(){
         buildmap["probe"] = &Protoss::probeBuild;
         buildmap["zealot"] = &Protoss::zealotBuild;
+        buildmap["stalker"] = &Protoss::stalkerBuild;
+        buildmap["sentry"] = &Protoss::sentryBuild;
+        buildmap["warp_prism"] = &Protoss::warpprismBuild;
+        buildmap["immortal"] = &Protoss::immortalBuild;
+        buildmap["observer"] = &Protoss::observerBuild;
+        buildmap["colossus"] = &Protoss::colossusBuild;
+        buildmap["high_templar"] = &Protoss::hightemplarBuild;
+        buildmap["dark_templar"] = &Protoss::darktemplarBuild;
+        buildmap["mothership"] = &Protoss::mothershipBuild;
+        buildmap["phoenix"] = &Protoss::phoenixBuild;
+        buildmap["void_ray"] = &Protoss::voidrayBuild;
+        buildmap["carrier"] = &Protoss::carrierBuild;
 
         buildmap["nexus"] = &Protoss::nexusBuild;
         buildmap["pylon"] = &Protoss::pylonBuild;
