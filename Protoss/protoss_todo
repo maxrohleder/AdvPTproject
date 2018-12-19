@@ -2,3 +2,15 @@
     - idea 
     - printing
 - implement energy
+- start stop special abilies
+
+- optimal worker distro idea: 
+    - optimal worker distro at timepoint is dependant on next planned build
+    - when building succeded, we set redistribute to true, so next time we try to build something in checkResources we toggle worker redistribution
+    - everytime we try to build something, we redistribute workers according to the needed resources
+    - after we pop an item from buildlist --> set revision_needed to true
+    - everytime we build a worker/assimilator --> increment revision; next time we try to build something --> redistribute workers
+    - works perfectly in case of assimilator or probe finish. when a item is build it takes one timestep to redistribute
+check:
+    - protoss_status 57
+        - add to printlist always or only if we will not build something

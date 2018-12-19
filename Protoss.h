@@ -37,7 +37,7 @@ class Protoss : public Protoss_status{
             while(getline(file, unit_name)){
                 if (buildmap.find(unit_name) == buildmap.end()){
                     // key does not exist. print invalid as json
-                    cerr << "invalid unit in buildlist. aborting" << endl;
+                    cerr << "no unit named: <" << unit_name << "> in buildlist. aborting..." << endl;
                     exit(1);
                 }
                 buildlist.push_back(buildmap[unit_name]);
@@ -65,6 +65,8 @@ class Protoss : public Protoss_status{
     void updateBuildlist(){
         if((this->*(*buildlist.begin()))()){
             buildlist.pop_front();
+            // ideal worker distro has changed with new item to build
+            revision_requested = true;
         }
     }
 
@@ -117,7 +119,9 @@ class Protoss : public Protoss_status{
         {
             updateResources();  //reevealuates resources
             updateEventlist();  //checks eventlist for events
-            if(!buildlist.empty()) updateBuildlist();  //checks if we can build some
+            // TODO start stop special abilities
+             //checks if we can build some and if so increment revision
+            if(!buildlist.empty()) updateBuildlist(); 
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){

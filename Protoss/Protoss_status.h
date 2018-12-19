@@ -11,11 +11,13 @@ using namespace std;
 class Protoss_status : public Race{
     public:
     // only for debug prints
-    bool debug = 1;
+    bool debug = true;
     int time = 1;
     // 12950 / 7250 == total cost of min/vesp
-    // ideal ratio of workers is sum over all units costs ratio
-    double ratio = 1.78; 
+    // ideal ratio of workers_min to workers_total is sum over all units costs ratio
+    double ratio = 0.64; // DEPRECATED WITH ADAPTIVE RATIO
+    // revision is state of worker distro
+    bool revision_requested = true;
 
     protected:
     // typedefs for compatability
@@ -33,23 +35,48 @@ class Protoss_status : public Race{
     list<funcBool> buildlist;
     list<end_event> eventlist;
     map<string, funcBool> buildmap;
-    // forward declarations
-    void distributeWorkers() {
-        // 0.64 = 1 - (1/(ratio+1)) = workers_min/workers
-        workers_minerals = (int) (((double) workers)*0.64);
+
+    // redistribute workers, so that they are in same ratio as next planned build
+    // @param report_change add blank to printlist if we are not going to build something anyway
+    void distributeWorkers(int mins, int vesp, bool report_change) {
+        // ratio over all summed resources = 0.64 = 1 - (1/(ratio+1)) = workers_min/workers
+
+        double adaptive_ratio = (double) mins / (double) (mins+vesp);
+        if(debug) cout << "ideal ratio(min/total): " << adaptive_ratio << "\n\t\tmin: "<<mins<<" vesp: "<<vesp;
+        // durch int casting --> fehler von ideal verteilung = max +-1
+        workers_minerals = (int) (((double) workers)*adaptive_ratio);
         workers_vesp = workers-workers_minerals;
         if(workers_vesp>workers_vesp_max){
             workers_vesp = workers_vesp_max;
             workers_minerals = workers-workers_vesp;
         }
+        if(debug) cout << "\nworker distro: " << workers_minerals << " / " << workers_vesp << "(min/vesp) (vmax=" << workers_vesp_max <<")\n\n";
+        if(debug && report_change) cout << "reporting\n";
+        if(report_change) addToPrintList("", "");
+        revision_requested = false;
     }
 
     void addToEventList (const int dt, funcVoid func) {
         eventlist.push_front(end_event(time + dt, func));
     }
 
+    // checks resources and ensures optimal worker distro
     bool checkResources(int min, int sup = 0, int ves = 0) {
-        return min<=minerals && sup<=supply_max-supply_used && ves<=vespene;
+         if(min<=minerals && sup<=supply_max-supply_used && ves<=vespene){
+/*            if(revision_requested){
+                distributeWorkers(min, ves, false);
+            } */
+            return true;
+        }
+        else {
+            if(revision_requested){
+                bool report = true;
+                if(!printlist.empty()) report = false;
+                distributeWorkers(min, ves, report);
+            }
+            return false;
+        }
+
     }
     
     void addToPrintList (string type, string name, string parent_id = "", string child_id = "") {
@@ -135,7 +162,7 @@ class Protoss_status : public Race{
 
     void probeFinish(){
         ++workers;
-        distributeWorkers();
+        revision_requested = true;
         addToPrintList("build-end", "probe");
     }
 
@@ -609,7 +636,7 @@ class Protoss_status : public Race{
     void assimilatorFinish(){
         ++assimilator;
         workers_vesp_max += 3;
-        distributeWorkers();
+        revision_requested = true; // next timestep redistr. workers
         addToPrintList("build-end", "assimilator");
     }
 
