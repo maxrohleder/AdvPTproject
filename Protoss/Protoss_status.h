@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <list>
 #include <map>
 
@@ -38,15 +39,22 @@ class Protoss_status : public Race{
 
     // redistribute workers, so that they are in same ratio as next planned build
     // @param report_change add blank to printlist if we are not going to build something anyway
-    void distributeWorkers(int mins, int vesp, bool report_change) {
+    void distributeWorkers(int mins_needed, int vesp_needed, bool report_change) {
         // ratio over all summed resources = 0.64 = 1 - (1/(ratio+1)) = workers_min/workers
-
-        double adaptive_ratio = (double) mins / (double) (mins+vesp);
-        if(debug) cout << "ideal ratio(min/total): " << adaptive_ratio << "\n\t\tmin: "<<mins<<" vesp: "<<vesp;
+        int delta_min = max(mins_needed-minerals, 0);
+        int delta_vesp = max(vesp_needed-vespene, 0);
+        if(delta_min == 0 && delta_vesp == 0){
+            // we already have all resources and do not need to optimize on this item
+            revision_requested = false;
+            return;
+        }
+        double adaptive_ratio = (double) (delta_min) / (double) (delta_min+delta_vesp);
+        if(debug) cout << "ideal ratio(min/total): " << adaptive_ratio << "\n\t\tmin: "<<delta_min<<" vesp: "<<delta_vesp;
         // durch int casting --> fehler von ideal verteilung = max +-1
         workers_minerals = (int) (((double) workers)*adaptive_ratio);
         workers_vesp = workers-workers_minerals;
         if(workers_vesp>workers_vesp_max){
+            // wenn optimale distro die max_vesp_workers überschreitet dann umschichten
             workers_vesp = workers_vesp_max;
             workers_minerals = workers-workers_vesp;
         }
