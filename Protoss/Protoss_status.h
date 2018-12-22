@@ -12,7 +12,7 @@ using namespace std;
 class Protoss_status : public Race{
     public:
     // only for debug prints
-    bool debug = true;
+    bool debug = false;
     int time = 1;
     // 12950 / 7250 == total cost of min/vesp
     // ideal ratio of workers_min to workers_total is sum over all units costs ratio
