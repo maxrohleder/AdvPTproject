@@ -12,7 +12,7 @@ using namespace std;
 class Protoss_status : public Race{
     public:
     // only for debug prints
-    bool debug = false;
+    bool debug = true;
     int time = 1;
     // 12950 / 7250 == total cost of min/vesp
     // ideal ratio of workers_min to workers_total is sum over all units costs ratio
@@ -48,16 +48,13 @@ class Protoss_status : public Race{
             revision_requested = false;
             return;
         }
-        double adaptive_ratio = (double) (delta_min) / (double) (delta_min+delta_vesp);
-        if(debug) cout << "ideal ratio(min/total): " << adaptive_ratio << "\n\t\tmin: "<<delta_min<<" vesp: "<<delta_vesp;
+        // VERSION 3.0 introduces division by rate which computes the needed time.
+        double vesp_to_total_ratio = (double) (delta_vesp/vesp_rate) / (double) (delta_min/minerals_rate+delta_vesp/vesp_rate);
+        if(debug) cout << "ideal ratio(min/total): " << vesp_to_total_ratio << "\n\t\tmin: "<<delta_min<<" vesp: "<<delta_vesp;
         // durch int casting --> fehler von ideal verteilung = max +-1
-        workers_minerals = (int) (((double) workers)*adaptive_ratio);
-        workers_vesp = workers-workers_minerals;
-        if(workers_vesp>workers_vesp_max){
-            // wenn optimale distro die max_vesp_workers überschreitet dann umschichten
-            workers_vesp = workers_vesp_max;
-            workers_minerals = workers-workers_vesp;
-        }
+        workers_vesp = max(workers_vesp_max, (int) ((((double) workers)*vesp_to_total_ratio)+0.5));
+        workers_minerals = workers-workers_vesp;
+
         if(debug) cout << "\nworker distro: " << workers_minerals << " / " << workers_vesp << "(min/vesp) (vmax=" << workers_vesp_max <<")\n\n";
         if(debug && report_change) cout << "reporting\n";
         if(report_change) addToPrintList("", "");
@@ -122,6 +119,65 @@ class Protoss_status : public Race{
         buildmap["forge"] = &Protoss_status::forgeBuild;
         buildmap["photon_cannon"] = &Protoss_status::photoncannonBuild;
 
+    }
+
+    void mock_resources(){
+        minerals = INT_MAX;
+        vespene = INT_MAX;
+    }
+
+    void default_setup(){
+        //resources
+        minerals = 5000;
+        vespene = 0;
+        supply_used = 6;
+        supply_max = 20; //racedependent (change in constructor)
+
+        //workers
+        workers = 6;
+        workers_minerals = 6;
+        workers_vesp = 0;
+        workers_vesp_max = 0;
+
+        //list-structures    
+        printlist.clear();
+        energylist.clear();
+        eventlist.clear();
+
+        //structures
+        bases = 1; // deprecated??
+        geyser_max = 2; // deprecated??
+
+        //units
+        zealot = 0;
+        stalker = 0;
+        sentry = 0;
+        warp_prism = 0;
+        immortal = 0;
+        observer = 0;
+        colossus = 0;
+        high_templar = 0;
+        dark_templar = 0;
+        mothership = 0;
+        phoenix = 0;
+        void_ray = 0;
+        carrier = 0;
+
+        // buildings
+        nexus = 1;
+        pylon = 0;
+        gateway = 0;
+        cybernetics_core = 0;
+        robotics_facility = 0;
+        robotics_bay = 0;
+        twilight_council = 0;
+        templar_archives = 0;
+        dark_shrine = 0;
+        stargate = 0;
+        fleet_beacon = 0;
+        assimilator = 0;
+        forge = 0;
+        photon_cannon = 0;
     }
 
     //units execept for probes (in Race as worker)

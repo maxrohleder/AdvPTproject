@@ -18,8 +18,6 @@ enum sim_stat{
 // main class handling the forward of a buildlist
 class Protoss : public Protoss_status{
     protected:
-    //global variables
-    bool is_valid;
     // helper functions
     void updateResources(){
         minerals += minerals_rate*workers_minerals;
@@ -58,7 +56,6 @@ class Protoss : public Protoss_status{
                 (this->*(i->func))();
                 eventlist.erase(i);
             }
-
         }
     }
 
@@ -88,28 +85,40 @@ class Protoss : public Protoss_status{
         cout << sout.str();
     }
 
-    void validateBuildlist(string filename){
-        // TODO run through file and validate dependencies
-        // return true if buildlist is valid; false if not
-        is_valid = true;
-        //check list here
+    // checks only for hard dependencies and supply (timeout not detected)
+    bool validateBuildlist(){
+        auto mocked_buildlist = buildlist;
+        for( funcBool item : mocked_buildlist )
+        {
+            mock_resources();
+            if(!(this->*(item))()){
+                // something could not be build despite infinite resources(excl. supply)
+                if(debug) cerr << "buildlist invalid at " <<  item << "\n";
+                return false;
+            }                
+            end_event event = eventlist.front();
+            // assume instant build
+            (this->*(event.func))();
+            eventlist.pop_front();
+            //assert(eventlist.size() == 0);
+            if(debug && eventlist.size() != 0) cerr << "eventlist not empty [validation error]\n";
+        }
+        // successfully built all items
+        default_setup();
+        return true;
     }
 
     public:
     Protoss(const string filename) {
-        // if buildlist is invalid print json and exit(0)
-        validateBuildlist(filename);
-        if (is_valid){
-            buildBuildlist(filename); // inits hashmap and fills it
-            supply_max = 10;
-        }        
+        buildBuildlist(filename); // inits hashmap and fills it
+        supply_max = 10;
     };
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
     ~Protoss(){};
 
     int run(int endtime = 1000){
         // print all invalid game
-        if(!is_valid){
+        if(!validateBuildlist()){
             printFinish(false);
             return simulation_invalid;   
         }
