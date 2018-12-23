@@ -41,11 +41,41 @@ struct resZerg{
 class ZergChecker{
     public:
         ZergChecker(){
+            cout << "init start" << endl;
             initDependency();
             initResources();
+            Validator val(depMap, resMap);
         }
         ZergChecker(const ZergChecker* zc){}
         ~ZergChecker(){}
+
+        //run with textfile
+        bool run(string file_name){
+            //TODO
+            return false;
+        }
+        //run with parsed buildlist
+        bool run(const list<string> buildlist){
+            return val.run(&buildlist);
+        }
+        //debug run
+        bool runDebug(const list<string> buildlist){
+            cout << "DEBUG TEST: " << endl;
+            cout << "input list: " << endl;
+            for(auto i : buildlist){
+                cout << i << endl;
+            }
+            return val.runDebug(&buildlist);
+        }
+
+
+
+    private:
+        depZerg dependencys;
+        resZerg resources;
+        map<string, depObj> depMap;
+        map<string, resObj> resMap;
+        Validator val = NULL;
         void initDependency(){
             depMap["drone"] = depObj();
             depMap["hatchery"] = depObj();
@@ -58,11 +88,4 @@ class ZergChecker{
                  resourceToUpdate(&resources.extractor_slots, 2), resourceToUpdate(&resources.supply, 2)});
             resMap["spawning_pool"] = resObj();
         }
-
-
-    private:
-        depZerg dependencys;
-        resZerg resources;
-        map<string, depObj> depMap;
-        map<string, resObj> resMap;
 };
