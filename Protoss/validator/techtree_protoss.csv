@@ -12,7 +12,6 @@ mothership;400;400;160;8;0;0;0;protoss; nexus ;fleet_beacon
 phoenix;150;100;35;2;0;0;0;protoss; stargate ;
 void_ray;250;150;60;3;0;0;0;protoss; stargate ;
 carrier;350;250;120;6;0;0;0;protoss; stargate ;fleet_beacon
-#buildings;;;;;0;;;;;
 nexus;400;0;100;0;10;0;100;protoss; probe ;
 pylon;100;0;25;0;8;0;0;protoss; probe ;
 gateway;150;0;65;0;0;0;0;protoss; probe ;pylon
