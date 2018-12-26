@@ -265,3 +265,6 @@ build/
 
 #ignore .vscode
 .vscode/
+
+#ignore own collection directory
+collection/
