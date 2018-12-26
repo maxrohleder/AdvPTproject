@@ -4,6 +4,7 @@
 int main(){
     ZergChecker zc;
     bool valid = zc.runDebug({"drone", "drone"});
-    cout << valid << endl;
+    if (valid) cout << "valid" << endl;
+    else cout << "invalid" << endl;
     return 0; 
 }

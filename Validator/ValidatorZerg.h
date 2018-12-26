@@ -43,7 +43,7 @@ class ZergChecker{
         ZergChecker(){
             initDependency();
             initResources();
-            Validator val(depMap, resMap);
+            val = Validator(depMap, resMap);
         }
         ZergChecker(const ZergChecker* zc){}
         ~ZergChecker(){}

@@ -63,7 +63,9 @@ struct resObj{
     list<resourceToUpdate> resUpdateList;
 
     bool updateRes(bool debug = false){
+        if (debug) cout << "resUpdateList.empty: " << resUpdateList.empty() << endl;
         if(resUpdateList.empty()){
+            cout << "here" << endl;
             return true;
         }
         for(auto i : resUpdateList){
@@ -82,6 +84,12 @@ public:
     Validator(const Validator* val) : depMap(val->depMap), resMap(val->resMap){}
     ~Validator(){}
 
+    Validator* operator=(const Validator* val){
+        this->depMap = val->depMap;
+        this->resMap = val->resMap;
+        return this;
+    }
+
 
     //run with already parsed buildList
     bool run(const list<string>* inputList, bool debug = false){
@@ -89,7 +97,11 @@ public:
             if(debug) cout << i << ": " << endl;
             resObj resourceObj = resMap[i];
             depObj dependencyObj = depMap[i];
-            if(!dependencyObj.updateDep(debug) || !resourceObj.updateRes(debug)){
+            bool uD = dependencyObj.updateDep(debug);
+            bool uR = resourceObj.updateRes(debug);
+            if (debug) cout << "updateDep: " << uD << endl;
+            if (debug) cout << "updateRes: " << uR << endl;
+            if(!uD || !uR){
                 return false;
             }
         }
