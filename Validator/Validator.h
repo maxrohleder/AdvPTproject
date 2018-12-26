@@ -15,12 +15,10 @@ struct depObj{
     ~depObj(){}
 
     bool updateDep(bool debug = false){
-        if(depPointerList.empty()){
-            return true;
-        }
         if(debug) cout << "dep: " << endl;
         for(auto i : depPointerList){
-            if(*i < 0){
+            if (debug) cout << *i << endl;
+            if(*i < 1){
                 return false;
             }
         }
@@ -41,7 +39,7 @@ struct depObj{
 };
 
 //pair for resource update and check
-//rTU (rTU):
+//resourceToUpdate (rTU):
 struct rTU{
     int* resource;
     int toAdd;

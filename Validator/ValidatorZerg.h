@@ -35,7 +35,6 @@ struct resZerg{
     int supply = 4;
     int extractor_slots = 2; //free extractor slots
     int spire = 0;
-
 };
 
 
@@ -137,7 +136,7 @@ class ZergChecker{
             depMap["brood_lord"] = depObj({&dependencys.greater_spine});
             depMap["corruptor"] = depObj({&dependencys.spire});
             depMap["mutalisk"] = depObj({&dependencys.spire});
-            depMap["evolution_chamber"] = depObj();
+            depMap["evolution_chamber"] = depObj({}, &dependencys.evolution_chamber);
             depMap["spore_crawler"] = depObj({&dependencys.evolution_chamber});
             depMap["lair"] = depObj({&dependencys.spawning_pool}, &dependencys.lair);
             depMap["extractor"] = depObj();

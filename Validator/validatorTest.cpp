@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     }else{
         valid = zc.run(argv[1]);
     }
-    if (valid) cout << "valid" << endl;
-    else cout << "invalid" << endl;
+    if (valid) cout << "\nvalid" << endl;
+    else cout << "\ninvalid" << endl;
     return 0; 
 }
