@@ -41,7 +41,6 @@ struct resZerg{
 class ZergChecker{
     public:
         ZergChecker(){
-            cout << "init start" << endl;
             initDependency();
             initResources();
             Validator val(depMap, resMap);
@@ -75,7 +74,7 @@ class ZergChecker{
         resZerg resources;
         map<string, depObj> depMap;
         map<string, resObj> resMap;
-        Validator val = NULL;
+        Validator val;
         void initDependency(){
             depMap["drone"] = depObj();
             depMap["hatchery"] = depObj();
