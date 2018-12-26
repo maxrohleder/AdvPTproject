@@ -20,13 +20,16 @@ struct depObj{
         }
         if(debug) cout << "dep: " << endl;
         for(auto i : depPointerList){
-            if(debug) cout << *i << endl;
             if(*i < 0){
                 return false;
             }
         }
-        ++(*newDependency);
-        if(debug) cout << "new dep: " << *newDependency << endl;
+        if (newDependency != NULL){
+            ++(*newDependency);
+            if(debug) cout << "new dep: " << *newDependency << endl;
+        }else{
+            if (debug) cout << "no new dep" << endl;
+        }
         return true;
     }
 
@@ -38,15 +41,17 @@ struct depObj{
 };
 
 //pair for resource update and check
-struct resourceToUpdate{
+//rTU (rTU):
+struct rTU{
     int* resource;
     int toAdd;
-    resourceToUpdate(int* resource, int toAdd) : resource(resource), toAdd(toAdd){}
-    resourceToUpdate(const resourceToUpdate* rU) : resource(rU->resource), toAdd(rU->toAdd){}
-    ~resourceToUpdate(){}
+    rTU(int* resource, int toAdd) : resource(resource), toAdd(toAdd){}
+    rTU(const rTU* rU) : resource(rU->resource), toAdd(rU->toAdd){}
+    ~rTU(){}
     bool update(bool debug = false){
-        if(debug) cout << "resource: " << *resource << " toAdd: " << toAdd << endl;
+        if(debug) cout << "resource: " << *resource << " toAdd: " << toAdd;
         *resource += toAdd;
+        if (debug) cout << " result: " << *resource << endl;
         if(*resource < 0){
             return false;
         }else{
@@ -57,15 +62,15 @@ struct resourceToUpdate{
 
 //struct for handling resources
 struct resObj{
-    resObj(const list<resourceToUpdate> resList = {}) : resUpdateList(resList) {}
+    resObj(const list<rTU> resList = {}) : resUpdateList(resList) {}
     resObj(const resObj* rOZ) : resUpdateList(rOZ->resUpdateList){}
     ~resObj(){};
-    list<resourceToUpdate> resUpdateList;
+    list<rTU> resUpdateList;
 
     bool updateRes(bool debug = false){
+        if (debug) cout << "res: " << endl;
         if (debug) cout << "resUpdateList.empty: " << resUpdateList.empty() << endl;
         if(resUpdateList.empty()){
-            cout << "here" << endl;
             return true;
         }
         for(auto i : resUpdateList){
@@ -94,7 +99,7 @@ public:
     //run with already parsed buildList
     bool run(const list<string>* inputList, bool debug = false){
         for(auto i : *inputList){
-            if(debug) cout << i << ": " << endl;
+            if(debug) cout << endl << i << ": " << endl;
             resObj resourceObj = resMap[i];
             depObj dependencyObj = depMap[i];
             bool uD = dependencyObj.updateDep(debug);
