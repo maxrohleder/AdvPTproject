@@ -15,5 +15,6 @@ int main(int argc, char* argv[]){
     }
     Zerg z(argv[1]);
     int i = z.runTest(2000);
+    cout << i << endl;
     return i;
 }
