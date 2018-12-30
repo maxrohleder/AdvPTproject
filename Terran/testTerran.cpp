@@ -8,5 +8,7 @@ int main(){
     string a;
     cin >> a;
     Terran ter(a);
-    return ter.run();
+    int i = ter.testRun(200000);
+    cout << i << endl;
+    return 0;
 }
