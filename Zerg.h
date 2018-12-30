@@ -807,7 +807,7 @@ class Zerg : public Zerg_header{
         return runTest(1000);
     }
 
-    int runTest(int endTime) {
+    int runTest(int endTime, bool output = false) {
         for(;time < endTime;++time){
             updateResources();
             updateEventlist();
@@ -830,7 +830,7 @@ class Zerg : public Zerg_header{
                 }
             }
         }
-        printFinish(false);
+        printFinish(output);
         return 1;
     }
 
