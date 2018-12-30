@@ -804,26 +804,7 @@ class Zerg : public Zerg_header{
     Zerg(const Zerg& z){}
     ~Zerg(){}
     int run() {
-        for(;time < 1000;++time){
-            updateResources();
-            updateEventlist();
-            if(!buildlist.empty()){
-                updateBuildlist();
-            }
-            redistributeWorkers();
-            if(!printlist.empty()){
-                print(time);
-                if(buildlist.empty() && eventlist.empty()){
-                    sout << endl;
-                    printFinish(true);
-                    return 0;
-                }else{
-                    sout << "," << endl;
-                }
-            }
-        }
-        printFinish(false);
-        return 1;
+        return runTest(1000);
     }
 
     int runTest(int endTime) {
