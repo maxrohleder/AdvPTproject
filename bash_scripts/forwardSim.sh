@@ -9,9 +9,9 @@ if [ "$1" == "sc2-hots-protoss" ]; then
 fi
 
 if [ "$1" == "sc2-hots-terran" ]; then
-    build/Terran/mainTerran
+    build/Terran/mainTerran "$2"
 fi
 
 if [ "$1" == "sc2-hots-zerg" ]; then
-    build/Zerg/mainZerg
+    build/Zerg/mainZerg "$2"
 fi

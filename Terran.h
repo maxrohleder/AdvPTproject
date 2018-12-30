@@ -124,12 +124,12 @@ private:
         buildmap["supply_depot"] = &Terran::supplyDepotBuild;
     } 
 
-    void addToEventlist(int time, funcInt func, int build = NULL){
+    void addToEventlist(int time, funcInt func, int build = -1){
         finishInformation fin(time, func, build);
         eventlist.push_front(fin);
     }
 
-    void addMuleToEventlist(int time, funcInt func, int build = NULL){
+    void addMuleToEventlist(int time, funcInt func, int build = -1){
         finishInformation fin(time, func, build);
         eventlist.push_back(fin);
     }
