@@ -5,9 +5,6 @@
 
 using namespace std;
 
-typedef int (Zerg::*funcInt)(int x);
-
-
 int main(int argc, char* argv[]){
     if(argc < 2){
         cout << "Usage : " << argv[0] << " <inputfile>" << "" << endl;
