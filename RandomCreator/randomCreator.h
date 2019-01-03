@@ -2,6 +2,7 @@
 #include <iostream>
 #include <list>
 #include <array>
+#include <random>
 
 using namespace std;
 
@@ -14,9 +15,11 @@ array<string, 30> zergList = {"drone", "overlord", "overseer", "hydralisk", "que
 
 list<string> createRandomZergList(int length){
     list<string> retList;
+    random_device generator;
+    uniform_int_distribution<int> distribution(0, 29);
     for(int i = 0; i < length; ++i){
-        int pos = rand() % 30;
-        retList.push_back(zergList[i]);
+        int pos = distribution(generator);
+        retList.push_back(zergList[pos]);
     }
     return retList;
 }
