@@ -1,6 +1,10 @@
 #include <iostream>
 #include "ValidatorZerg.h"
 #include <string>
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
 
 int main(int argc, char* argv[]){
     if(argc != 3){
@@ -22,8 +26,11 @@ int main(int argc, char* argv[]){
     }
     if(string(argv[1]).find('z') != string::npos){
         ZergChecker zc;
+        auto start = steady_clock::now();
         if(debug) valid = zc.runDebug(argv[2]);
         else valid = zc.run(argv[2]);
+        auto end = steady_clock::now();
+        cout << "\ntime " << duration_cast<nanoseconds>(end - start).count() << " ns" << endl;
         if (valid) cout << "\nvalid" << endl;
         else cout << "\ninvalid" << endl;
         return 0; 
