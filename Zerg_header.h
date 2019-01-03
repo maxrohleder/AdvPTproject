@@ -3,7 +3,7 @@
 class Zerg_header : public Race{
     protected:
 
-    double upper_relation = 1.0/2.0;
+    double upper_relation = 1.0/2.0; 
     double lower_relation = 1.0/3.0;
 
 
@@ -314,40 +314,7 @@ class Zerg_header : public Race{
     //helpers
     //helper for printlist
     void addToPrintlist(string type, string name, string produced_id = "", string boosted_id = "") {
-        if(name != "queen" && name != "hatchery" && type != "special" && name != "hive" && name != "lair"){
-            printlist.push_back(printstruct(type, name));
-        }else{
-            if (type == "build-end"){
-                if(name == "hatchery"){
-                    printlist.push_back(printstruct(type, name, "hatchery_" + to_string(bases))); //"producedIDs" : [ "hatchery_*bases*" ]
-                }else if(name == "queen"){
-                    string id = addQueen();
-                    printlist.push_back(printstruct(type, name, id));    //"producedIDs" : [ *id* ]
-                }else if(name == "lair"){
-                    int id = *lair_update_list.begin();
-                    lair_update_list.pop_front();
-                    upgradeToLair(id);
-                    printlist.push_back(printstruct(type, name, "lair_" + to_string(id), "hatchery_"+ to_string(id)));
-                }else{
-                    int id = *hive_update_list.begin();
-                    hive_update_list.pop_front();
-                    upgradeToHive(id);
-                    printlist.push_back(printstruct(type, name, "hive_" + to_string(id), "lair_" + to_string(id)));
-                }
-            }else if(type == "special"){
-                printlist.push_back(printstruct(type, name, produced_id, boosted_id));
-            }else if(name == "lair"){
-                int id = getHatch();
-                lair_update_list.push_back(id);
-                printlist.push_back(printstruct(type, name));
-            }else if(name == "hive"){
-                int id = getLair();
-                hive_update_list.push_back(id);
-                printlist.push_back(printstruct(type, name));
-            }else{
-                printlist.push_back(printstruct(type, name));
-            }
-        }
-        
+        printlist.push_back(printstruct(type, name, produced_id, boosted_id));
     }
+
 };
