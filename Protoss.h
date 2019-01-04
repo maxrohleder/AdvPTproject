@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "Protoss/Protoss_status.h"
+#include "Protoss/validator/parser.h"
 
 using namespace std;
 
@@ -17,6 +18,10 @@ enum sim_stat{
 
 // main class handling the forward of a buildlist
 class Protoss : public Protoss_status{
+    private:
+    string buildlistpath;
+    string techtreepath;
+
     protected:
     // helper functions
     void updateResources(){
@@ -87,6 +92,10 @@ class Protoss : public Protoss_status{
 
     // checks only for hard dependencies and supply (timeout not detected)
     bool validateBuildlist(){
+        if(techtreepath != ""){
+            return (validate(techtreepath, buildlistpath, debug) == 0);
+        }
+
         auto mocked_buildlist = buildlist;
         for( funcBool item : mocked_buildlist )
         {
@@ -109,7 +118,10 @@ class Protoss : public Protoss_status{
     }
 
     public:
-    Protoss(const string filename) {
+    Protoss(const string filename, const string techtree = "", bool dbg = false) {
+        debug = dbg;
+        techtreepath = techtree;
+        buildlistpath = filename;
         buildBuildlist(filename); // inits hashmap and fills it
         supply_max = 10;
     };
