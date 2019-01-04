@@ -1,9 +1,10 @@
 #!/bin/bash
 cd ..
-if [ ! -d "collection" ] then
+if [ ! -d "collection" ]; then
     mkdir collection
 else
     rm -r collection
+    mkdir collection
 fi
 
 #dirs for races

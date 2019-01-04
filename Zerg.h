@@ -93,7 +93,8 @@ class Zerg : public Zerg_header{
     void queenFinish(){
         ++queen;
         ++queen_slot;
-        addToPrintlist("build-end", "queen");
+        string id = addQueen();
+        addToPrintlist("build-end", "queen", id);
     }
 
 
@@ -389,7 +390,7 @@ class Zerg : public Zerg_header{
         supply_max += 2;
         ++queen_slot;
         addLarvaePool();
-        addToPrintlist("build-end", "hatchery");
+        addToPrintlist("build-end", "hatchery", "hatchery_" + to_string(bases));
         ++bases;
     }
 
@@ -444,6 +445,8 @@ class Zerg : public Zerg_header{
             minerals -= 15000;
             vespene -= 10000;
             --hatchery;
+            int id = getHatch();
+            lair_update_list.push_back(id);
             addToPrintlist("build-start", "lair");
             addToEventlist(80, &Zerg::lairFinish);
             return true;
@@ -453,7 +456,10 @@ class Zerg : public Zerg_header{
     void lairFinish(){
         ++lair;
         ++lair_hive;
-        addToPrintlist("build-end", "lair");
+        int id = *lair_update_list.begin();
+        lair_update_list.pop_front();
+        upgradeToLair(id);
+        addToPrintlist("build-end", "lair", "lair_" + to_string(id), "hatchery_" + to_string(id));
     }
 
     //spawning_pool
@@ -617,6 +623,8 @@ class Zerg : public Zerg_header{
             minerals -= 20000;
             vespene -= 15000;
             --lair;
+            int id = getLair();
+            hive_update_list.push_back(id);
             addToPrintlist("build-start", "hive");
             addToEventlist(100, &Zerg::hiveFinish);
             return true;
@@ -625,7 +633,10 @@ class Zerg : public Zerg_header{
 
     void hiveFinish(){
         ++hive;
-        addToPrintlist("build-end", "hive");
+        int id = *hive_update_list.begin();
+        hive_update_list.pop_front();
+        upgradeToHive(id);
+        addToPrintlist("build-end", "hive", "hive_" + to_string(id), "lair_" + to_string(id));
     }
 
     //nydus_network
@@ -804,29 +815,10 @@ class Zerg : public Zerg_header{
     Zerg(const Zerg& z){}
     ~Zerg(){}
     int run() {
-        for(;time < 1000;++time){
-            updateResources();
-            updateEventlist();
-            if(!buildlist.empty()){
-                updateBuildlist();
-            }
-            redistributeWorkers();
-            if(!printlist.empty()){
-                print(time);
-                if(buildlist.empty() && eventlist.empty()){
-                    sout << endl;
-                    printFinish(true);
-                    return 0;
-                }else{
-                    sout << "," << endl;
-                }
-            }
-        }
-        printFinish(false);
-        return 1;
+        return runTest(1000);
     }
 
-    int runTest(int endTime) {
+    int runTest(int endTime, bool output = false) {
         for(;time < endTime;++time){
             updateResources();
             updateEventlist();
@@ -849,7 +841,7 @@ class Zerg : public Zerg_header{
                 }
             }
         }
-        printFinish(false);
+        printFinish(output);
         return 1;
     }
 

@@ -41,6 +41,14 @@ barracks_with_reactor
 barracks_with_tech_lab
 starport_with_reactor
 marine
+supply_depot
+supply_depot
+marine
+marine
+marauder
+marauder
+marauder
+marine
 hellion
 starport_with_tech_lab
 factory_with_reactor

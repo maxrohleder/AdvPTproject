@@ -124,12 +124,12 @@ private:
         buildmap["supply_depot"] = &Terran::supplyDepotBuild;
     } 
 
-    void addToEventlist(int time, funcInt func, int build = NULL){
+    void addToEventlist(int time, funcInt func, int build = -1){
         finishInformation fin(time, func, build);
         eventlist.push_front(fin);
     }
 
-    void addMuleToEventlist(int time, funcInt func, int build = NULL){
+    void addMuleToEventlist(int time, funcInt func, int build = -1){
         finishInformation fin(time, func, build);
         eventlist.push_back(fin);
     }
@@ -943,37 +943,10 @@ public:
     ~Terran() {}
 
     int run (){
-        for(;timestep < 1000; ++timestep){
-            updateResources();
-            updateEventlist();
-            bool forMule = false;
-            if(!buildlist.empty()){
-                forMule = updateBuildlist();
-            }
-            if(!forMule){
-                muleBuild();
-            }
-            redistributeWorkers();
-            if(!printlist.empty()){
-                print(timestep);
-                bool eventEmpty = false;
-                if(!eventlist.empty()){
-                    eventEmpty = eventlist.begin()->function == &Terran::muleFinish;
-                }
-                if((buildlist.empty() && eventEmpty) || (buildlist.empty() && eventlist.empty())){
-                    sout << endl;
-                    printFinish(true);
-                    return 0;
-                }else{
-                    sout << "," << endl;
-                }
-            }
-        }
-        printFinish(false);
-        return 1;
+        return testRun(1000, false);        
     }
 
-    int testRun(int endTime) {
+    int testRun(int endTime, bool output = true) {
         for(;timestep < endTime;++timestep){
             updateResources();
             updateEventlist();
@@ -1000,7 +973,7 @@ public:
                 }
             }
         }
-        printFinish(true);
+        printFinish(output);
         return 1;
     }
 
