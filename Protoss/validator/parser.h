@@ -5,8 +5,6 @@
 #include <list>
 #include <string>
 
-bool debug = false;
-
 struct depObj{
     depObj(std::string name, int supply_cost, int supply_provided, std::string produced_by, std::string dependency) : 
             name(name), supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
@@ -30,25 +28,30 @@ struct depObj{
 class parser{
     protected:
     // ACTUAL DATASTRUCTURE
+    bool debug = false;
 
     public:
     std::map<std::string, depObj*> dependencies;
     std::list<std::string> buildlist;
 
-
-    parser (const std::string filename,const std::string buildlistname) {
-        init(filename);
+    parser (const std::string techtreefilename,const std::string buildlistname, bool dbg = false) {
+        debug = dbg;
+        init(techtreefilename);
         init_buildlist(buildlistname);
     }
-    parser(const parser& n) : dependencies(n.dependencies){}
+    parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
     ~parser(){
         //delete dependencies;
-                
+        
+        /* for(auto&& i : dependencies)
+        {
+            delete i;
+        } */
     }
        
     void init(const std::string filename) {
         const int MAX_LINE_LENGTH = 150;
-        const char * DELIMS = ";"; // Tab, space or comma.
+        const char * DELIMS = " ;"; // space or semicolon.
 
         std::fstream fin(filename);
         //fin.open(filename);
@@ -77,8 +80,8 @@ class parser{
 
             // if the last tokenize operation fails 
             if(dependency == NULL){
-                std::cerr << "ERROR: invalid line. MUST specify all fields. If absent, mark with either 0 or NONE\nError in line:\"" << buffer <<"\"\n";
-                 continue;
+                if(debug) std::cerr << "ERROR: invalid line. MUST specify all fields. If absent, mark with either 0 or NONE\nError in line: \"" << buffer <<"\"\tskipping...\n";
+                continue;
             }
 
             // avoiding compiler warnings about unused variables
@@ -115,7 +118,7 @@ class parser{
     }
 
     depObj* get_obj(const std::string name){
-        std::cout << "getting object\n";
+        if(debug) std::cout << "getting object\n";
         if(dependencies.count(name) == 0) return nullptr;
         return dependencies[name];
     }
