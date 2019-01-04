@@ -5,8 +5,10 @@
 #include <list>
 #include <string>
 
+using namespace std;
+
 struct depObj{
-    depObj(std::string name, int supply_cost, int supply_provided, std::string produced_by, std::string dependency) : 
+    depObj(string name, int supply_cost, int supply_provided, string produced_by, string dependency) : 
             name(name), supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
     depObj(const depObj& n) : name(n.name), supply(n.supply), dependency(n.dependency), produced_by(n.produced_by){}
     ~depObj(){}
@@ -19,10 +21,10 @@ struct depObj{
         return this;
     }
     
-    std::string name;
+    string name;
     int supply; // pos if it adds negetive if it consumes
-    std::string dependency;
-    std::string produced_by;
+    string dependency;
+    string produced_by;
 };
 
 class parser{
@@ -31,10 +33,10 @@ class parser{
     bool debug = false;
 
     public:
-    std::map<std::string, depObj*> dependencies;
-    std::list<std::string> buildlist;
+    map<string, depObj*> dependencies;
+    list<string> buildlist;
 
-    parser (const std::string techtreefilename,const std::string buildlistname, bool dbg = false) {
+    parser (const string techtreefilename,const string buildlistname, bool dbg = false) {
         debug = dbg;
         init(techtreefilename);
         init_buildlist(buildlistname);
@@ -49,14 +51,14 @@ class parser{
         } */
     }
        
-    void init(const std::string filename) {
+    void init(const string filename) {
         const int MAX_LINE_LENGTH = 150;
         const char * DELIMS = " ;"; // space or semicolon.
 
-        std::fstream fin(filename);
+        fstream fin(filename);
         //fin.open(filename);
         if(!fin.is_open()){
-            std::cerr << "cant read file";
+            cerr << "cant read file";
             abort();
         } 
         // Prepare a C-string buffer to be used when reading lines.
@@ -80,7 +82,7 @@ class parser{
 
             // if the last tokenize operation fails 
             if(dependency == NULL){
-                if(debug) std::cerr << "ERROR: invalid line. MUST specify all fields. If absent, mark with either 0 or NONE\nError in line: \"" << buffer <<"\"\tskipping...\n";
+                if(debug) cerr << "ERROR: invalid line. MUST specify all fields. If absent, mark with either 0 or NONE\nError in line: \"" << buffer <<"\"\tskipping...\n";
                 continue;
             }
 
@@ -93,11 +95,11 @@ class parser{
             (void) race;
 
             // casting tokens to proper cpp types
-            std::string n = std::string(name);            
-            int c1 = std::atoi(supply_cost);
-            int c2 = std::atoi(supply_provided); 
-            std::string prod = std::string(produced_by);
-            std::string dep = std::string(dependency);
+            string n = string(name);            
+            int c1 = atoi(supply_cost);
+            int c2 = atoi(supply_provided); 
+            string prod = string(produced_by);
+            string dep = string(dependency);
 
             // create new element on heap
             depObj* new_Obj = new depObj(n, c1, c2, prod, dep);
@@ -106,7 +108,7 @@ class parser{
             dependencies[n] = new_Obj;
 
             if(debug){
-                std::cout   << "{\n\t"
+                cout   << "{\n\t"
                             << new_Obj->name << ",\n\t" 
                             << new_Obj->supply << ",\n\t"
                             << new_Obj->produced_by << ",\n\t"
@@ -117,28 +119,28 @@ class parser{
         fin.close();
     }
 
-    depObj* get_obj(const std::string name){
-        if(debug) std::cout << "getting object\n";
+    depObj* get_obj(const string name){
+        if(debug) cout << "getting object\n";
         if(dependencies.count(name) == 0) return nullptr;
         return dependencies[name];
     }
 
-    void init_buildlist(std::string filename){
-        std::ifstream file;
-        std::string item;
+    void init_buildlist(string filename){
+        ifstream file;
+        string item;
         file.open(filename);
         if(file.is_open()){
             while(getline(file, item)){
                 if (dependencies.count(item) == 0){
                     // key does not exist. print invalid as json
-                    std::cerr << "no unit named: <" << item << "> in techtree. aborting..." << std::endl;
+                    cerr << "no unit named: <" << item << "> in techtree. aborting..." << endl;
                     exit(1);
                 }
                 buildlist.push_back(item);
             }
             file.close();
         }else{
-            std::cerr << "could not read file" << std::endl;
+            cerr << "could not read file" << endl;
             exit(-1);
         }
         file.close();
