@@ -4,7 +4,8 @@
 
 using namespace std;
 
-// test with validate ../../../
+// test with: .\validate.exe ..\..\..\Validator\validator_by_file\techtree_protoss.csv ..\..\..\Validator\validator_by_file\advancedBuild.txt 
+// from within build\Validator\validator_by_file
 
 // returns 0 on successfull buildlist 1 otherwise
 int main(int argc, char* argv[]){
