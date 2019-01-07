@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include "Protoss/Protoss_status.h"
-#include "Protoss/validator/parser.h"
+#include "Validator/validator_by_file/parser.h"
 
 using namespace std;
 

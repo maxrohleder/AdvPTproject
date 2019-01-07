@@ -1,0 +1,15 @@
+probe
+probe
+pylon
+pylon
+probe
+probe
+probe
+probe
+assimilator
+assimilator
+gateway
+cybernetics_core
+stargate
+fleet_beacon
+mothership

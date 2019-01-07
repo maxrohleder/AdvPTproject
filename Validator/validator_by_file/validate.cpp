@@ -4,6 +4,8 @@
 
 using namespace std;
 
+// test with validate ../../../
+
 // returns 0 on successfull buildlist 1 otherwise
 int main(int argc, char* argv[]){
     if(argc != 3){
