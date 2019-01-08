@@ -4,6 +4,12 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
+# check if build dir exists
+if [ ! -d "build" ]; then
+    echo "must build programme bevore simulation. aborting..."
+    exit 1
+fi
+
 if [ "$1" == "sc2-hots-protoss" ]; then
     build/Protoss/mainProtoss "$2"
 fi

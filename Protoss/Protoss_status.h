@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <climits> //added to get rid of compiler warning
 
 #include "../Race.h"
 
