@@ -299,11 +299,17 @@ private:
             minerals -= 10000;
             supply_used += 2;
             int slot_variable = 0;
-            if(factory_with_tech_lab_buildslots > 0){
-                --factory_with_tech_lab_buildslots;
-            }else{  
+            // if(factory_with_tech_lab_buildslots > 0){
+            //     --factory_with_tech_lab_buildslots;
+            // }else{  
+            //     --factory_buildslots;
+            //     slot_variable = 1;
+            // }
+            if(factory_buildslots > 0){
                 --factory_buildslots;
                 slot_variable = 1;
+            }else{
+                --factory_with_tech_lab_buildslots;
             }
             addToPrintlist("build-start", "hellion");
             addToEventlist(timestep + 30, &Terran::hellionFinish, slot_variable);
@@ -314,11 +320,12 @@ private:
     void hellionFinish(int slot){
         ++hellion;
         if(slot == 1){
-            ++factory_buildslots;;
+            ++factory_buildslots;
+            addToPrintlist("build-end", "hellion", "hellion_" + to_string(hellion), "factory"); //TODO
         }else{
             ++factory_with_tech_lab_buildslots;
+            addToPrintlist("build-end", "hellion");
         }
-        addToPrintlist("build-end", "hellion");
     }
 
     bool siegeTankBuild(){

@@ -77,6 +77,7 @@ marauder
 reaper
 ghost
 hellion
+hellion
 siege_tank
 hellion
 hellion
