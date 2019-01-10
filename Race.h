@@ -87,8 +87,10 @@ class Race{
 				if(i.boosted_id == ""){		//id set for building a building
 					if(i.type == "build-end"){	//build end with only produced ID here (one does not need producer ID at build-start!!!)
 						sout << ",\n\t\t\t\t\t\"producedIDs\": [ \"" << i.produced_id << "\" ]";
-					}else{		//Terran ability here
+					}else if(i.type == "special"){		//Terran ability here
 						sout << ",\n\t\t\t\t\t\"triggeredBy\": \"" << i.produced_id << "\"";
+					} else{
+						sout << ",\n\t\t\t\t\t\"producerID\": \"" << i.produced_id << "\"";
 					}
 				}else if(i.type == "build-end"){
 					sout << ",\n\t\t\t\t\t\"producerID\": \"" << i.boosted_id << "\"," << endl;
