@@ -59,17 +59,18 @@ class Protoss : public Protoss_status{
                 return;
             }else{
                 (this->*(i->func))();
+                if(i->producerID != "") idlebuildings.push_front(i->producerID);
                 eventlist.erase(i);
             }
         }
     }
 
-    void updateBuildlist(){
+    bool updateBuildlist(){
         if((this->*(*buildlist.begin()))()){
             buildlist.pop_front();
-            // ideal worker distro has changed with new item to build
-            revision_requested = true;
+            return true;
         }
+        return false;
     }
 
     void printHeader(){
@@ -81,7 +82,8 @@ class Protoss : public Protoss_status{
     /*does final printing from stringstream sout*/
     void printFinish(bool valid){
         if(valid){
-            sout << "\t]\n}" << endl;
+            sout << "\t],\n" << endl;
+            sout << "\"initialUnits\" : { \"probe\" : [ \"larry_der_fleissige\", \"1\", \"2\", \"3\", \"4\", \"5\" ],\n\"nexus\": [ \"nexus_0\" ] \n}\n}";
         }else{
             if(debug) cout << sout.str() << "\n\n\nnow real output:\n\n\n";
             sout.str("");
@@ -134,15 +136,23 @@ class Protoss : public Protoss_status{
             printFinish(false);
             return simulation_invalid;   
         }
-        // print header for valid game (checked in constructor)
+        // print header for valid game
         printHeader();
         for(; time < endtime; ++time)
         {
-            updateResources();  //reevealuates resources
-            updateEventlist();  //checks eventlist for events
+            updateResources();  // 1. reevealuates resources
+            updateEventlist();  // 2. checks eventlist for events
             // TODO start stop special abilities
-             //checks if we can build some and if so increment revision
-            if(!buildlist.empty()) updateBuildlist(); 
+
+            //checks if we can build some and if so increment revision
+            if(!buildlist.empty()){
+                if(updateBuildlist()){
+                    // ideal worker distro has changed as we are now 
+                    // looking foreward to build something different
+                    revision_requested = true;
+                }
+            }
+            // printing
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){

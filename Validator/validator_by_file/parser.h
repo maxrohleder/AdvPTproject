@@ -44,11 +44,10 @@ class parser{
     parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
     ~parser(){
         //delete dependencies;
-        
-        /* for(auto&& i : dependencies)
+        for(auto& i : dependencies)
         {
-            delete i;
-        } */
+            delete i.second;
+        }
     }
        
     void init(const string filename) {
