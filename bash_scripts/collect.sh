@@ -9,6 +9,7 @@ fi
 
 #dirs for races
 mkdir collection/Protoss
+mkdir collection/Validator/validator_by_file
 mkdir collection/Terran
 mkdir collection/Zerg
 
@@ -21,6 +22,7 @@ cp Protoss.h collection/
 cp Protoss/CMakeLists.txt collection/Protoss/
 cp Protoss/mainProtoss.cpp collection/Protoss/
 cp Protoss/Protoss_status.h collection/Protoss/
+cp Validator/validator_by_file/parser.h collection/Validator/validator_by_file/
 
 #Terran
 cp Terran.h collection/
