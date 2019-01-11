@@ -9,6 +9,13 @@
 
 using namespace std;
 
+string dynamicType = "";
+
+bool isOfType(string ID){
+    return dynamicType.find(ID) !=  std::string::npos;
+}
+
+
 // includes all stats and build functions
 class Protoss_status : public Race{
     public:
@@ -27,16 +34,26 @@ class Protoss_status : public Race{
     typedef void (Protoss_status::*funcVoid) (void);
     //struct for eventlist
     struct end_event{
-        end_event(int i, funcVoid function) : end_time(i), func(function){}
-        end_event(const end_event* e) : end_time(e->end_time), func(e->func){}
+        end_event(int i, funcVoid function, string pID = "") : end_time(i), func(function), producerID(pID){}
+        end_event(const end_event* e) : end_time(e->end_time), func(e->func), producerID(e->producerID){}
         ~end_event(){}
         int end_time;
         funcVoid func;
+        string producerID;
     };
     //needed list structures
     list<funcBool> buildlist;
     list<end_event> eventlist;
     map<string, funcBool> buildmap;
+
+    // needed for boosting building id and associated endevent
+    list<string> activebuildings;
+    list<string> idlebuildings;
+
+    string getBuildingIdOfType(string type){
+        dynamicType = type;
+        string buildingID = find_if(idlebuildings.begin(), idlebuildings.end(), isOfType);
+    }
 
     // redistribute workers, so that they are in same ratio as next planned build
     // @param report_change add blank to printlist if we are not going to build something anyway
@@ -506,9 +523,10 @@ class Protoss_status : public Race{
     }
 
     void nexusFinish(){
-        ++nexus;
         supply_max += 10;
-        addToPrintList("build-end", "nexus");
+        idlebuildings.push_back("nexus_" + to_string(nexus));
+        addToPrintList("build-end", "nexus", "nexus_" + to_string(nexus));
+        ++nexus;
     }
 
     //pylon 
@@ -540,8 +558,9 @@ class Protoss_status : public Race{
     }
 
     void gatewayFinish(){
+        idlebuildings.push_back("gateway_" + to_string(gateway));
+        addToPrintList("build-end", "gateway", "gateway_" + to_string(gateway));
         ++gateway;
-        addToPrintList("build-end", "gateway");
     }
 
     // cybernetics core
@@ -575,8 +594,9 @@ class Protoss_status : public Race{
     }
 
     void roboticsfacilityFinish(){
+        idlebuildings.push_back("robotics_facility_" + to_string(robotics_facility));
         ++robotics_facility;
-        addToPrintList("build-end", "robotics_facility");
+        addToPrintList("build-end", "robotics_facility", "robotics_facility_" + to_string(robotics_facility));
     }
 
     // robotics_bay
@@ -665,6 +685,7 @@ class Protoss_status : public Race{
     }
 
     void stargateFinish(){
+        idlebuildings.push_back("stargate_" + to_string(stargate));
         ++stargate;
         addToPrintList("build-end", "stargate");
     }
