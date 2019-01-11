@@ -18,5 +18,5 @@ int main(int argc, char* argv[]){
     auto end = steady_clock::now();
     cout << i << endl;
     cout << "time: " << duration_cast<nanoseconds>(end - start).count() << " ns" << endl;
-    return i;
+    return 0;
 }

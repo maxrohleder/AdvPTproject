@@ -6,7 +6,7 @@ fi
 
 # check if build dir exists
 if [ ! -d "build" ]; then
-    echo "must build programme bevore simulation. aborting..."
+    echo "must build programme before simulation. aborting..."
     exit 1
 fi
 

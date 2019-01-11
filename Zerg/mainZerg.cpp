@@ -11,6 +11,6 @@ int main(int argc, char* argv[]){
         exit(-1);
     }
     Zerg z(argv[1]);
-    int i = z.run();
-    return i;
+    z.run();
+    return 0;
 }

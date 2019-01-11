@@ -81,10 +81,12 @@ class Zerg : public Zerg_header{
         if(checkResources(15000, 2) || spawning_pool < 1 || queen_slot < 1){
             return false;
         }else{
+            string prod = getLarvaePool();
+            if(prod == "") return false;
             minerals -= 15000;
             --queen_slot;
             supply_used += 2;
-            addToPrintlist("build-start", "queen");
+            addToPrintlist("build-start", "queen", prod);
             addToEventlist(50, &Zerg::queenFinish);
             return true;
         }
@@ -94,7 +96,17 @@ class Zerg : public Zerg_header{
         ++queen;
         ++queen_slot;
         string id = addQueen();
-        addToPrintlist("build-end", "queen", id);
+        int p_id = *producing_pools.begin();
+        string producer;
+        for(auto& i : larvae_list){
+            if(i.id == p_id){
+                string producer = i.type + to_string(p_id);
+                i.notGettingUped = true;
+                producing_pools.pop_front();
+                addToPrintlist("build-end", "queen", id, producer);
+                return;
+            }
+        }
     }
 
 
@@ -442,12 +454,13 @@ class Zerg : public Zerg_header{
         if(checkResources(15000, 0, 10000) || spawning_pool < 1 || hatchery < 1){
             return false;
         }else{
+            int id = getHatch();
+            if(id < 0) return false;
             minerals -= 15000;
             vespene -= 10000;
             --hatchery;
-            int id = getHatch();
             lair_update_list.push_back(id);
-            addToPrintlist("build-start", "lair");
+            addToPrintlist("build-start", "lair", "hatchery_" + to_string(id));
             addToEventlist(80, &Zerg::lairFinish);
             return true;
         }
@@ -620,12 +633,13 @@ class Zerg : public Zerg_header{
         if(checkResources(20000, 0, 15000) || infestation_pit < 1 || lair < 1){
             return false;
         }else{
+            int id = getLair();
+            if(id < 0) return false;
             minerals -= 20000;
             vespene -= 15000;
             --lair;
-            int id = getLair();
             hive_update_list.push_back(id);
-            addToPrintlist("build-start", "hive");
+            addToPrintlist("build-start", "hive", "lair_" + to_string(id));
             addToEventlist(100, &Zerg::hiveFinish);
             return true;
         }

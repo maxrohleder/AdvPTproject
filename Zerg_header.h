@@ -3,7 +3,7 @@
 class Zerg_header : public Race{
     protected:
 
-    double upper_relation = 1.0/2.0; 
+    double upper_relation = 1.0/2.0;  
     double lower_relation = 1.0/3.0;
 
 
@@ -88,6 +88,7 @@ class Zerg_header : public Race{
     };
 
     list<larvae_pool> larvae_list;
+    list<int> producing_pools; 
 
     
 
@@ -97,6 +98,17 @@ class Zerg_header : public Race{
 
     void addLarvaePool(){
         larvae_list.push_back(larvae_pool(0, bases));
+    }
+
+    string getLarvaePool(){
+        for(auto& i : larvae_list){
+            if(i.notGettingUped){
+                i.notGettingUped = false;
+                producing_pools.push_back(i.id);
+                return i.type + to_string(i.id);
+            }
+        }
+        return "";
     }
 
 
@@ -225,6 +237,7 @@ class Zerg_header : public Race{
 
     //build-slots for queen
     int queen_slot = 1;
+
 
 
     void distributeWorker(){

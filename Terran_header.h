@@ -27,7 +27,7 @@ protected:
     }
 
     void addToPrintlist(string type, string name, string produced_id = "", string boosted_id = "") {
-        printlist.push_back(printstruct(type, name, produced_id));
+        printlist.push_back(printstruct(type, name, produced_id, boosted_id));
     }
 
     void redistributeWorkers(){

@@ -3,6 +3,9 @@ scv
 scv
 scv
 supply_depot
+supply_depot
+scv
+scv
 scv
 scv
 scv
@@ -10,6 +13,7 @@ scv
 refinery
 refinery
 barracks
+marine
 barracks_with_reactor
 barracks
 barracks_with_tech_lab
