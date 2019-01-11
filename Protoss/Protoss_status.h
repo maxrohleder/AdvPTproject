@@ -53,7 +53,7 @@ class Protoss_status : public Race{
         double vesp_to_total_ratio = (double) (delta_vesp/vesp_rate) / (double) (delta_min/minerals_rate+delta_vesp/vesp_rate);
         if(debug) cout << "ideal ratio(min/total): " << vesp_to_total_ratio << "\n\t\tmin: "<<delta_min<<" vesp: "<<delta_vesp;
         // durch int casting --> fehler von ideal verteilung = max +-1
-        workers_vesp = max(workers_vesp_max, (int) ((((double) workers)*vesp_to_total_ratio)+0.5));
+        workers_vesp = min(workers_vesp_max, (int) ((((double) workers)*vesp_to_total_ratio)+0.5));
         workers_minerals = workers-workers_vesp;
 
         if(debug) cout << "\nworker distro: " << workers_minerals << " / " << workers_vesp << "(min/vesp) (vmax=" << workers_vesp_max <<")\n\n";
@@ -132,7 +132,7 @@ class Protoss_status : public Race{
         minerals = 5000;
         vespene = 0;
         supply_used = 6;
-        supply_max = 20; //racedependent (change in constructor)
+        supply_max = 10; //racedependent (change in constructor)
 
         //workers
         workers = 6;
@@ -216,6 +216,8 @@ class Protoss_status : public Race{
     // probe 
     bool probeBuild(){
         if(checkResources(5000, 1)){
+            if(nexus <= 0) return false;
+            --nexus;
             minerals -= 5000;
             ++supply_used;
             addToPrintList("build-start", "probe");
@@ -227,6 +229,7 @@ class Protoss_status : public Race{
 
     void probeFinish(){
         ++workers;
+        ++nexus;
         revision_requested = true;
         addToPrintList("build-end", "probe");
     }
