@@ -52,13 +52,24 @@ class Protoss : public Protoss_status{
         }
     }
 
+    void chronoBoost(){
+        for(auto nex : energylist){
+            if(nex.second >= 2000){
+                if(activebuildings.size() == 0)
+                    return;
+                string building_to_be_boosted = activebuildings.front();
+                addToPrintList("special", "chronoboost", "nexus_"+to_string(nex.first), building_to_be_boosted);
+            }
+        }        
+    }
+
     void updateEventlist(){
         while(1){
             auto i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return p.end_time == time;});
             if(i == eventlist.end()){
                 return;
             }else{
-                (this->*(i->func))();
+                (this->*(i->func))(i->producerID);
                 if(i->producerID != "") idlebuildings.push_front(i->producerID);
                 eventlist.erase(i);
             }
@@ -109,7 +120,7 @@ class Protoss : public Protoss_status{
             }                
             end_event event = eventlist.front();
             // assume instant build
-            (this->*(event.func))();
+            (this->*(event.func))("");
             eventlist.pop_front();
             //assert(eventlist.size() == 0);
             if(debug && eventlist.size() != 0) cerr << "eventlist not empty [validation error]\n";
@@ -126,8 +137,12 @@ class Protoss : public Protoss_status{
         buildlistpath = filename;
         buildBuildlist(filename); // inits hashmap and fills it
         supply_max = 10;
+        // initial buildings
+        idlebuildings.push_back("nexus_0");
     };
+
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
+
     ~Protoss(){};
 
     int run(int endtime = 1000){
@@ -142,14 +157,15 @@ class Protoss : public Protoss_status{
         {
             updateResources();  // 1. reevealuates resources
             updateEventlist();  // 2. checks eventlist for events
-            // TODO start stop special abilities
-
             //checks if we can build some and if so increment revision
             if(!buildlist.empty()){
                 if(updateBuildlist()){
                     // ideal worker distro has changed as we are now 
                     // looking foreward to build something different
                     revision_requested = true;
+                }
+                else{
+                    chronoBoost();
                 }
             }
             // printing

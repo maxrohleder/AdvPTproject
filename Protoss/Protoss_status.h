@@ -9,13 +9,6 @@
 
 using namespace std;
 
-string dynamicType = "";
-
-bool isOfType(string ID){
-    return dynamicType.find(ID) !=  std::string::npos;
-}
-
-
 // includes all stats and build functions
 class Protoss_status : public Race{
     public:
@@ -31,7 +24,7 @@ class Protoss_status : public Race{
     protected:
     // typedefs for compatability
     typedef bool (Protoss_status::*funcBool) (void);
-    typedef void (Protoss_status::*funcVoid) (void);
+    typedef void (Protoss_status::*funcVoid) (string ID);
     //struct for eventlist
     struct end_event{
         end_event(int i, funcVoid function, string pID = "") : end_time(i), func(function), producerID(pID){}
@@ -51,8 +44,23 @@ class Protoss_status : public Race{
     list<string> idlebuildings;
 
     string getBuildingIdOfType(string type){
-        dynamicType = type;
-        string buildingID = find_if(idlebuildings.begin(), idlebuildings.end(), isOfType);
+        auto i = find_if(idlebuildings.begin(), idlebuildings.end(), [this, type](const string p){return p.find(type) != std::string::npos;});
+        if(i == idlebuildings.end()){
+            return "error_no_empty_buildings_for_this_type" + to_string(time);
+        }
+        else{
+            idlebuildings.erase(i);
+            activebuildings.push_back(*i);
+            return *i;
+        }
+    }
+
+    void deactivateBuilding(string ID){
+        auto i = find_if(activebuildings.begin(), activebuildings.end(), [this, ID](const string p){return p == ID;});
+        if(i != activebuildings.end()){
+            activebuildings.erase(i);
+            idlebuildings.push_back(*i);
+        }
     }
 
     // redistribute workers, so that they are in same ratio as next planned build
@@ -79,8 +87,8 @@ class Protoss_status : public Race{
         revision_requested = false;
     }
 
-    void addToEventList (const int dt, funcVoid func) {
-        eventlist.push_front(end_event(time + dt, func));
+    void addToEventList (const int dt, funcVoid func, string producerID = "") {
+        eventlist.push_front(end_event(time + dt, func, producerID));
     }
 
     // checks resources and ensures optimal worker distro
@@ -156,8 +164,11 @@ class Protoss_status : public Race{
 
         //list-structures    
         printlist.clear();
-        energylist.clear();
         eventlist.clear();
+
+        activebuildings.clear();
+        idlebuildings.clear();
+        idlebuildings.push_back("nexus_0");
 
         //structures
         bases = 1; // deprecated??
@@ -234,18 +245,20 @@ class Protoss_status : public Race{
             --nexus;
             minerals -= 5000;
             ++supply_used;
-            addToPrintList("build-start", "probe");
-            addToEventList(17, &Protoss_status::probeFinish);
+            string producer = getBuildingIdOfType("nexus");
+            addToPrintList("build-start", "probe", producer);
+            addToEventList(17, &Protoss_status::probeFinish, producer);
             return true;
         }
         return false;
     }
 
-    void probeFinish(){
+    void probeFinish(string ID){
         ++workers;
         ++nexus;
         revision_requested = true;
-        addToPrintList("build-end", "probe");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "probe", "probe_" + to_string(workers), ID);
     }
 
     // zealot
@@ -255,17 +268,19 @@ class Protoss_status : public Race{
             --gateway;  // occupie a place in gateway
             minerals -= 10000;
             supply_used += 2;
-            addToPrintList("build-start", "zealot");
-            addToEventList(38, &Protoss_status::zealotFinish);
+            string producer = getBuildingIdOfType("gateway");
+            addToPrintList("build-start", "zealot",producer);
+            addToEventList(38, &Protoss_status::zealotFinish, producer);
             return true;
         }
         return false;
     }
 
-    void zealotFinish(){
+    void zealotFinish(string ID){
         ++zealot;
         ++gateway;  // give free gateway place
-        addToPrintList("build-end", "zealot");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "zealot", "zealot_" + to_string(zealot), ID);
     }
 
     // stalker
@@ -276,17 +291,19 @@ class Protoss_status : public Race{
             minerals -= 12500;
             vespene -= 5000;
             supply_used += 2;
-            addToPrintList("build-start", "stalker");
-            addToEventList(42, &Protoss_status::stalkerFinish);
+            string producer = getBuildingIdOfType("gateway");            
+            addToPrintList("build-start", "stalker", producer);
+            addToEventList(42, &Protoss_status::stalkerFinish, producer);
             return true;
         }
         return false;
     }
 
-    void stalkerFinish(){
+    void stalkerFinish(string ID){
         ++stalker;
         ++gateway;  // give free gateway place
-        addToPrintList("build-end", "stalker");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "stalker", "stalker_" + to_string(stalker), ID);
     }    
     //sentry
     bool sentryBuild(){
@@ -296,17 +313,19 @@ class Protoss_status : public Race{
             minerals -= 5000;
             vespene -= 10000;
             supply_used += 2;
-            addToPrintList("build-start", "sentry");
-            addToEventList(37, &Protoss_status::sentryFinish);
+            string producer = getBuildingIdOfType("gateway");
+            addToPrintList("build-start", "sentry", producer);
+            addToEventList(37, &Protoss_status::sentryFinish, producer);
             return true;
         }
         return false;
     }
 
-    void sentryFinish(){
+    void sentryFinish(string ID){
         ++sentry;
         ++gateway;  // give free gateway place
-        addToPrintList("build-end", "sentry");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "sentry", "sentry_" + to_string(sentry), ID);
     }      
 
     //warp_prism
@@ -316,17 +335,19 @@ class Protoss_status : public Race{
             --robotics_facility;  // occupie a place in robotics_facility
             minerals -= 20000;
             supply_used += 2;
-            addToPrintList("build-start", "warp_prism");
-            addToEventList(50, &Protoss_status::warpprismFinish);
+            string producer = getBuildingIdOfType("robotics_facility");
+            addToPrintList("build-start", "warp_prism", producer);
+            addToEventList(50, &Protoss_status::warpprismFinish, producer);
             return true;
         }
         return false;
     }
 
-    void warpprismFinish(){
+    void warpprismFinish(string ID){
         ++warp_prism;
         ++robotics_facility;  // give free robotics_facility place
-        addToPrintList("build-end", "warp_prism");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "warp_prism", "warp_prism_"+to_string(warp_prism), ID);
     }     
     //immortal
     bool immortalBuild(){
@@ -336,17 +357,19 @@ class Protoss_status : public Race{
             minerals -= 25000;
             vespene -= 10000;
             supply_used += 3;
-            addToPrintList("build-start", "immortal");
-            addToEventList(55, &Protoss_status::immortalFinish);
+            string producer = getBuildingIdOfType("robotics_facility");
+            addToPrintList("build-start", "immortal", producer);
+            addToEventList(55, &Protoss_status::immortalFinish, producer);
             return true;
         }
         return false;
     }
 
-    void immortalFinish(){
+    void immortalFinish(string ID){
         ++immortal;
         ++robotics_facility;  // give free robotics_facility place
-        addToPrintList("build-end", "immortal");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "immortal", "immortal_"+to_string(immortal), ID);
     }  
     //observer
     bool observerBuild(){
@@ -356,17 +379,19 @@ class Protoss_status : public Race{
             minerals -= 2500;
             vespene -= 7500;
             supply_used += 1;
-            addToPrintList("build-start", "observer");
-            addToEventList(30, &Protoss_status::observerFinish);
+            string producer = getBuildingIdOfType("robotics_facility");
+            addToPrintList("build-start", "observer", producer);
+            addToEventList(30, &Protoss_status::observerFinish, producer);
             return true;
         }
         return false;
     }
 
-    void observerFinish(){
+    void observerFinish(string ID){
         ++observer;
         ++robotics_facility;  // give free robotics_facility place
-        addToPrintList("build-end", "observer");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "observer", "observer_"+to_string(observer), ID);
     }  
     //colossus
     bool colossusBuild(){
@@ -376,17 +401,19 @@ class Protoss_status : public Race{
             minerals -= 30000;
             vespene -= 20000;
             supply_used += 6;
-            addToPrintList("build-start", "colossus");
-            addToEventList(75, &Protoss_status::colossusFinish);
+            string producer = getBuildingIdOfType("robotics_facility");
+            addToPrintList("build-start", "colossus", producer);
+            addToEventList(75, &Protoss_status::colossusFinish, producer);
             return true;
         }
         return false;
     }
 
-    void colossusFinish(){
+    void colossusFinish(string ID){
         ++colossus;
         ++robotics_facility;  // give free gateway place
-        addToPrintList("build-end", "colossus");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "colossus", "fat_boi_"+to_string(colossus), ID);
     }  
     //high_templar
     bool hightemplarBuild(){
@@ -396,17 +423,19 @@ class Protoss_status : public Race{
             minerals -= 5000;
             vespene -= 15000;
             supply_used += 2;
-            addToPrintList("build-start", "high_templar");
-            addToEventList(55, &Protoss_status::hightemplarFinish);
+            string producer = getBuildingIdOfType("gateway");
+            addToPrintList("build-start", "high_templar", producer);
+            addToEventList(55, &Protoss_status::hightemplarFinish, producer);
             return true;
         }
         return false;
     }
 
-    void hightemplarFinish(){
+    void hightemplarFinish(string ID){
         ++high_templar;
         ++gateway;  // give free gateway place
-        addToPrintList("build-end", "high_templar");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "high_templar", "bananenkrieger_"+to_string(high_templar), ID);
     }  
     //dark_templar
    bool darktemplarBuild(){
@@ -416,17 +445,19 @@ class Protoss_status : public Race{
             minerals -= 12500;
             vespene -= 12500;
             supply_used += 2;
-            addToPrintList("build-start", "dark_templar");
-            addToEventList(55, &Protoss_status::darktemplarFinish);
+            string producer = getBuildingIdOfType("gateway");
+            addToPrintList("build-start", "dark_templar", producer);
+            addToEventList(55, &Protoss_status::darktemplarFinish, producer);
             return true;
         }
         return false;
     }
 
-    void darktemplarFinish(){
+    void darktemplarFinish(string ID){
         ++dark_templar;
         ++gateway;  // give free gateway place
-        addToPrintList("build-end", "dark_templar");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "dark_templar", "boeser_bube_"+to_string(dark_templar), ID);
     }  
     //mothership
    bool mothershipBuild(){
@@ -436,17 +467,19 @@ class Protoss_status : public Race{
             minerals -= 40000;
             vespene -= 40000;
             supply_used += 8;
-            addToPrintList("build-start", "mothership");
-            addToEventList(160, &Protoss_status::mothershipFinish);
+            string producer = getBuildingIdOfType("nexus");            
+            addToPrintList("build-start", "mothership", producer);
+            addToEventList(160, &Protoss_status::mothershipFinish, producer);
             return true;
         }
         return false;
     }
 
-    void mothershipFinish(){
+    void mothershipFinish(string ID){
         ++mothership;
         ++nexus;  // give free gateway place
-        addToPrintList("build-end", "mothership");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "mothership", "mutti_brummer_"+to_string(mothership), ID);
     }  
     //phoenix
     bool phoenixBuild(){
@@ -456,17 +489,19 @@ class Protoss_status : public Race{
             minerals -= 15000;
             vespene -= 10000;
             supply_used += 2;
-            addToPrintList("build-start", "phoenix");
-            addToEventList(35, &Protoss_status::phoenixFinish);
+            string producer = getBuildingIdOfType("stargate");
+            addToPrintList("build-start", "phoenix", producer);
+            addToEventList(35, &Protoss_status::phoenixFinish, producer);
             return true;
         }
         return false;
     }
 
-    void phoenixFinish(){
+    void phoenixFinish(string ID){
         ++phoenix;
         ++stargate;  // give free stargate place
-        addToPrintList("build-end", "phoenix");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "phoenix", "smaug_"+to_string(phoenix), ID);
     }  
     //void_ray
     bool voidrayBuild(){
@@ -476,17 +511,19 @@ class Protoss_status : public Race{
             minerals -= 25000;
             vespene -= 15000;
             supply_used += 3;
-            addToPrintList("build-start", "void_ray");
-            addToEventList(60, &Protoss_status::phoenixFinish);
+            string producer = getBuildingIdOfType("stargate");
+            addToPrintList("build-start", "void_ray", producer);
+            addToEventList(60, &Protoss_status::phoenixFinish, producer);
             return true;
         }
         return false;
     }
 
-    void voidrayFinish(){
+    void voidrayFinish(string ID){
         ++void_ray;
         ++stargate;  // give free stargate place
-        addToPrintList("build-end", "void_ray");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "void_ray", "leerer_rochen_"+to_string(void_ray), ID);
     }  
     //carrier
    bool carrierBuild(){
@@ -496,17 +533,19 @@ class Protoss_status : public Race{
             minerals -= 35000;
             vespene -= 25000;
             supply_used += 6;
-            addToPrintList("build-start", "carrier");
-            addToEventList(120, &Protoss_status::carrierFinish);
+            string producer = getBuildingIdOfType("stargate");
+            addToPrintList("build-start", "carrier", producer);
+            addToEventList(120, &Protoss_status::carrierFinish, producer);
             return true;
         }
         return false;
     }
 
-    void carrierFinish(){
+    void carrierFinish(string ID){
         ++carrier;
         ++stargate;  // give free stargate place
-        addToPrintList("build-end", "carrier");
+        deactivateBuilding(ID);
+        addToPrintList("build-end", "carrier", "traeger_"+to_string(carrier), ID);
     }  
 
 
@@ -522,7 +561,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void nexusFinish(){
+    void nexusFinish(string ID){
         supply_max += 10;
         idlebuildings.push_back("nexus_" + to_string(nexus));
         addToPrintList("build-end", "nexus", "nexus_" + to_string(nexus));
@@ -540,10 +579,10 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void pylonFinish(){
+    void pylonFinish(string ID){
         ++pylon;
         supply_max += 8;
-        addToPrintList("build-end", "pylon");
+        addToPrintList("build-end", "pylon", "pylon");
     }
     // gateway
     bool gatewayBuild(){
@@ -557,7 +596,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void gatewayFinish(){
+    void gatewayFinish(string ID){
         idlebuildings.push_back("gateway_" + to_string(gateway));
         addToPrintList("build-end", "gateway", "gateway_" + to_string(gateway));
         ++gateway;
@@ -575,7 +614,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void cyberneticscoreFinish(){
+    void cyberneticscoreFinish(string ID){
         ++cybernetics_core;
         addToPrintList("build-end", "cybernetics_core");
     }
@@ -593,7 +632,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void roboticsfacilityFinish(){
+    void roboticsfacilityFinish(string ID){
         idlebuildings.push_back("robotics_facility_" + to_string(robotics_facility));
         ++robotics_facility;
         addToPrintList("build-end", "robotics_facility", "robotics_facility_" + to_string(robotics_facility));
@@ -612,7 +651,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void roboticsbayFinish(){
+    void roboticsbayFinish(string ID){
         ++robotics_bay;
         addToPrintList("build-end", "robotics_bay");
     }
@@ -630,7 +669,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void twilightcouncilFinish(){
+    void twilightcouncilFinish(string ID){
         ++twilight_council;
         addToPrintList("build-end", "twilight_council");
     }
@@ -648,7 +687,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void templararchivesFinish(){
+    void templararchivesFinish(string ID){
         ++templar_archives;
         addToPrintList("build-end", "templar_archives");
     }
@@ -666,7 +705,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void darkshrineFinish(){
+    void darkshrineFinish(string ID){
         ++dark_shrine;
         addToPrintList("build-end", "dark_shrine");
     }
@@ -684,10 +723,10 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void stargateFinish(){
+    void stargateFinish(string ID){
         idlebuildings.push_back("stargate_" + to_string(stargate));
         ++stargate;
-        addToPrintList("build-end", "stargate");
+        addToPrintList("build-end", "stargate", "stargate_" + to_string(stargate));
     }
 
     // fleet_beacon
@@ -703,7 +742,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void fleetbeaconFinish(){
+    void fleetbeaconFinish(string ID){
         ++fleet_beacon;
         addToPrintList("build-end", "fleet_beacon");
     }
@@ -719,7 +758,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void assimilatorFinish(){
+    void assimilatorFinish(string ID){
         ++assimilator;
         workers_vesp_max += 3;
         revision_requested = true; // next timestep redistr. workers
@@ -738,7 +777,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void forgeFinish(){
+    void forgeFinish(string ID){
         ++forge;
         addToPrintList("build-end", "forge");
     }
@@ -755,7 +794,7 @@ class Protoss_status : public Race{
         return false;
     }
 
-    void photoncannonFinish(){
+    void photoncannonFinish(string ID){
         ++photon_cannon;
         addToPrintList("build-end", "photon_cannon");
     }

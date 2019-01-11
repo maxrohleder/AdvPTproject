@@ -14,3 +14,4 @@
 check:
     - protoss_status 57
         - add to printlist always or only if we will not build something
+    - assimilator number bounded by nexus number?
