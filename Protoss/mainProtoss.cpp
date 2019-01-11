@@ -14,15 +14,15 @@ int main(int argc, char *argv[]){
     int status;
     if(argc == 3){
         Protoss P(argv[1], argv[2]);
-        status = P.run(1000);
+        status = P.run();
     }
     else if(argc == 4){
         Protoss P(argv[1], argv[2], atoi(argv[3]));
-        status = P.run(1000);
+        status = P.run();
     }
     else{
         Protoss P(argv[1]);
-        status = P.run(1000);
+        status = P.run();
     }
     // returns sim_stat and enables differentiation
     return status;

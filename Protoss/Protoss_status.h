@@ -69,9 +69,6 @@ class Protoss_status : public Race{
     // checks resources and ensures optimal worker distro
     bool checkResources(int min, int sup = 0, int ves = 0) {
          if(min<=minerals && sup<=supply_max-supply_used && ves<=vespene){
-/*            if(revision_requested){
-                distributeWorkers(min, ves, false);
-            } */
             return true;
         }
         else {

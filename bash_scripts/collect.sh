@@ -9,6 +9,7 @@ fi
 
 #dirs for races
 mkdir collection/Protoss
+mkdir collection/Validator
 mkdir collection/Validator/validator_by_file
 mkdir collection/Terran
 mkdir collection/Zerg
