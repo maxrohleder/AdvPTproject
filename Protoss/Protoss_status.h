@@ -21,18 +21,31 @@ class Protoss_status : public Race{
     // revision is state of worker distro
     bool revision_requested = true;
 
+    void boostEnd(string ID){
+        list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [ID](const end_event p){return (p.producerID == ID && p.boosted);});
+        if(i == eventlist.end()){
+            // item was build, before chronoboost ended
+            return;
+        }
+        // normal speed results in later endtime
+        i->end_time = time + (int)(((i->end_time-time)*1.5)+0.5);
+        // reset, so that the same item could be boosted twice
+        i->boosted = false;
+    }
+
     protected:
     // typedefs for compatability
     typedef bool (Protoss_status::*funcBool) (void);
     typedef void (Protoss_status::*funcVoid) (string ID);
     //struct for eventlist
     struct end_event{
-        end_event(int i, funcVoid function, string pID = "") : end_time(i), func(function), producerID(pID){}
-        end_event(const end_event* e) : end_time(e->end_time), func(e->func), producerID(e->producerID){}
+        end_event(int i, funcVoid function, string pID = "", bool boosted = false) : end_time(i), func(function), producerID(pID), boosted(boosted){}
+        end_event(const end_event* e) : end_time(e->end_time), func(e->func), producerID(e->producerID), boosted(e->boosted){}
         ~end_event(){}
         int end_time;
         funcVoid func;
         string producerID;
+        bool boosted;
     };
     //needed list structures
     list<funcBool> buildlist;
@@ -44,22 +57,24 @@ class Protoss_status : public Race{
     list<string> idlebuildings;
 
     string getBuildingIdOfType(string type){
-        auto i = find_if(idlebuildings.begin(), idlebuildings.end(), [this, type](const string p){return p.find(type) != std::string::npos;});
+        list<string>::iterator i = find_if(idlebuildings.begin(), idlebuildings.end(), [type](const string p){return p.find(type) != std::string::npos;});
         if(i == idlebuildings.end()){
             return "error_no_empty_buildings_for_this_type" + to_string(time);
         }
         else{
+            string id = *i;
+            activebuildings.push_back(id);
             idlebuildings.erase(i);
-            activebuildings.push_back(*i);
-            return *i;
+            return id;
         }
     }
 
     void deactivateBuilding(string ID){
-        auto i = find_if(activebuildings.begin(), activebuildings.end(), [this, ID](const string p){return p == ID;});
+        list<string>::iterator i = find_if(activebuildings.begin(), activebuildings.end(), [ID](const string p){return p == ID;});
         if(i != activebuildings.end()){
+            string id = *i;
             activebuildings.erase(i);
-            idlebuildings.push_back(*i);
+            idlebuildings.push_back(id);
         }
     }
 
@@ -87,8 +102,8 @@ class Protoss_status : public Race{
         revision_requested = false;
     }
 
-    void addToEventList (const int dt, funcVoid func, string producerID = "") {
-        eventlist.push_front(end_event(time + dt, func, producerID));
+    void addToEventList (const int dt, funcVoid func, string producerID = "", bool boosted = false) {
+        eventlist.push_front(end_event(time + dt, func, producerID, boosted));
     }
 
     // checks resources and ensures optimal worker distro
@@ -165,10 +180,12 @@ class Protoss_status : public Race{
         //list-structures    
         printlist.clear();
         eventlist.clear();
-
         activebuildings.clear();
         idlebuildings.clear();
+        energylist.clear();
+
         idlebuildings.push_back("nexus_0");
+        energylist.push_back(pair<int,int>(0, 250000));
 
         //structures
         bases = 1; // deprecated??
@@ -462,7 +479,7 @@ class Protoss_status : public Race{
     //mothership
    bool mothershipBuild(){
         if(checkResources(40000, 8, 40000)){
-            if(nexus <= 0 || fleet_beacon <= 0) return false;
+            if(nexus <= 0 || fleet_beacon <= 0 || mothership != 0) return false;
             --nexus;  // occupie a place in gateway
             minerals -= 40000;
             vespene -= 40000;
@@ -563,9 +580,10 @@ class Protoss_status : public Race{
 
     void nexusFinish(string ID){
         supply_max += 10;
+        ++nexus;
+        energylist.push_back(pair<int,int>(nexus, 0));
         idlebuildings.push_back("nexus_" + to_string(nexus));
         addToPrintList("build-end", "nexus", "nexus_" + to_string(nexus));
-        ++nexus;
     }
 
     //pylon 
@@ -582,7 +600,7 @@ class Protoss_status : public Race{
     void pylonFinish(string ID){
         ++pylon;
         supply_max += 8;
-        addToPrintList("build-end", "pylon", "pylon");
+        addToPrintList("build-end", "pylon");
     }
     // gateway
     bool gatewayBuild(){

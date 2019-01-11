@@ -1,5 +1,0 @@
-probe
-nexus
-pylon
-gateway
-zealot

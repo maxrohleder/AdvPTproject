@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>  
 #include <string>
 #include <list>
 #include <map>
@@ -21,6 +22,8 @@ class Protoss : public Protoss_status{
     private:
     string buildlistpath;
     string techtreepath;
+    bool printToFile = false;
+    ofstream *fileToWriteTo;
 
     protected:
     // helper functions
@@ -54,10 +57,31 @@ class Protoss : public Protoss_status{
 
     void chronoBoost(){
         for(auto nex : energylist){
-            if(nex.second >= 2000){
+            nex.second = min(1000000, nex.second + energy_rate);
+            if(debug) cout << "energy of nexus_" << to_string(nex.first) << ": " << nex.second << endl; 
+            if(nex.second >= 250000){
                 if(activebuildings.size() == 0)
-                    return;
-                string building_to_be_boosted = activebuildings.front();
+                    continue;
+                string building_to_be_boosted;
+                // move some element in eventlist ( first try to find one that is active for at least 20s, if that fails just pick one randomly )
+                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [this, building_to_be_boosted](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && !p.boosted && p.end_time-time >= 20);});
+                if(i == eventlist.end()){
+                    // omit criterion of lasting at least 20 seconds from now
+                    building_to_be_boosted = activebuildings.front();
+                    i = find_if(eventlist.begin(), eventlist.end(), [building_to_be_boosted](const end_event p){return p.producerID == building_to_be_boosted && !p.boosted;});
+                    if(i == eventlist.end()){
+                        continue;
+                    }
+                }
+                // either we found one with the first search or the second, doesnt matter now
+                building_to_be_boosted = i->producerID;
+                i->end_time = time + (int)(((i->end_time-time)/1.5)+0.5);
+                i->boosted = true;
+                nex.second -= 250000;
+                if(debug) cout << "--------------------CHRONOBOOST----------------" << "\non building: " << building_to_be_boosted << endl;
+                // add endevent to eventlist which moves endevent back ( true, so that we do not find a boosted endevent by accident )
+                addToEventList(time + 20, &Protoss_status::boostEnd, building_to_be_boosted, true);
+                // and print that shit
                 addToPrintList("special", "chronoboost", "nexus_"+to_string(nex.first), building_to_be_boosted);
             }
         }        
@@ -100,7 +124,13 @@ class Protoss : public Protoss_status{
             sout.str("");
             sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
         }
-        cout << sout.str();
+        if(printToFile){
+            if (fileToWriteTo != nullptr && fileToWriteTo->is_open()){
+                *fileToWriteTo << sout.str() << std::endl;
+            }
+        }else{
+            cout << sout.str();
+        }
     }
 
     // checks only for hard dependencies and supply (timeout not detected)
@@ -139,11 +169,17 @@ class Protoss : public Protoss_status{
         supply_max = 10;
         // initial buildings
         idlebuildings.push_back("nexus_0");
+        energylist.push_back(pair<int,int>(0, 0));
     };
 
     Protoss(const Protoss& p){cerr << "copy constructor not support\n"; exit(1);};
 
     ~Protoss(){};
+
+    void writeToFile(std::ofstream *file){
+        printToFile = true;
+        fileToWriteTo = file;
+    }
 
     int run(int endtime = 1000){
         // print all invalid game
