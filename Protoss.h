@@ -64,7 +64,7 @@ class Protoss : public Protoss_status{
                     continue;
                 string building_to_be_boosted;
                 // move some element in eventlist ( first try to find one that is active for at least 20s, if that fails just pick one randomly )
-                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [this, building_to_be_boosted](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && !p.boosted && p.end_time-time >= 20);});
+                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && !p.boosted && p.end_time-time >= 20 && p.type == "build-end");});
                 if(i == eventlist.end()){
                     // omit criterion of lasting at least 20 seconds from now
                     building_to_be_boosted = activebuildings.front();
@@ -86,7 +86,10 @@ class Protoss : public Protoss_status{
                 addToPrintList("special", "chronoboost", "nexus_"+to_string(nex.first), building_to_be_boosted);
             }
         }
+    }
 
+    void revise_chrono(){
+        // if we built something new, see if the building is boosted
         if(boostedbuildings.size() != 0){
             for(string b : boostedbuildings){
                 // if there is a building in eventlist, that is not boosted, but should be, boost it
@@ -211,6 +214,7 @@ class Protoss : public Protoss_status{
                     // ideal worker distro has changed as we are now 
                     // looking foreward to build something different
                     revision_requested = true;
+                    revise_chrono();
                 }
                 else{
                     chronoBoost();

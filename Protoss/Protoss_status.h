@@ -85,18 +85,20 @@ class Protoss_status : public Race{
     // @param report_change add blank to printlist if we are not going to build something anyway
     void distributeWorkers(int mins_needed, int vesp_needed, bool report_change) {
         // ratio over all summed resources = 0.64 = 1 - (1/(ratio+1)) = workers_min/workers
-        int delta_min = max(mins_needed-minerals, 0);
-        int delta_vesp = max(vesp_needed-vespene, 0);
+        double delta_min = max(mins_needed-minerals, 0);
+        double delta_vesp = max(vesp_needed-vespene, 0);
         if(delta_min == 0 && delta_vesp == 0){
             // we already have all resources and do not need to optimize on this item
             revision_requested = false;
             return;
         }
         // VERSION 3.0 introduces division by rate which computes the needed time.
-        double vesp_to_total_ratio = (double) (delta_vesp/vesp_rate) / (double) (delta_min/minerals_rate+delta_vesp/vesp_rate);
-        if(debug) cout << "ideal ratio(min/total): " << vesp_to_total_ratio << "\n\t\tmin: "<<delta_min<<" vesp: "<<delta_vesp;
+        double vesp_to_total_ratio = (double) ((double)delta_vesp/(double)vesp_rate) / (double) (((double)delta_min/(double)minerals_rate)+((double)delta_vesp/(double)vesp_rate));
+        if(debug) cout << "ideal ratio(vesp/total): " << vesp_to_total_ratio << "\n\t\tdelta_min: "<<delta_min<<" delta_vesp: "<<delta_vesp;
+        if(debug) cout << "\n\t\tmin: "<<mins_needed<<" vesp: "<<vesp_needed;
         // durch int casting --> fehler von ideal verteilung = max +-1
         workers_vesp = min(workers_vesp_max, (int) ((((double) workers)*vesp_to_total_ratio)+0.5));
+        //if(workers_vesp < 0) cerr << "worker_distro"; exit(-1);
         workers_minerals = workers-workers_vesp;
 
         if(debug) cout << "\nworker distro: " << workers_minerals << " / " << workers_vesp << "(min/vesp) (vmax=" << workers_vesp_max <<")\n\n";

@@ -19,6 +19,7 @@ int main(int argc, char *argv[]){
     else if(argc == 4){
         Protoss P(argv[1], argv[2], atoi(argv[3]));
         status = P.run();
+        if(atoi(argv[3]) == 1) cout << "status (0, 1, 2) (success/timeout/invalid):" << status << endl;
     }
     else{
         Protoss P(argv[1]);
