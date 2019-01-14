@@ -56,7 +56,7 @@ class Protoss : public Protoss_status{
     }
 
     void chronoBoost(){
-        for(auto nex : energylist){
+        for(auto& nex : energylist){
             nex.second = min(1000000, nex.second + energy_rate);
             if(debug) cout << "energy of nexus_" << to_string(nex.first) << ": " << nex.second << endl; 
             if(nex.second >= 250000){
@@ -75,16 +75,28 @@ class Protoss : public Protoss_status{
                 }
                 // either we found one with the first search or the second, doesnt matter now
                 building_to_be_boosted = i->producerID;
+                boostedbuildings.push_back(building_to_be_boosted);
                 i->end_time = time + (int)(((i->end_time-time)/1.5)+0.5);
                 i->boosted = true;
                 nex.second -= 250000;
                 if(debug) cout << "--------------------CHRONOBOOST----------------" << "\non building: " << building_to_be_boosted << endl;
                 // add endevent to eventlist which moves endevent back ( true, so that we do not find a boosted endevent by accident )
-                addToEventList(time + 20, &Protoss_status::boostEnd, building_to_be_boosted, true);
+                addToEventList(time + 20, &Protoss_status::boostEnd, building_to_be_boosted, true, "chrono");
                 // and print that shit
                 addToPrintList("special", "chronoboost", "nexus_"+to_string(nex.first), building_to_be_boosted);
             }
-        }        
+        }
+
+        if(boostedbuildings.size() != 0){
+            for(string b : boostedbuildings){
+                // if there is a building in eventlist, that is not boosted, but should be, boost it
+                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [b](const end_event p){return (p.producerID == b && !p.boosted && p.type == "build-end");});
+                if(i != eventlist.end()){
+                    i->boosted = true;
+                    i->end_time = time + (int)(((i->end_time-time)/1.5)+0.5);
+                }
+            }
+        }   
     }
 
     void updateEventlist(){

@@ -8,9 +8,9 @@ using namespace std;
 // test with ..\..\Protoss\advancedBuild.txt as argv[1]
 
 int main(int argc, char *argv[]){
-    Protoss P1("../../Protoss/protoss1.txt");
-    Protoss P2("../../Protoss/protoss2.txt");
-    Protoss P3("../../Protoss/protoss3.txt");
+    Protoss P1("../../Protoss/protoss1.txt", "../../Validator/validator_by_file/techtree_protoss.csv");
+    Protoss P2("../../Protoss/protoss2.txt", "../../Validator/validator_by_file/techtree_protoss.csv");
+    Protoss P3("../../Protoss/protoss3.txt", "../../Validator/validator_by_file/techtree_protoss.csv");
     
     std::ofstream of1 ("protoss1_results.txt");
     P1.writeToFile(&of1);

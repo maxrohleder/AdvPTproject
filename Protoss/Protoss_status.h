@@ -22,7 +22,7 @@ class Protoss_status : public Race{
     bool revision_requested = true;
 
     void boostEnd(string ID){
-        list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [ID](const end_event p){return (p.producerID == ID && p.boosted);});
+        list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [ID](const end_event p){return (p.producerID == ID && p.boosted && p.type == "build-end");});
         if(i == eventlist.end()){
             // item was build, before chronoboost ended
             return;
@@ -31,6 +31,7 @@ class Protoss_status : public Race{
         i->end_time = time + (int)(((i->end_time-time)*1.5)+0.5);
         // reset, so that the same item could be boosted twice
         i->boosted = false;
+        boostedbuildings.remove(ID);
     }
 
     protected:
@@ -39,13 +40,14 @@ class Protoss_status : public Race{
     typedef void (Protoss_status::*funcVoid) (string ID);
     //struct for eventlist
     struct end_event{
-        end_event(int i, funcVoid function, string pID = "", bool boosted = false) : end_time(i), func(function), producerID(pID), boosted(boosted){}
-        end_event(const end_event* e) : end_time(e->end_time), func(e->func), producerID(e->producerID), boosted(e->boosted){}
+        end_event(int i, funcVoid function, string pID = "", bool boosted = false, string type = "build-end") : end_time(i), func(function), producerID(pID), boosted(boosted), type(type){}
+        end_event(const end_event* e) : end_time(e->end_time), func(e->func), producerID(e->producerID), boosted(e->boosted), type(e->type){}
         ~end_event(){}
         int end_time;
         funcVoid func;
         string producerID;
         bool boosted;
+        string type;
     };
     //needed list structures
     list<funcBool> buildlist;
@@ -55,6 +57,7 @@ class Protoss_status : public Race{
     // needed for boosting building id and associated endevent
     list<string> activebuildings;
     list<string> idlebuildings;
+    list<string> boostedbuildings;
 
     string getBuildingIdOfType(string type){
         list<string>::iterator i = find_if(idlebuildings.begin(), idlebuildings.end(), [type](const string p){return p.find(type) != std::string::npos;});
@@ -102,8 +105,8 @@ class Protoss_status : public Race{
         revision_requested = false;
     }
 
-    void addToEventList (const int dt, funcVoid func, string producerID = "", bool boosted = false) {
-        eventlist.push_front(end_event(time + dt, func, producerID, boosted));
+    void addToEventList (const int dt, funcVoid func, string producerID = "", bool boosted = false, string type = "build-end") {
+        eventlist.push_front(end_event(time + dt, func, producerID, boosted, type));
     }
 
     // checks resources and ensures optimal worker distro
@@ -185,7 +188,7 @@ class Protoss_status : public Race{
         energylist.clear();
 
         idlebuildings.push_back("nexus_0");
-        energylist.push_back(pair<int,int>(0, 250000));
+        energylist.push_back(pair<int,int>(0, 0));
 
         //structures
         bases = 1; // deprecated??
