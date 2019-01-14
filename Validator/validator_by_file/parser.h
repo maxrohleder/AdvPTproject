@@ -1,3 +1,7 @@
+#if defined(_WIN32) || defined(_WIN64)
+/* We are on Windows */
+# define strtok_r strtok_s
+#endif
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -68,17 +72,17 @@ class parser{
         // Read one line at a time.
         while ( fin.getline(buffer, MAX_LINE_LENGTH) ) {
             // Extract the tokens from line:
-            const char * name =             strtok_s( buffer, DELIMS, &contextBuffer);
-            const char * minerals =         strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * vespene =          strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * build_time =       strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * supply_cost =      strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * supply_provided =  strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * start_energy =     strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * max_energy =       strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * race =             strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * produced_by =      strtok_s( NULL, DELIMS, &contextBuffer);
-            const char * dependency =       strtok_s( NULL, DELIMS, &contextBuffer);
+            const char * name =             strtok_r( buffer, DELIMS, &contextBuffer);
+            const char * minerals =         strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * vespene =          strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * build_time =       strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * supply_cost =      strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * supply_provided =  strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * start_energy =     strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * max_energy =       strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * race =             strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * produced_by =      strtok_r( NULL, DELIMS, &contextBuffer);
+            const char * dependency =       strtok_r( NULL, DELIMS, &contextBuffer);
 
             // if the last tokenize operation fails 
             if(dependency == NULL){

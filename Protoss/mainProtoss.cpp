@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
         if(atoi(argv[3]) == 1) cout << "status (0, 1, 2) (success/timeout/invalid):" << status << endl;
     }
     else{
-        Protoss P(argv[1]);
+        Protoss P(argv[1], "../../Validator/validator_by_file/techtree_protoss.csv");
         status = P.run();
     }
     // returns sim_stat and enables differentiation
