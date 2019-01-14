@@ -64,11 +64,11 @@ class Protoss : public Protoss_status{
                     continue;
                 string building_to_be_boosted;
                 // move some element in eventlist ( first try to find one that is active for at least 20s, if that fails just pick one randomly )
-                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && !p.boosted && p.end_time-time >= 20 && p.type == "build-end");});
+                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && !p.boosted && p.end_time > time && p.end_time-time >= 20 && p.type == "build-end");});
                 if(i == eventlist.end()){
                     // omit criterion of lasting at least 20 seconds from now
                     building_to_be_boosted = activebuildings.front();
-                    i = find_if(eventlist.begin(), eventlist.end(), [building_to_be_boosted](const end_event p){return p.producerID == building_to_be_boosted && !p.boosted;});
+                    i = find_if(eventlist.begin(), eventlist.end(), [this, building_to_be_boosted](const end_event p){return p.producerID == building_to_be_boosted && p.end_time > time && !p.boosted && p.type == "build-end";});
                     if(i == eventlist.end()){
                         continue;
                     }
@@ -76,12 +76,17 @@ class Protoss : public Protoss_status{
                 // either we found one with the first search or the second, doesnt matter now
                 building_to_be_boosted = i->producerID;
                 boostedbuildings.push_back(building_to_be_boosted);
-                i->end_time = time + (int)(((i->end_time-time)/1.5)+0.5);
+                // 50% faster means speedup by 2/3
+                if(debug) cout << "endtime: " << i->end_time << " time: " << time;
+                double fac = (double)2/(double)3;
+                i->end_time = time + (int)((((double)i->end_time-(double)time)*fac)+0.5);
+                if(debug) cout << " new endtime: " << i->end_time << endl;
+                
                 i->boosted = true;
                 nex.second -= 250000;
                 if(debug) cout << "--------------------CHRONOBOOST----------------" << "\non building: " << building_to_be_boosted << endl;
                 // add endevent to eventlist which moves endevent back ( true, so that we do not find a boosted endevent by accident )
-                addToEventList(time + 20, &Protoss_status::boostEnd, building_to_be_boosted, true, "chrono");
+                addToEventList(20, &Protoss_status::boostEnd, building_to_be_boosted, true, "chrono");
                 // and print that shit
                 addToPrintList("special", "chronoboost", "nexus_"+to_string(nex.first), building_to_be_boosted);
             }
@@ -96,7 +101,8 @@ class Protoss : public Protoss_status{
                 list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [b](const end_event p){return (p.producerID == b && !p.boosted && p.type == "build-end");});
                 if(i != eventlist.end()){
                     i->boosted = true;
-                    i->end_time = time + (int)(((i->end_time-time)/1.5)+0.5);
+                    double fac = (double)2/(double)3;
+                    i->end_time = time + (int)((((double)i->end_time-(double)time)*fac)+0.5);
                 }
             }
         }   

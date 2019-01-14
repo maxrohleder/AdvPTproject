@@ -25,10 +25,13 @@ class Protoss_status : public Race{
         list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [ID](const end_event p){return (p.producerID == ID && p.boosted && p.type == "build-end");});
         if(i == eventlist.end()){
             // item was build, before chronoboost ended
+            if(debug) cout << "there is no itemident produced by " << ID << " at time " << time << endl;
             return;
         }
         // normal speed results in later endtime
+        if(debug)cout << "endtime: " << i->end_time << " time: " << time;
         i->end_time = time + (int)(((i->end_time-time)*1.5)+0.5);
+        if(debug)cout << " new endtime: " << i->end_time <<  endl;
         // reset, so that the same item could be boosted twice
         i->boosted = false;
         boostedbuildings.remove(ID);
