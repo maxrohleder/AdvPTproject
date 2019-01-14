@@ -81,6 +81,9 @@ class Protoss_status : public Race{
             string id = *i;
             activebuildings.erase(i);
             idlebuildings.push_back(id);
+        } else{
+            if(debug) cout << "deactivateBuilding";
+            exit(-1);
         }
     }
 
