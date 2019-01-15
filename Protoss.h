@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <math.h>
 #include <algorithm>
 #include <fstream>
 
