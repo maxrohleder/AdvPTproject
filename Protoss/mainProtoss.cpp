@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
         status = P.run();
     }
     // returns sim_stat and enables differentiation
-    return status;
+    return 0;
 /*     if (status == simulation_success) return simulation_success;
     if (status == simulation_invalid) return simulation_invalid;
     if (status == simulation_timeout) return simulation_timeout; */

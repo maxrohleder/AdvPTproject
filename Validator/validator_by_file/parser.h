@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <map>
+#include <map>  
 #include <list>
 #include <string.h>
 #include <string>
@@ -62,8 +62,8 @@ class parser{
         fstream fin(filename);
         //fin.open(filename);
         if(!fin.is_open()){
-            cerr << "cant read file";
-            abort();
+            cerr << "cant read techtree file";
+            exit(-1);
         } 
         // Prepare a C-string buffer to be used when reading lines.
         char buffer[MAX_LINE_LENGTH] = {};
