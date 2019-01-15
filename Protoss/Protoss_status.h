@@ -30,7 +30,7 @@ class Protoss_status : public Race{
         }
         // normal speed results in later endtime
         if(debug)cout << "endtime: " << i->end_time << " time: " << time;
-        i->end_time = time + (int)(((i->end_time-time)*1.5)+0.5);
+        i->end_time = time + (int) ceil(((double)(i->end_time-time)*1.5));
         if(debug)cout << " new endtime: " << i->end_time <<  endl;
         // reset, so that the same item could be boosted twice
         i->boosted = false;
