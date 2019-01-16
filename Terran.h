@@ -53,6 +53,32 @@ private:
 
     list<orbital_command_id> orbital_command_list;
 
+    list<pair<string, bool>> barracks_names_list;
+    // list<string, bool> barracks_names_used_list;
+    // list<string> barracks_with_tech_lab_names_list;
+    // list<string> barracks_with_tech_lab_names_used_list;
+
+    list<pair<string, bool>> factory_names_list;
+    // list<string, bool> factory_names_used_list;
+    // list<string> factory_with_tech_lab_names_list;
+    // list<string> factory_with_tech_lab_names_used_list;
+
+    list<pair<string, bool>> starport_names_list;
+    // list<string, bool> starport_names_used_list;
+    // list<string> starport_with_tech_lab_names_list;
+    // list<string> starport_with_tech_lab_names_used_list;
+
+    void addToNamesList(int i, string s, bool b){
+        // i = 0  => barracks i = 1 => factory, i = 2 => starport
+        if(i == 0){
+            barracks_names_list.push_back(make_pair(s, b));
+        }else if(i == 1){
+            factory_names_list.push_back(make_pair(s, b));
+        }else if(i == 2){
+            starport_names_list.push_back(make_pair(s, b));
+        }
+    }
+
     string addOrbitalCommand(){
         orbital_command_list.push_back(orbital_command_id("orbital_command_" + to_string(orbital_command)));
         return "orbital_command_" + to_string(orbital_command);
@@ -723,7 +749,8 @@ private:
         ++factory_total;
         ++factory;
         ++factory_buildslots;
-        addToPrintlist("build-end", "factory");
+        addToNamesList(1, "factory_" + to_string(factory), false);
+        addToPrintlist("build-end", "factory", "factory_" + to_string(factory));
     }
 
     //TODO buildslot sperren????
