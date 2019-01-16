@@ -10,13 +10,13 @@ using namespace std;
 
 class lineObj{
     public:
-        lineObj(int supply_cost = 0, int supply_provided = 0, string produced_by = "", string dependency = "") :
-                 supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
-        lineObj(const lineObj& n) : supply(n.supply), dependency(n.dependency), produced_by(n.produced_by){}
+        lineObj(bool vesp = false, string produced_by = "", string dependency = "") :
+                 vespene(vesp), dependency(dependency), produced_by(produced_by){}
+        lineObj(const lineObj& n) : vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
         ~lineObj(){}
 
         lineObj& operator=(const lineObj& n){
-            supply = n.supply;
+            vespene = n.vespene;
             dependency = n.dependency;
             produced_by = n.produced_by;
             return *this;
@@ -24,14 +24,13 @@ class lineObj{
 
         friend ostream& operator<<(ostream& out, const lineObj& obj);
 
-    protected:
-        int supply = 0; // pos if it adds negetive if it consumes
+        bool vespene; // needs vespene
         string dependency = "";
         string produced_by = "";
 };
 
 ostream& operator<<(ostream& out, const lineObj& obj){
-    out << "\tsupply: " << obj.supply << "\t\tproduced_by: " << obj.produced_by;
+    out << "\tvespene: " << obj.vespene << "\t\tproduced_by: " << obj.produced_by;
     if(obj.produced_by.length() < 10) out << "\t"; //for fancy output
     out << "\tdependency: " << obj.dependency;
     return out;
@@ -89,7 +88,9 @@ class parser{
                 }
                 pos_start = pos_end + 1;
             }
-            dependencies[param[0]] = lineObj(stoi(param[4]), stoi(param[5]), param[9], param[10]);
+            bool vesp = false;
+            if(stoi(param[2]) != 0) vesp = true;
+            dependencies[param[0]] = lineObj(vesp, param[9], param[10]);
         }
         file.close();
     }
