@@ -11,20 +11,26 @@ using namespace std;
 struct depObj{
     depObj(int supply_cost, int supply_provided, string produced_by, string dependency) : 
             supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
-    depObj(const depObj& n) : supply(n.supply), dependency(n.dependency), produced_by(n.produced_by){}
+    depObj(const depObj* n) : supply(n->supply), dependency(n->dependency), produced_by(n->produced_by){}
     ~depObj(){}
 
-    depObj* operator=(const depObj& n){
-        supply = n.supply;
-        dependency = n.dependency;
-        produced_by = n.produced_by;
+    depObj* operator=(const depObj* n){
+        supply = n->supply;
+        dependency = n->dependency;
+        produced_by = n->produced_by;
         return this;
     }
+
+    friend ostream& operator<<(ostream& out, const depObj& obj);
     
     int supply; // pos if it adds negetive if it consumes
     string dependency;
     string produced_by;
 };
+
+ostream& operator<<(ostream& out, const depObj& obj){
+    out << "supply: " << obj.supply << " produced_by: " << obj.produced_by << " dependency: " << obj.dependency;
+}
 
 class parser{
     protected:
@@ -35,13 +41,22 @@ class parser{
     map<string, depObj> dependencies;
     list<string> buildlist;
 
-    parser (const string techtreefilename,const string buildlistname, bool dbg = false) {
-        debug = dbg;
+    parser (const string techtreefilename,const string buildlistname, bool dbg = false) :debug(dbg) {
         init(techtreefilename);
+        if(debug) printMap();
+        if (buildlistname == "" && debug){
+            return;
+        }
         init_buildlist(buildlistname);
     }
     parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
     ~parser(){}
+
+    void printMap(){
+        for(auto& i : dependencies){
+            cout << i.first << ": " << i.second << endl;
+        }
+    }
 
     void init(const string filename){
         fstream file(filename);
@@ -69,7 +84,6 @@ class parser{
             dependencies[param[0]] = depObj(stoi(param[4]), stoi(param[5]), param[9], param[10]);
         }
         file.close();
-
     }
 
     /*
@@ -144,7 +158,7 @@ class parser{
 
     depObj* get_obj(const string name){
         if(debug) cout << "getting object\n";
-        if(dependencies.count(name) == 0) return nullptr;
+        if(dependencies.count(name) == 0) return NULL;
         return &dependencies[name];
     }
 
@@ -154,6 +168,7 @@ class parser{
         file.open(filename);
         if(file.is_open()){
             while(getline(file, item)){
+                if(item == "") continue;
                 if (dependencies.count(item) == 0){
                     // key does not exist. print invalid as json
                     cerr << "no unit named: <" << item << "> in techtree. aborting..." << endl;
