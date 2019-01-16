@@ -9,24 +9,23 @@
 #include <list>
 #include <string.h>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
 struct depObj{
-    depObj(string name, int supply_cost, int supply_provided, string produced_by, string dependency) : 
-            name(name), supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
-    depObj(const depObj& n) : name(n.name), supply(n.supply), dependency(n.dependency), produced_by(n.produced_by){}
+    depObj(int supply_cost, int supply_provided, string produced_by, string dependency) : 
+            supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
+    depObj(const depObj& n) : supply(n.supply), dependency(n.dependency), produced_by(n.produced_by){}
     ~depObj(){}
 
     depObj* operator=(const depObj& n){
-        name = n.name;
         supply = n.supply;
         dependency = n.dependency;
         produced_by = n.produced_by;
         return this;
     }
     
-    string name;
     int supply; // pos if it adds negetive if it consumes
     string dependency;
     string produced_by;
@@ -38,7 +37,7 @@ class parser{
     bool debug = false;
 
     public:
-    map<string, depObj*> dependencies;
+    map<string, depObj> dependencies;
     list<string> buildlist;
 
     parser (const string techtreefilename,const string buildlistname, bool dbg = false) {
@@ -47,14 +46,37 @@ class parser{
         init_buildlist(buildlistname);
     }
     parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
-    ~parser(){
-        //delete dependencies;
-        for(auto& i : dependencies)
-        {
-            delete i.second;
+    ~parser(){}
+
+    void init(const string filename){
+        fstream file(filename);
+
+        if(!file.is_open()){
+            cerr << "cant read techtree file";
+            exit(-1);
+        } 
+
+        string line;
+        array<string, 11> param;
+
+        while(file >> line){
+            size_t pos_start = 0;
+            for(int i = 0; i < 11; ++i){
+                size_t pos_end = line.find(';', pos_start);
+                if(pos_end != string::npos){
+                    param[i] = line.substr(pos_start, pos_end - pos_start);
+                }else{
+                    param[i] = line.substr(pos_start);
+                }
+                pos_start = pos_end + 1;
+            }
+            dependencies[param[0]] = depObj(stoi(param[4]), stoi(param[5]), param[9], param[10]);
         }
+        file.close();
+
     }
-       
+
+    /*
     void init(const string filename) {
         const int MAX_LINE_LENGTH = 150;
         const char * DELIMS = " ;"; // space or semicolon.
@@ -90,7 +112,7 @@ class parser{
                 continue;
             }
 
-            // avoiding compiler warnings about unused variables    
+            // avoiding compiler warnings about unused variables
             (void) minerals;
             (void) vespene;
             (void) build_time;
@@ -122,11 +144,12 @@ class parser{
         }     
         fin.close();
     }
+    */
 
     depObj* get_obj(const string name){
         if(debug) cout << "getting object\n";
         if(dependencies.count(name) == 0) return nullptr;
-        return dependencies[name];
+        return &dependencies[name];
     }
 
     void init_buildlist(string filename){
@@ -165,7 +188,7 @@ int validate(string techtree, string buildlist, bool debug = false){
     while(p.building()){
         string name = p.buildlist.front();
         // can do this without error checking, constructing buildlist in parser checks that they are declared in dependencies
-        depObj* item = p.dependencies[name];
+        depObj* item = &p.dependencies[name];
         supply += item->supply;
         // it either dependencies or produced_by are not met or supply goes below 0 return 1 and terminate
         /* if( (item->dependency != "NONE" && find(seen.begin(), seen.end(), item->dependency) == seen.end()) ||
