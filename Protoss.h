@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <math.h>
 #include <algorithm>
 #include <fstream>
 
@@ -79,7 +80,7 @@ class Protoss : public Protoss_status{
                 // 50% faster means speedup by 2/3
                 if(debug) cout << "endtime: " << i->end_time << " time: " << time;
                 double fac = (double)2/(double)3;
-                i->end_time = time + (int)((((double)i->end_time-(double)time)*fac)+0.5);
+                i->end_time = time + (int) ceil(((double)i->end_time-(double)time)*fac);
                 if(debug) cout << " new endtime: " << i->end_time << endl;
                 
                 i->boosted = true;
@@ -102,7 +103,7 @@ class Protoss : public Protoss_status{
                 if(i != eventlist.end()){
                     i->boosted = true;
                     double fac = (double)2/(double)3;
-                    i->end_time = time + (int)((((double)i->end_time-(double)time)*fac)+0.5);
+                    i->end_time = time + (int) ceil(((double)i->end_time-(double)time)*fac);
                 }
             }
         }   
@@ -143,7 +144,7 @@ class Protoss : public Protoss_status{
         }else{
             if(debug) cout << sout.str() << "\n\n\nnow real output:\n\n\n";
             sout.str("");
-            sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
+            sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}\n" << endl;
         }
         if(printToFile){
             if (fileToWriteTo != nullptr && fileToWriteTo->is_open()){

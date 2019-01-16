@@ -55,14 +55,14 @@ class parser{
         }
     }
        
-    void init(const string filename) {
+    void init(const string techtree_path) {
         const int MAX_LINE_LENGTH = 150;
         const char * DELIMS = " ;"; // space or semicolon.
 
-        fstream fin(filename);
+        fstream fin(techtree_path);
         //fin.open(filename);
         if(!fin.is_open()){
-            cerr << "cant read techtree file";
+            cerr << "cant read techtree file\n";
             exit(-1);
         } 
         // Prepare a C-string buffer to be used when reading lines.
