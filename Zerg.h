@@ -771,6 +771,7 @@ class Zerg : public Zerg_header{
         file.open(filename);
         if(file.is_open()){
             while(getline(file, unit_name)){
+                if(unit_name == "") continue;
                 if(buildmap.find(unit_name) == buildmap.end()){
                     cerr << "bad unitname: " << unit_name << endl;
                     exit(1);

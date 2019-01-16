@@ -1,15 +1,10 @@
-#if defined(_WIN32) || defined(_WIN64)
-/* We are on Windows */
-# define strtok_r strtok_s
-#endif
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <map>  
 #include <list>
-#include <string.h>
-#include <string>
 #include <algorithm>
+#include <array>
 
 using namespace std;
 
@@ -60,6 +55,7 @@ class parser{
         array<string, 11> param;
 
         while(file >> line){
+            if(line == "") continue;
             size_t pos_start = 0;
             for(int i = 0; i < 11; ++i){
                 size_t pos_end = line.find(';', pos_start);
