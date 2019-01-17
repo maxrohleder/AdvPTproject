@@ -24,16 +24,15 @@ class list_builder{
         void runDebug(string start){
             buildDigList(start);
             printDigList();
-            addToBuildlist(getRandomUnit());
-            printAllLists();
-            addToBuildlist(getRandomUnit());
-            printAllLists();
-            addToBuildlist(getRandomUnit());
-            printAllLists();
-            addToBuildlist(getRandomUnit());
-            printAllLists();
-            addToBuildlist(getRandomUnit());
-            printAllLists();
+            for(int i = 0; i < 10; ++i){
+                string r = getRandomUnit();
+                if(r != ""){
+                    addToBuildlist(r);
+                    printAllLists();
+                }else{
+                    --i;
+                }
+            }
         }
 
     protected:
