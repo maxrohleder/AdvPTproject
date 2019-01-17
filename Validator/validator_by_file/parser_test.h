@@ -43,7 +43,8 @@ class parser{
     map<string, lineObj> dependencies;
 
     public:
-    parser (const string techtreefilename = "", bool dbg = false) :debug(dbg) {
+    parser(){}
+    parser (const string techtreefilename, bool dbg = false) :debug(dbg) {
         init(techtreefilename);
         if(debug) printMap();
     }
@@ -65,11 +66,11 @@ class parser{
         }
     }
 
-    void init(const string filename){
+    void init(string filename){
         fstream file(filename);
 
         if(!file.is_open()){
-            cerr << "cant read techtree file";
+            cerr << "cant read techtree file" << endl;
             exit(-1);
         } 
 

@@ -4,79 +4,169 @@
 #include <iostream>
 #include "validator_by_file/parser_test.h"
 #include "ValidatorZerg.h"
-#include "ValidatorTerran.h"
 #include <algorithm>
+#include <stdlib.h>
+#include <vector>
 
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(const string path_to_techtree, char rf = 'd', bool debug = false) : race_flag(rf){
+        list_builder(const string path_to_techtree, char rf, bool debug = false) : race_flag(rf){
+            init(rf);
             p = parser(path_to_techtree, debug);
         }
-        list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){}
+        list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
+            init(lb.race_flag);
+            p = lb.p;
+        }
         ~list_builder(){};
 
-    protected:
-    void init(){
+        void runDebug(string start){
+            buildDigList(start);
+            printDigList();
+            addToBuildlist(getRandomUnit());
+            printAllLists();
+            addToBuildlist(getRandomUnit());
+            printAllLists();
+            addToBuildlist(getRandomUnit());
+            printAllLists();
+            addToBuildlist(getRandomUnit());
+            printAllLists();
+            addToBuildlist(getRandomUnit());
+            printAllLists();
+        }
 
+    protected:
+    void init(char rf){
+        srand(0);
+        if(rf == 'z'){
+            used_only_once = used_only_once_zerg;
+            initZerg();
+        }
     }
 
-    void init_Zerg(){
-        multiple.push_front("drone");
-        multiple.push_front("hatchery");
-        multiple.push_front("overlord");
-        once.push_front("extractor");
-        once.push_front("extractor");
+    void initZerg(){
+        multiple.push_back("drone");
+        multiple.push_back("hatchery");
+        multiple.push_back("overlord");
+        once.push_back("extractor");
+        once.push_back("extractor");
     }
 
     //add 2 vespene producers
     void push_vespene(){
         if(race_flag == 'z'){
-            once.push_front("extractor");
-            once.push_front("extractor");
+            once.push_back("extractor");
+            once.push_back("extractor");
         }
     }
 
-    //build diglist to get dependencies etc right
-    void buildDigList(string name, const lineObj& lo){
-        if(lo.dependency != "NONE"){
-            buildDigList(lo.dependency, p.get_obj(lo.dependency));
+    //build digList to get dependencies etc right
+    void buildDigList(string name){
+        lineObj* lo = p.get_obj(name);
+        if(lo == NULL){
+            cout << "invalid name: " << name << endl;
+            exit(1);
         }
-        if(lo.produced_by != "NONE"){
-            buildDigList(lo.produced_by, p.get_obj(lo.produced_by));
+        if(lo->dependency != "NONE"){
+            buildDigList(lo->dependency);
         }
-        if(lo.vespene) vespene = true;
-        diglist.push_back(name);
+        if(lo->produced_by != "NONE"){
+            buildDigList(lo->produced_by);
+        }
+        if(lo->vespene) vespene = true;
+        digList.push_back(name);
     }
 
     //add producable to either once or multiple
     void addToProducable(string name){
-        if(race_flag == 'z'){
-            if(find(used_only_once_zerg.begin(), used_only_once_zerg.end(), name) == used_only_once_zerg.end()){
-                multiple.push_front(name);
-            }else{
-                addToOnce(name);
-            }
+        if(find(used_only_once.begin(), used_only_once.end(), name) == used_only_once.end()){
+            multiple.push_back(name);
         }
     }
 
     //helper to decide if already in once
     void addToOnce(string name){
         if(find(once.begin(), once.end(), name) == once.end()){
-            once.push_front(name);
+            once.push_back(name);
         }
     }
 
+    void printDigList(){
+        cout << "digList: ";
+        for(auto i : digList){
+            cout << i << " ";
+        }
+        cout << endl;
+    }
+
+    void printAllLists(){
+        printDigList();
+        cout << "once: ";
+        for(auto i : once){
+            cout << i << " ";
+        }
+        cout << endl;
+        cout << "multiple: ";
+        for(auto i : multiple){
+            cout << i << " ";
+        }
+        cout << endl;
+        cout << "buildlist: ";
+        for(auto i : buildlist){
+            cout << i << " ";
+        }
+        cout << endl;
+    }
+
+    string getFromMultiple(){
+        int pos = rand() % multiple.size();
+        return multiple[pos];
+    }
+
+    string getFromOnce(){
+        if(once.empty()) return ""; 
+        int pos = rand() % once.size();
+        string r = once[pos];
+        once.erase(once.begin() + pos);
+        return r;
+    }
+
+    string getFromDigList(){
+        if(digList.empty()) return "";
+        string r = digList[0];
+        digList.erase(digList.begin());
+        return r;
+    }
+
+    string getRandomUnit(){
+        int list_to_use = rand() % 3;
+        if(list_to_use == 0){
+            return getFromMultiple();
+        }else if(list_to_use == 1){
+            return getFromOnce();
+        }else{
+            string new_unit = getFromDigList();
+            addToProducable(new_unit);
+            return new_unit;
+        }
+    }
+
+    void addToBuildlist(string name){
+        buildlist.push_back(name);
+    }
 
     parser p;
     list<string> used_only_once_zerg = {"evolution_chamber",
          "spore_crawler", "spawning_pool", "spine_crawler", "roach_warren", 
          "baneling_nest", "hydralisk_den", "infestation_pit", "nydus_network",
          "ultralisk_cavern", "greater_spire", "spire"};
-    list<string> once;
-    list<string> multiple;
-    list<string> diglist;
+    list<string>& used_only_once = used_only_once_zerg;
+    vector<string> once;
+    vector<string> multiple;
+    vector<string> digList;
     bool vespene = false;
     char race_flag = 'd';
+    list<string> buildlist;
 
 };
