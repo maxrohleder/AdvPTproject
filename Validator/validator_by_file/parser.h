@@ -1,36 +1,43 @@
-#if defined(_WIN32) || defined(_WIN64)
-/* We are on Windows */
-# define strtok_r strtok_s
-#endif
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <map>  
 #include <list>
-#include <string.h>
-#include <string>
+#include <algorithm>
+#include <array>
 
 using namespace std;
 
-struct depObj{
-    depObj(string name, int supply_cost, int supply_provided, string produced_by, string dependency) : 
-            name(name), supply(supply_provided-supply_cost), dependency(dependency), produced_by(produced_by){}
-    depObj(const depObj& n) : name(n.name), supply(n.supply), dependency(n.dependency), produced_by(n.produced_by){}
-    ~depObj(){}
+class depObj{
+    public:
+        depObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
+                 name(name), supply(supply), vespene(vesp), dependency(dependency), produced_by(produced_by){}
+        depObj(const depObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
+        ~depObj(){}
 
-    depObj* operator=(const depObj& n){
-        name = n.name;
-        supply = n.supply;
-        dependency = n.dependency;
-        produced_by = n.produced_by;
-        return this;
-    }
-    
-    string name;
-    int supply; // pos if it adds negetive if it consumes
-    string dependency;
-    string produced_by;
+        depObj& operator=(const depObj& n){
+            vespene = n.vespene;
+            dependency = n.dependency;
+            produced_by = n.produced_by;
+            return *this;
+        }
+
+        friend ostream& operator<<(ostream& out, const depObj& obj);
+
+
+        string name;
+        int supply;
+        bool vespene; // needs vespene
+        string dependency;
+        string produced_by;
 };
+
+ostream& operator<<(ostream& out, const depObj& obj){
+    out << "\tvespene: " << obj.vespene << "\t\tproduced_by: " << obj.produced_by;
+    if(obj.produced_by.length() < 10) out << "\t"; //for fancy output
+    out << "\tdependency: " << obj.dependency;
+    return out;
+}
 
 class parser{
     protected:
@@ -38,95 +45,67 @@ class parser{
     bool debug = false;
 
     public:
-    map<string, depObj*> dependencies;
+    map<string, depObj> dependencies;
     list<string> buildlist;
 
-    parser (const string techtreefilename,const string buildlistname, bool dbg = false) {
-        debug = dbg;
+    parser(){}
+    parser (const string techtreefilename, bool dbg = false) :debug(dbg) {
+        init(techtreefilename);
+        if(debug) printMap();
+    }
+    parser (const string techtreefilename,const string buildlistname, bool dbg = false) : debug(dbg) {
         init(techtreefilename);
         init_buildlist(buildlistname);
+        if(debug) printMap();
     }
     parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
-    ~parser(){
-        //delete dependencies;
-        for(auto& i : dependencies)
-        {
-            delete i.second;
+    ~parser(){}
+
+    parser& operator=(const parser& p){
+        debug = p.debug;
+        dependencies = p.dependencies;
+        return *this;
+    } 
+
+    void printMap(){
+        for(auto i : dependencies){
+            cout << i.first << ":";
+            if(i.first.length() < 7) cout << "\t"; //for fancy output
+            if(i.first.length() < 15) cout << "\t"; //for fancy output
+            cout << i.second << endl;;
         }
     }
-       
-    void init(const string techtree_path) {
-        const int MAX_LINE_LENGTH = 150;
-        const char * DELIMS = " ;"; // space or semicolon.
 
-        fstream fin(techtree_path);
-        //fin.open(filename);
-        if(!fin.is_open()){
-            cerr << "cant read techtree file\n";
+    void init(string filename){
+        fstream file(filename);
+
+        if(!file.is_open()){
+            cerr << "cant read techtree file" << endl;
             exit(-1);
         } 
-        // Prepare a C-string buffer to be used when reading lines.
-        char buffer[MAX_LINE_LENGTH] = {};
-        char *contextBuffer = NULL;        
 
-        // Read one line at a time.
-        while ( fin.getline(buffer, MAX_LINE_LENGTH) ) {
-            // Extract the tokens from line:
-            const char * name =             strtok_r( buffer, DELIMS, &contextBuffer);
-            const char * minerals =         strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * vespene =          strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * build_time =       strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * supply_cost =      strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * supply_provided =  strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * start_energy =     strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * max_energy =       strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * race =             strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * produced_by =      strtok_r( NULL, DELIMS, &contextBuffer);
-            const char * dependency =       strtok_r( NULL, DELIMS, &contextBuffer);
+        string line;
+        array<string, 11> param;
 
-            // if the last tokenize operation fails 
-            if(dependency == NULL){
-                if(debug) cerr << "ERROR: invalid line. MUST specify all fields. If absent, mark with either 0 or NONE\nError in line: \"" << buffer <<"\"\tskipping...\n";
-                continue;
+        while(file >> line){
+            if(line == "") continue;
+            size_t pos_start = 0;
+            for(int i = 0; i < 11; ++i){
+                size_t pos_end = line.find(';', pos_start);
+                if(pos_end != string::npos){
+                    param[i] = line.substr(pos_start, pos_end - pos_start);
+                }else{
+                    param[i] = line.substr(pos_start);
+                }
+                pos_start = pos_end + 1;
             }
+            bool vesp = stoi(param[2]) != 0;
+            int suppl = stoi(param[5])-stoi(param[4]);
+            dependencies[param[0]] = depObj(param[0], suppl, vesp, param[9], param[10]);
+    //        depObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 
-            // avoiding compiler warnings about unused variables    
-            (void) minerals;
-            (void) vespene;
-            (void) build_time;
-            (void) start_energy;
-            (void) max_energy;
-            (void) race;
-
-            // casting tokens to proper cpp types
-            string n = string(name);            
-            int c1 = atoi(supply_cost);
-            int c2 = atoi(supply_provided); 
-            string prod = string(produced_by);
-            string dep = string(dependency);
-
-            // create new element on heap
-            depObj* new_Obj = new depObj(n, c1, c2, prod, dep);
-
-            // Insert elements.
-            dependencies[n] = new_Obj;
-
-            if(debug){
-                cout   << "{\n\t"
-                            << new_Obj->name << ",\n\t" 
-                            << new_Obj->supply << ",\n\t"
-                            << new_Obj->produced_by << ",\n\t"
-                            << new_Obj->dependency << "\n}\n";
-            }
-
-        }     
-        fin.close();
-    }
-
-    depObj* get_obj(const string name){
-        if(debug) cout << "getting object\n";
-        if(dependencies.count(name) == 0) return nullptr;
-        return dependencies[name];
+        }
+        file.close();
     }
 
     void init_buildlist(string filename){
@@ -153,6 +132,12 @@ class parser{
     bool building(){
         return !buildlist.empty();
     }
+
+    depObj* get_obj(const string name){
+        if(debug) cout << "getting object\n";
+        if(dependencies.count(name) == 0) return NULL;
+        return &dependencies[name];
+    }
 };
 
 // for further information on why the list is invalid set debug to true and see extensive prints
@@ -165,21 +150,21 @@ int validate(string techtree, string buildlist, bool debug = false){
     while(p.building()){
         string name = p.buildlist.front();
         // can do this without error checking, constructing buildlist in parser checks that they are declared in dependencies
-        depObj* item = p.dependencies[name];
-        supply += item->supply;
+        depObj& item = p.dependencies[name];
+        supply += item.supply;
         // it either dependencies or produced_by are not met or supply goes below 0 return 1 and terminate
-        /* if( (item->dependency != "NONE" && find(seen.begin(), seen.end(), item->dependency) == seen.end()) ||
-            (item->dependency != "NONE" && find(seen.begin(), seen.end(), item->produced_by) == seen.end()) ||
+        /* if( (item.dependency != "NONE" && find(seen.begin(), seen.end(), item.dependency) == seen.end()) ||
+            (item.dependency != "NONE" && find(seen.begin(), seen.end(), item.produced_by) == seen.end()) ||
             supply < 0 )
         {
             cout << "BUILDLIST INVALID AT " << name << endl;
             return 1;
         } */
-        if( (item->dependency != "NONE" && find(seen.begin(), seen.end(), item->dependency) == seen.end())){
+        if( (item.dependency != "NONE" && find(seen.begin(), seen.end(), item.dependency) == seen.end())){
             if(debug) cout << "DEPENDENCY INVALID AT " << name << endl;
             return 1;
         }
-        else if(item->produced_by != "NONE" && find(seen.begin(), seen.end(), item->produced_by) == seen.end())
+        else if(item.produced_by != "NONE" && find(seen.begin(), seen.end(), item.produced_by) == seen.end())
         {
             if(debug) cout << "PODUCED_BY INVALID AT " << name << endl;
             return 1;
