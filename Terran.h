@@ -54,28 +54,55 @@ private:
     list<orbital_command_id> orbital_command_list;
 
     list<pair<string, bool>> barracks_names_list;
-    // list<string, bool> barracks_names_used_list;
+    list<pair<string, bool>> barracks_names_used_list;
     // list<string> barracks_with_tech_lab_names_list;
     // list<string> barracks_with_tech_lab_names_used_list;
 
     list<pair<string, bool>> factory_names_list;
-    // list<string, bool> factory_names_used_list;
+    list<pair<string, bool>> factory_names_used_list;
     // list<string> factory_with_tech_lab_names_list;
     // list<string> factory_with_tech_lab_names_used_list;
 
     list<pair<string, bool>> starport_names_list;
-    // list<string, bool> starport_names_used_list;
+    list<pair<string, bool>> starport_names_used_list;
     // list<string> starport_with_tech_lab_names_list;
     // list<string> starport_with_tech_lab_names_used_list;
 
-    void addToNamesList(int i, string s, bool b){
+    void addToNamesList(int building, string s, bool b){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
-        if(i == 0){
+        if(building == 0){
             barracks_names_list.push_back(make_pair(s, b));
-        }else if(i == 1){
+        }else if(building == 1){
             factory_names_list.push_back(make_pair(s, b));
-        }else if(i == 2){
+        }else if(building == 2){
             starport_names_list.push_back(make_pair(s, b));
+        }
+    }
+
+    void upgradeToReactor(int building){
+        // i = 0  => barracks i = 1 => factory, i = 2 => starport
+        if(building == 0){
+            
+        }else if(building == 1){
+            
+        }else if(building == 2){
+            while(1){
+                auto i = find_if(starport_names_list.begin(), starport_names_list.end(), [this](const pair<string,bool> p){return p.second == false;});
+                // if(i == false){
+
+                // }
+            }
+        }
+    }
+
+    void addToNamesUsedList(int building, string s, bool b){
+        // i = 0  => barracks used i = 1 => factory used, i = 2 => starport used
+        if(building == 0){
+            barracks_names_used_list.push_back(make_pair(s, b));
+        }else if(building == 1){
+            factory_names_used_list.push_back(make_pair(s, b));
+        }else if(building == 2){
+            starport_names_used_list.push_back(make_pair(s, b));
         }
     }
 
@@ -672,7 +699,7 @@ private:
         }else{
             minerals -= 15000;
             --workers;
-            --workers_minerals; //TODO Vllt im wechsel mit Vesp worker?
+            --workers_minerals;
             addToPrintlist("build-start", "barracks");
             addToEventlist(timestep + 65, &Terran::barracksFinish);
             return true;
@@ -876,7 +903,9 @@ private:
         ++starport;
         ++starport_total;
         ++starport_buildslots;
-        addToPrintlist("build-end", "starport");
+        string id = "starport_" + to_string(starport);
+        addToNamesList(2, id, false);
+        addToPrintlist("build-end", "starport", id);
     }    
 
     //TODO während upgrade buildslot gesperrt????
