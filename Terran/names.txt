@@ -1,0 +1,9 @@
+scv
+scv
+refinery
+scv
+supply_depot
+barracks
+scv
+factory
+factory_with_tech_lab

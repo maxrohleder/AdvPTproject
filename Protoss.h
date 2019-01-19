@@ -140,11 +140,11 @@ class Protoss : public Protoss_status{
     void printFinish(bool valid){
         if(valid){
             sout << "\t],\n" << endl;
-            sout << "\"initialUnits\" : { \"probe\" : [ \"larry_der_fleissige\", \"1\", \"2\", \"3\", \"4\", \"5\" ],\n\"nexus\": [ \"nexus_0\" ] \n}\n}";
+            sout << "\"initialUnits\" : { \"probe\" : [ \"larry_der_fleissige\", \"1\", \"2\", \"3\", \"4\", \"5\" ],\n\"nexus\": [ \"nexus_0\" ] \n}\n}\n";
         }else{
             if(debug) cout << sout.str() << "\n\n\nnow real output:\n\n\n";
             sout.str("");
-            sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}\n" << endl;
+            sout << "{\n\t\"game\" : \"sc2-hots-protoss\",\n\t\"buildlistValid\" : \"0\"\n}" << endl;
         }
         if(printToFile){
             if (fileToWriteTo != nullptr && fileToWriteTo->is_open()){
