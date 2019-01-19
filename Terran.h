@@ -62,6 +62,7 @@ private:
     
     list<pair<string, bool>> factory_with_tech_lab_names_list;
     list<pair<string, bool>> factory_upgrade_techlab;
+    list<pair<string, bool>> factory_upgrade_reactor;
     //list<pair<string, bool>> factory_upgrade_reactor;
 
     list<pair<string, bool>> starport_names_list;
@@ -71,6 +72,10 @@ private:
 
     list<pair<string, bool>> siege_tank_id_list;
     list<pair<string, bool>> hellion_id_list;
+
+    // void switchPairBetweenLists(){
+
+    // }
 
     void addToNamesList(int building, string s, bool b){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
@@ -84,33 +89,55 @@ private:
     }
 
     // TODO nicht fertig
-    void upgradeToReactor(int building){
+    string upgradeToReactorStart(int building){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
         if(building == 0){
             for(auto i : barracks_names_list){
                 if(!i.second){
                     i.second = true;
                     addToNamesList(2, i.first, true);
-                    return;
+                    return "";
                 }
             }
         }else if(building == 1){
             for(list<pair<string, bool>>::iterator i = factory_names_list.begin(); i != factory_names_list.end(); ++i){
                 if(!i->second){
-                    i->second = true;
-                    addToNamesList(1, i->first, true);
-                    return;
+                    string producer_id = i->first;
+                    factory_upgrade_reactor.push_back(*i);
+                    factory_names_list.erase(i);
+                    return producer_id;
                 }
             }
         }else if(building == 2){
-            for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
-                if(!i->second){
-                    i->second = true;
-                    addToNamesList(2, i->first, true);
-                    return;
-                }
-            }
+            
+            // for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
+            //     if(!i->second){
+            //         i->second = true;
+            //         addToNamesList(2, i->first, true);
+            //         return;
+            //     }
+            // }
         }
+        return "";
+    }
+    
+    string upgradeToReactorFinish(int building){
+        // i = 0  => barracks i = 1 => factory, i = 2 => starport
+        if(building == 0){
+            return "";
+        }else if(building == 1){
+            auto i = factory_upgrade_reactor.begin();
+            string producer_id = i->first;
+            i->first = "factory_with_reactor_" + to_string(factory_with_reactor);
+            i->second = true;
+            factory_names_list.push_back(*i);
+            factory_names_list.push_back(*i);
+            factory_upgrade_reactor.pop_front();
+            return producer_id;
+        }else if(building == 2){
+            return "";
+        }
+        return "";
     }
 
     string upgradeToTechLabStart(int building){
@@ -127,13 +154,14 @@ private:
                 }
             }
         }else if(building == 2){
-            for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
-                if(!i->second){
-                    starport_with_tech_lab_names_list.push_back(*i);
-                    starport_names_list.erase(i);
-                    return i->first;
-                }
-            }
+            // for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
+            //     if(!i->second){
+            //         starport_with_tech_lab_names_list.push_back(*i);
+            //         starport_names_list.erase(i);
+            //         return i->first;
+            //     }
+            // }
+            return "";
         }
         return "";
     }
@@ -456,7 +484,7 @@ private:
             hellion_id_list.pop_front();
             factory_names_list.push_back(producer_id);
 
-            addToPrintlist("build-end", "hellion", "hellion_" + to_string(hellion), producer_id.first); //TODO
+            addToPrintlist("build-end", "hellion", "hellion_" + to_string(hellion), producer_id.first);
         }else{
             ++factory_with_tech_lab_buildslots;
 
@@ -886,7 +914,8 @@ private:
             vespene -= 5000;
             --factory;
             --factory_buildslots;
-            addToPrintlist("build-start", "factory_with_reactor");
+            string producer_id = upgradeToReactorStart(1);
+            addToPrintlist("build-start", "factory_with_reactor", producer_id);
             addToEventlist(timestep + 50, &Terran::factoryWithReactorFinish);
             return true;
         }
@@ -895,8 +924,8 @@ private:
     void factoryWithReactorFinish(int useless){
         ++factory_with_reactor;
         factory_buildslots += 2;
-        upgradeToReactor(1);
-        addToPrintlist("build-end", "factory_with_reactor");
+        string producer_id = upgradeToReactorFinish(1);
+        addToPrintlist("build-end", "factory_with_reactor", "factory_with_reactor_" + to_string(factory_with_reactor), producer_id);
     }    
 
     bool factorywithTechLabBuild(){
