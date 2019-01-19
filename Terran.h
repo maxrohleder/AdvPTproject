@@ -54,24 +54,34 @@ private:
     list<orbital_command_id> orbital_command_list;
 
     list<pair<string, bool>> barracks_names_list;
-    // list<pair<string, bool>> barracks_names_used_list;
-    // list<string> barracks_with_tech_lab_names_list;
-    // list<string> barracks_with_tech_lab_names_used_list;
+    list<pair<string, bool>> barracks_with_tech_lab_names_list;
+    list<pair<string, bool>> barracks_upgrade_techlab;
+    list<pair<string, bool>> barracks_upgrade_reactor;
 
     list<pair<string, bool>> factory_names_list;
-    
     list<pair<string, bool>> factory_with_tech_lab_names_list;
     list<pair<string, bool>> factory_upgrade_techlab;
     list<pair<string, bool>> factory_upgrade_reactor;
-    //list<pair<string, bool>> factory_upgrade_reactor;
 
     list<pair<string, bool>> starport_names_list;
-    // list<pair<string, bool>> starport_names_used_list;
     list<pair<string, bool>> starport_with_tech_lab_names_list;
-    // list<string> starport_with_tech_lab_names_used_list;
+    list<pair<string, bool>> starport_upgrade_techlab;
+    list<pair<string, bool>> starport_upgrade_reactor;
 
-    list<pair<string, bool>> siege_tank_id_list;
+    
+    list<pair<string, bool>> marine_id_list;
+    list<pair<string, bool>> marauder_id_list;
+    list<pair<string, bool>> reaper_id_list;
+    list<pair<string, bool>> ghost_id_list;
     list<pair<string, bool>> hellion_id_list;
+    list<pair<string, bool>> siege_tank_id_list;
+    list<pair<string, bool>> thor_id_list;
+    list<pair<string, bool>> medivac_id_list;
+    list<pair<string, bool>> viking_id_list;
+    list<pair<string, bool>> raven_id_list;
+    list<pair<string, bool>> banshee_id_list;
+    list<pair<string, bool>> battlecruiser_id_list;
+
 
     // void switchPairBetweenLists(){
 
@@ -88,15 +98,15 @@ private:
         }
     }
 
-    // TODO nicht fertig
     string upgradeToReactorStart(int building){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
         if(building == 0){
-            for(auto i : barracks_names_list){
-                if(!i.second){
-                    i.second = true;
-                    addToNamesList(2, i.first, true);
-                    return "";
+            for(list<pair<string, bool>>::iterator i = barracks_names_list.begin(); i != barracks_names_list.end(); ++i){
+                if(!i->second){
+                    string producer_id = i->first;
+                    barracks_upgrade_reactor.push_back(*i);
+                    barracks_names_list.erase(i);
+                    return producer_id;
                 }
             }
         }else if(building == 1){
@@ -109,14 +119,14 @@ private:
                 }
             }
         }else if(building == 2){
-            
-            // for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
-            //     if(!i->second){
-            //         i->second = true;
-            //         addToNamesList(2, i->first, true);
-            //         return;
-            //     }
-            // }
+            for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
+                if(!i->second){
+                    string producer_id = i->first;
+                    starport_upgrade_reactor.push_back(*i);
+                    starport_names_list.erase(i);
+                    return producer_id;
+                }
+            }
         }
         return "";
     }
@@ -124,7 +134,14 @@ private:
     string upgradeToReactorFinish(int building){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
         if(building == 0){
-            return "";
+            auto i = barracks_upgrade_reactor.begin();
+            string producer_id = i->first;
+            i->first = "barracks_with_reactor_" + to_string(barracks_with_reactor);
+            i->second = true;
+            barracks_names_list.push_back(*i);
+            barracks_names_list.push_back(*i);
+            barracks_upgrade_reactor.pop_front();
+            return producer_id;
         }else if(building == 1){
             auto i = factory_upgrade_reactor.begin();
             string producer_id = i->first;
@@ -135,7 +152,14 @@ private:
             factory_upgrade_reactor.pop_front();
             return producer_id;
         }else if(building == 2){
-            return "";
+            auto i = starport_upgrade_reactor.begin();
+            string producer_id = i->first;
+            i->first = "starport_with_reactor_" + to_string(starport_with_reactor);
+            i->second = true;
+            starport_names_list.push_back(*i);
+            starport_names_list.push_back(*i);
+            starport_upgrade_reactor.pop_front();
+            return producer_id;
         }
         return "";
     }
@@ -143,7 +167,14 @@ private:
     string upgradeToTechLabStart(int building){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
         if(building == 0){
-            return "";
+            for(list<pair<string, bool>>::iterator i = barracks_names_list.begin(); i != barracks_names_list.end(); ++i){
+                if(!i->second){
+                    string producer_id = i->first;
+                    barracks_upgrade_techlab.push_back(*i);
+                    barracks_names_list.erase(i);
+                    return producer_id;
+                }
+            }
         }else if(building == 1){
             for(list<pair<string, bool>>::iterator i = factory_names_list.begin(); i != factory_names_list.end(); ++i){
                 if(!i->second){
@@ -154,14 +185,14 @@ private:
                 }
             }
         }else if(building == 2){
-            // for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
-            //     if(!i->second){
-            //         starport_with_tech_lab_names_list.push_back(*i);
-            //         starport_names_list.erase(i);
-            //         return i->first;
-            //     }
-            // }
-            return "";
+            for(list<pair<string, bool>>::iterator i = starport_names_list.begin(); i != starport_names_list.end(); ++i){
+                if(!i->second){
+                    string producer_id = i->first;
+                    starport_upgrade_techlab.push_back(*i);
+                    starport_names_list.erase(i);
+                    return producer_id;
+                }
+            }
         }
         return "";
     }
@@ -169,7 +200,12 @@ private:
     string upgradeToTechLabFinish(int building){
         // i = 0  => barracks i = 1 => factory, i = 2 => starport
         if(building == 0){
-            return "";
+            auto i = barracks_upgrade_techlab.begin();
+            string producer_id = i->first;
+            i->first = "barracks_with_tech_lab_" + to_string(barracks_with_tech_lab);
+            barracks_with_tech_lab_names_list.push_back(*i);
+            barracks_upgrade_techlab.pop_front();
+            return producer_id;
         }else if(building == 1){
             auto i = factory_upgrade_techlab.begin();
             string producer_id = i->first;
@@ -178,7 +214,12 @@ private:
             factory_upgrade_techlab.pop_front();
             return producer_id;
         }else if(building == 2){
-            return "";
+            auto i = starport_upgrade_techlab.begin();
+            string producer_id = i->first;
+            i->first = "starport_with_tech_lab_" + to_string(starport_with_tech_lab);
+            starport_with_tech_lab_names_list.push_back(*i);
+            starport_upgrade_techlab.pop_front();
+            return producer_id;
         }
         return "";
     }
@@ -837,7 +878,8 @@ private:
         ++barracks_buildslots; 
         ++workers_minerals;
         ++workers;
-        addToPrintlist("build-end", "barracks");
+        addToNamesList(0, "barracks_" + to_string(barracks_total), false);
+        addToPrintlist("build-end", "barracks", "barracks_" + to_string(barracks_total));
     }
 
     //TODO während upgrade buildslot gesperrt????
@@ -849,7 +891,8 @@ private:
             vespene -= 5000;
             --barracks;
             --barracks_buildslots;
-            addToPrintlist("build-start", "barracks_with_reactor");
+            string producer_id = upgradeToReactorStart(0);
+            addToPrintlist("build-start", "barracks_with_reactor", producer_id);
             addToEventlist(timestep + 50, &Terran::barracksWithReactorFinish);
             return true;
         }
@@ -858,7 +901,8 @@ private:
     void barracksWithReactorFinish(int useless){
         ++barracks_with_reactor;
         barracks_buildslots += 2;
-        addToPrintlist("build-end", "barracks_with_reactor");
+        string producer_id = upgradeToReactorFinish(0);
+        addToPrintlist("build-end", "barracks_with_reactor", "barracks_with_reactor_" + to_string(barracks_with_reactor), producer_id);
     }
 
     bool barrackswithTechLabBuild(){
@@ -869,7 +913,8 @@ private:
             vespene -= 2500;
             --barracks;
             --barracks_buildslots;
-            addToPrintlist("build-start", "barracks_with_tech_lab");
+            string producer_id = upgradeToTechLabStart(0);
+            addToPrintlist("build-start", "barracks_with_tech_lab", producer_id);
             addToEventlist(timestep + 25, &Terran::barrackswithTechLabFinish);
             return true;
         }
@@ -878,7 +923,8 @@ private:
     void barrackswithTechLabFinish(int useless){
         ++barracks_with_tech_lab;
         ++barracks_with_tech_lab_buildslots;
-        addToPrintlist("build-end", "barracks_with_tech_lab");
+        string producer_id = upgradeToTechLabFinish(0);
+        addToPrintlist("build-end", "barracks_with_tech_lab", "barracks_with_tech_lab_" + to_string(barracks_with_tech_lab), producer_id);
     }
 
     bool factoryBuild(){
@@ -1032,7 +1078,7 @@ private:
         ++starport;
         ++starport_total;
         ++starport_buildslots;
-        string id = "starport_" + to_string(starport);
+        string id = "starport_" + to_string(starport_total); //
         addToNamesList(2, id, false);
         addToPrintlist("build-end", "starport", id);
     }    
@@ -1046,7 +1092,8 @@ private:
             vespene -= 5000;
             --starport;
             --starport_buildslots;
-            addToPrintlist("build-start", "starport_with_reactor");
+            string producer_id = upgradeToReactorStart(2);
+            addToPrintlist("build-start", "starport_with_reactor", producer_id);
             addToEventlist(timestep + 50, &Terran::starportWithReactorFinish);
             return true;
         }
@@ -1055,7 +1102,8 @@ private:
     void starportWithReactorFinish(int useless){
         ++starport_with_reactor;
         starport_buildslots += 2;
-        addToPrintlist("build-end", "starport_with_reactor");
+        string producer_id = upgradeToReactorFinish(2);
+        addToPrintlist("build-end", "starport_with_reactor", "starport_with_reactor_" + to_string(starport_with_reactor), producer_id);
     }
 
     bool starportwithTechLabBuild(){
@@ -1066,7 +1114,8 @@ private:
             vespene -= 2500;
             --starport;
             --starport_buildslots;
-            addToPrintlist("build-start", "starport_with_tech_lab");
+            string producer_id = upgradeToTechLabStart(2);
+            addToPrintlist("build-start", "starport_with_tech_lab", producer_id);
             addToEventlist(timestep + 25, &Terran::starportwithTechLabFinish);
             return true;
         }
@@ -1075,7 +1124,8 @@ private:
     void starportwithTechLabFinish(int useless){
         ++starport_with_tech_lab;
         ++starport_with_tech_lab_buildslots;
-        addToPrintlist("build-end", "starport_with_tech_lab");
+        string producer_id = upgradeToTechLabFinish(2);
+        addToPrintlist("build-end", "starport_with_tech_lab", "starport_with_tech_lab_" + to_string(starport_with_tech_lab), producer_id);
     }
 
     bool fusionCoreBuild(){
