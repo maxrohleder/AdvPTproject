@@ -8,8 +8,8 @@ barracks
 scv
 factory
 factory
-factory_with_tech_lab
 factory_with_reactor
+factory_with_tech_lab
 scv
 command_center
 scv
@@ -21,6 +21,5 @@ scv
 scv
 scv
 scv
-hellion
 hellion
 siege_tank
