@@ -55,8 +55,8 @@ class parser{
     }
     parser (const string techtreefilename,const string buildlistname, bool dbg = false) : debug(dbg) {
         init(techtreefilename);
-        init_buildlist(buildlistname);
         if(debug) printMap();
+        init_buildlist(buildlistname);
     }
     parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
     ~parser(){}
