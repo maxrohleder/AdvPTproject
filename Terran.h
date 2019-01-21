@@ -1226,4 +1226,9 @@ public:
         return 1;
     }
 
+    int getEndTime(){
+        // TODO: do one forward simulation and return only the endtime of the last item
+        return 42;
+    }
+
 };

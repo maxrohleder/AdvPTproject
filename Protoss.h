@@ -243,4 +243,9 @@ class Protoss : public Protoss_status{
         printFinish(false);
         return simulation_timeout; // timelimit reached; no successful simulation
     }
+
+    int getEndTime(){
+        // TODO: do one forward simulation and return only the endtime of the last item
+        return 42;
+    }
 };
