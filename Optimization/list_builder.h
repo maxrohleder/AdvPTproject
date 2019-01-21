@@ -21,6 +21,12 @@ class list_builder{
         }
         ~list_builder(){};
 
+        list_builder operator=(const list_builder& lb){
+            p = lb.p;
+            used_only_once = lb.used_only_once;
+            once = lb.once;
+        }
+
         void runDebug(string start){
             buildDigList(start);
             for(int i = 0; i < 10; ++i){
