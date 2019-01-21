@@ -19,3 +19,8 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/RandomCreator")
     message("adding RandomCreator")
     add_subdirectory(RandomCreator)
 endif()
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Optimization")
+    message("adding Optimization")
+    add_subdirectory(Optimization)
+endif()
