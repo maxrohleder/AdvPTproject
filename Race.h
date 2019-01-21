@@ -113,4 +113,7 @@ class Race{
 		//liste leeren
 		printlist.clear();
 	}
+
+	public:
+	int getEndTime(int endTime){};
 };

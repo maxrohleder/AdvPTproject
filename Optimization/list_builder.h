@@ -11,7 +11,7 @@
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(const string path_to_techtree, char rf, bool debug = false) : race_flag(rf){
+        list_builder(const string path_to_techtree = "", char rf = 'd', bool debug = false) : race_flag(rf){
             init(rf);
             p = parser(path_to_techtree, debug);
         }
@@ -25,6 +25,11 @@ class list_builder{
             p = lb.p;
             used_only_once = lb.used_only_once;
             once = lb.once;
+            multiple = lb.multiple;
+            digList = lb.digList;
+            vespene = lb.vespene;
+            race_flag = lb.race_flag;
+            buildlist = lb.buildlist;
         }
 
         void runDebug(string start){

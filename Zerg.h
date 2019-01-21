@@ -860,5 +860,27 @@ class Zerg : public Zerg_header{
         return 1;
     }
 
+    int getEndTime(int endTime) {
+        for(;time < endTime;++time){
+            updateResources();
+            updateEventlist();
+            bool new_building = false;
+            if(!buildlist.empty()){
+                printlist.clear();
+                new_building = updateBuildlist();
+            }
+            if(!new_building && queen > 0){
+                Injection();
+            }
+            redistributeWorkers();
+            if(!printlist.empty()){
+                if(buildlist.empty() && eventlist.empty()){
+                    return time;
+                }
+            }
+        }
+        return time;
+    }
+
 
 };
