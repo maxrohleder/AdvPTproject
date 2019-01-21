@@ -23,8 +23,8 @@ cp Protoss.h collection/
 cp Protoss/CMakeLists.txt collection/Protoss/
 cp Protoss/mainProtoss.cpp collection/Protoss/
 cp Protoss/Protoss_status.h collection/Protoss/
-cp Validator/validator_by_file/parser.h collection/Validator/validator_by_file/
-cp Validator/validator_by_file/techtree_protoss.csv collection/Validator/validator_by_file/
+cp Protoss/parser.h collection/Protoss/
+cp Protoss/techtree_protoss.csv collection/Protoss/
 
 #Terran
 cp Terran.h collection/
