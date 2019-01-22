@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -15,7 +16,7 @@ class lineObj{
         lineObj(const lineObj& n) : vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
         ~lineObj(){}
 
-        lineObj& operator=(const lineObj& n){
+        lineObj operator=(const lineObj& n){
             vespene = n.vespene;
             dependency = n.dependency;
             produced_by = n.produced_by;
@@ -51,7 +52,7 @@ class parser{
     parser(const parser& n) : debug(n.debug), dependencies(n.dependencies){}
     ~parser(){}
 
-    parser& operator=(const parser& p){
+    parser operator=(const parser& p){
         debug = p.debug;
         dependencies = p.dependencies;
         return *this;
@@ -68,7 +69,7 @@ class parser{
 
     void init(string filename){
         fstream file(filename);
-
+        cout << filename << endl;
         if(!file.is_open()){
             cerr << "cant read techtree file" << endl;
             exit(-1);

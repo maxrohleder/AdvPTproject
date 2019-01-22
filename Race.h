@@ -1,3 +1,4 @@
+#pragma once
 #include <list>
 #include <tuple>
 #include <string>
@@ -114,6 +115,6 @@ class Race{
 		printlist.clear();
 	}
 
-	public:
-	int getEndTime(int endTime){};
+	//public:
+	//int getEndTime(int endTime){ return 0;};
 };

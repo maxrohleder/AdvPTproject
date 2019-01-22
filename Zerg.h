@@ -1,3 +1,4 @@
+#pragma once
 #include "Zerg_header.h"
 #include <list>
 #include <map>
@@ -827,6 +828,20 @@ class Zerg : public Zerg_header{
         buildBuildlist(filename);
         printHeader(1);
     }
+    Zerg(const list<string>& randomList){
+        buildBuildmap();
+        initLarvaelist();
+        supply_max = 10;
+        for(auto unit_name : randomList){
+            if(unit_name == "") continue;
+                if(buildmap.find(unit_name) == buildmap.end()){
+                    cerr << "bad unitname: " << unit_name << endl;
+                    exit(1);
+                }
+                buildlist.push_back(buildmap[unit_name]);
+        }
+        printHeader(1);
+    }
     Zerg(const Zerg& z){}
     ~Zerg(){}
     int run() {
@@ -866,7 +881,6 @@ class Zerg : public Zerg_header{
             updateEventlist();
             bool new_building = false;
             if(!buildlist.empty()){
-                printlist.clear();
                 new_building = updateBuildlist();
             }
             if(!new_building && queen > 0){
@@ -874,6 +888,7 @@ class Zerg : public Zerg_header{
             }
             redistributeWorkers();
             if(!printlist.empty()){
+                print(time);
                 if(buildlist.empty() && eventlist.empty()){
                     return time;
                 }

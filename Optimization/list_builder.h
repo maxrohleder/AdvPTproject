@@ -1,8 +1,9 @@
+#pragma once
 #include <string>
 #include <list>
 #include <map>
 #include <iostream>
-#include "parser.h"
+#include "./parser.h"
 #include <algorithm>
 #include <stdlib.h>
 #include <vector>
@@ -34,8 +35,8 @@ class list_builder{
         }
 
         void runDebug(string start){
-            ZergChecker zc = ZergChecker();
             for(int j = 0; j < 1000; ++j){
+                ZergChecker zc = ZergChecker();
                 buildDigList(start);
                 for(int i = 0; i < 30; ++i){
                     if(digList.empty()){
@@ -53,6 +54,37 @@ class list_builder{
                 cout << zc.run(buildList) << endl;
                 reset();
             }
+        }
+
+        void printBuildList(){
+            cout << "buildList: ";
+            for(auto i : buildList){
+                cout << i << " ";
+            }
+            cout << endl;
+        }
+
+        void reset(){
+            once.clear();
+            multiple.clear();
+            buildList.clear();
+            digList.clear();
+            vespene = false;
+            if(race_flag == 'z'){
+                initZerg();
+            }
+        }
+
+        list<string> getList(string target){
+            //only for one unit push 
+            buildDigList(target);
+            while(!digList.empty()){
+                string r = getRandomUnit();
+                if(r != ""){
+                    addToBuildlist(r);
+                }
+            }
+            return buildList;
         }
 
     protected:
@@ -73,16 +105,6 @@ class list_builder{
         once.push_back("extractor");
     }
 
-    void reset(){
-        once.clear();
-        multiple.clear();
-        buildList.clear();
-        digList.clear();
-        vespene = false;
-        if(race_flag == 'z'){
-            initZerg();
-        }
-    }
 
     //add 2 vespene producers
     void addVespene(){
@@ -128,14 +150,6 @@ class list_builder{
     void printDigList(){
         cout << "digList: ";
         for(auto i : digList){
-            cout << i << " ";
-        }
-        cout << endl;
-    }
-
-    void printBuildList(){
-        cout << "buildList: ";
-        for(auto i : buildList){
             cout << i << " ";
         }
         cout << endl;
@@ -221,7 +235,7 @@ class list_builder{
     //test for more valid lists
     //probabilitys:
     int prob_max = 30;
-    int prob_mult = 20;
+    int prob_mult = 15;
     int prob_once = prob_mult + 5;
     int prob_dig = prob_max - prob_mult - prob_once;
     
