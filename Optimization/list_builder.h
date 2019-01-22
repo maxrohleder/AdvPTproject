@@ -13,11 +13,7 @@
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-<<<<<<< HEAD
         list_builder(string target = "", const string path_to_techtree = "", char rf = 'd', bool debug = false, RaceType r = ZERG) : race_flag(rf), target(target), optimRace(r){
-=======
-        list_builder(string path_to_techtree = "", char rf = 'd',int amount = 1, bool debug = false) : race_flag(rf), amount(amount){
->>>>>>> f4120ce07d1e03c54b85120a6cc5ed02ae05f53a
             init(rf);
             p = parser(path_to_techtree, debug);
         }
@@ -92,11 +88,9 @@ class list_builder{
             }
         }
 
-<<<<<<< HEAD
         vector<string>* get_multiple(){
             return &multiple;
         }
-=======
         void printBuildList(){
             cout << "buildList: ";
             for(auto i : buildList){
@@ -131,7 +125,6 @@ class list_builder{
             return buildList;
         }
 
->>>>>>> f4120ce07d1e03c54b85120a6cc5ed02ae05f53a
     protected:
 
     void init(char rf){
