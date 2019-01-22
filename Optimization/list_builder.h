@@ -12,13 +12,12 @@
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(const string path_to_techtree = "", char rf = 'd', bool debug = false) : race_flag(rf){
+        list_builder(string path_to_techtree = "", char rf = 'd',int amount = 1, bool debug = false) : race_flag(rf), amount(amount){
             init(rf);
             p = parser(path_to_techtree, debug);
         }
         list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
             init(lb.race_flag);
-            p = lb.p;
         }
         ~list_builder(){};
 
@@ -78,6 +77,9 @@ class list_builder{
         list<string> getList(string target){
             //only for one unit push 
             buildDigList(target);
+            for(int i = 1; i < amount; ++i){
+                digList.push_back(target);
+            }
             while(!digList.empty()){
                 string r = getRandomUnit();
                 if(r != ""){
@@ -110,17 +112,6 @@ class list_builder{
 
     void initTerran(){
         //TODO
-    }
-
-    void reset(){
-        once.clear();
-        multiple.clear();
-        buildList.clear();
-        digList.clear();
-        vespene = false;
-        if(race_flag == 'z'){
-            initZerg();
-        }
     }
 
     //add 2 vespene producers
@@ -249,6 +240,7 @@ class list_builder{
     bool vespene = false;
     char race_flag = 'd';
     list<string> buildList;
+    int amount = 1;
 
     //test for more valid lists
     //probabilitys:

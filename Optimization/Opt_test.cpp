@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main(){
-    Opt o("../../Optimization/techtree_zerg.csv", "mutalisk", 1, false, 'z');
+    Opt o("../../Optimization/techtree_zerg.csv", "roach", 10, false, 'z');
     o.runPureRandomDebug();
     o.printBuildlists();
     return 0;

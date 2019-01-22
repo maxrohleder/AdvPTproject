@@ -18,12 +18,12 @@ bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& s
 
 class Opt{
     public:
-        Opt(string tech_tree, string target, int amount, bool rush, char race_flag) : path_to_techtree(tech_tree), target(target), amount(amount), rush(rush){
-            cout << tech_tree << endl;
-            lb = list_builder(path_to_techtree, race_flag);
+        Opt(string tech_tree, string target, int amount, bool rush, char race_flag) : path_to_techtree(tech_tree), target(target), amount(amount), rush(rush), race_flag(race_flag){
+            //cout << tech_tree << endl;
+            //lb = list_builder(path_to_techtree, race_flag);
         }
         Opt(const Opt& o) : path_to_techtree(o.path_to_techtree), target(o.target), amount(o.amount), rush(o.rush){
-            lb = list_builder(path_to_techtree, race_flag);
+            //lb = list_builder(path_to_techtree, race_flag);
         }
         ~Opt(){}
 
@@ -48,12 +48,17 @@ class Opt{
         }
 
         void runPureRandomDebug(){
+            list_builder lb = list_builder(path_to_techtree, race_flag, amount);
             for(int i = 0; i < 100; ++i){
                 list<string> new_buildlist = lb.getList(target);
                 runBuildList(new_buildlist);
                 lb.reset();
             }
             sortBuildLists();
+        }
+
+        list<string> getBestList(){
+            return buildlists.front().first;
         }
 
 
@@ -96,7 +101,7 @@ class Opt{
         }
 
 
-        list_builder lb;
+        //list_builder lb;
         int epochs = 30;
         int steps = 1000;
         list<pair<list<string>, int>> buildlists;

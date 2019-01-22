@@ -69,7 +69,6 @@ class parser{
 
     void init(string filename){
         fstream file(filename);
-        cout << filename << endl;
         if(!file.is_open()){
             cerr << "cant read techtree file" << endl;
             exit(-1);
