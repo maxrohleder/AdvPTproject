@@ -62,6 +62,9 @@ class list_builder{
         if(rf == 'z'){
             used_only_once = used_only_once_zerg;
             initZerg();
+        }else if(rf == 't'){
+            used_only_once = used_only_once_terran;
+            initTerran();
         }
     }
 
@@ -71,6 +74,10 @@ class list_builder{
         multiple.push_back("overlord");
         once.push_back("extractor");
         once.push_back("extractor");
+    }
+
+    void initTerran(){
+        //TODO
     }
 
     void reset(){
@@ -210,6 +217,7 @@ class list_builder{
          "spore_crawler", "spawning_pool", "spine_crawler", "roach_warren",
          "baneling_nest", "hydralisk_den", "infestation_pit", "nydus_network",
          "ultralisk_cavern", "greater_spire", "spire"};
+    list<string> used_only_once_terran = {"engineering bay", "armory", "fusion_core", "ghost_academy"};
     list<string>& used_only_once = used_only_once_zerg;
     vector<string> once;
     vector<string> multiple;
