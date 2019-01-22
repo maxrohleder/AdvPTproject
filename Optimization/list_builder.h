@@ -1,8 +1,9 @@
+#pragma once
 #include <string>
 #include <list>
 #include <map>
 #include <iostream>
-#include "parser.h"
+#include "./parser.h"
 #include <algorithm>
 #include <stdlib.h>
 #include <vector>
@@ -12,13 +13,16 @@
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
+<<<<<<< HEAD
         list_builder(string target = "", const string path_to_techtree = "", char rf = 'd', bool debug = false, RaceType r = ZERG) : race_flag(rf), target(target), optimRace(r){
+=======
+        list_builder(string path_to_techtree = "", char rf = 'd',int amount = 1, bool debug = false) : race_flag(rf), amount(amount){
+>>>>>>> f4120ce07d1e03c54b85120a6cc5ed02ae05f53a
             init(rf);
             p = parser(path_to_techtree, debug);
         }
         list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
             init(lb.race_flag);
-            p = lb.p;
         }
         ~list_builder(){};
 
@@ -67,8 +71,8 @@ class list_builder{
         }
 
         void runDebug(string start){
-            ZergChecker zc = ZergChecker();
             for(int j = 0; j < 1000; ++j){
+                ZergChecker zc = ZergChecker();
                 buildDigList(start);
                 for(int i = 0; i < 30; ++i){
                     if(digList.empty()){
@@ -88,9 +92,46 @@ class list_builder{
             }
         }
 
+<<<<<<< HEAD
         vector<string>* get_multiple(){
             return &multiple;
         }
+=======
+        void printBuildList(){
+            cout << "buildList: ";
+            for(auto i : buildList){
+                cout << i << " ";
+            }
+            cout << endl;
+        }
+
+        void reset(){
+            once.clear();
+            multiple.clear();
+            buildList.clear();
+            digList.clear();
+            vespene = false;
+            if(race_flag == 'z'){
+                initZerg();
+            }
+        }
+
+        list<string> getList(string target){
+            //only for one unit push 
+            buildDigList(target);
+            for(int i = 1; i < amount; ++i){
+                digList.push_back(target);
+            }
+            while(!digList.empty()){
+                string r = getRandomUnit();
+                if(r != ""){
+                    addToBuildlist(r);
+                }
+            }
+            return buildList;
+        }
+
+>>>>>>> f4120ce07d1e03c54b85120a6cc5ed02ae05f53a
     protected:
 
     void init(char rf){
@@ -114,17 +155,6 @@ class list_builder{
 
     void initTerran(){
         //TODO
-    }
-
-    void reset(){
-        once.clear();
-        multiple.clear();
-        buildList.clear();
-        digList.clear();
-        vespene = false;
-        if(race_flag == 'z'){
-            initZerg();
-        }
     }
 
     //add 2 vespene producers
@@ -171,14 +201,6 @@ class list_builder{
     void printDigList(){
         cout << "digList: ";
         for(auto i : digList){
-            cout << i << " ";
-        }
-        cout << endl;
-    }
-
-    void printBuildList(){
-        cout << "buildList: ";
-        for(auto i : buildList){
             cout << i << " ";
         }
         cout << endl;
@@ -263,11 +285,12 @@ class list_builder{
     bool vespene = false;
     char race_flag = 'd';
     list<string> buildList;
+    int amount = 1;
 
     //test for more valid lists
     //probabilitys:
     int prob_max = 30;
-    int prob_mult = 20;
+    int prob_mult = 15;
     int prob_once = prob_mult + 5;
     int prob_dig = prob_max - prob_mult - prob_once;
     

@@ -1,3 +1,4 @@
+#pragma once
 #include "Race.h"
 
 class Zerg_header : public Race{
