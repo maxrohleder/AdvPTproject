@@ -7,11 +7,12 @@
 #include <stdlib.h>
 #include <vector>
 #include "../Validator/ValidatorZerg.h"
+#include "global_enums.h"
 
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(const string path_to_techtree = "", char rf = 'd', bool debug = false) : race_flag(rf){
+        list_builder(string target = "", const string path_to_techtree = "", char rf = 'd', bool debug = false, RaceType r = ZERG) : race_flag(rf), target(target), optimRace(r){
             init(rf);
             p = parser(path_to_techtree, debug);
         }
@@ -31,6 +32,38 @@ class list_builder{
             race_flag = lb.race_flag;
             buildList = lb.buildList;
             return *this;
+        }
+
+        void append_n_lists(list<pair<list<string>, int>> *buildlists, int n){
+            for(int i = 0; i < n; i++)
+            {
+                // append n lists to given buildlists pointer
+                list<string> new_list = create_list(target);
+                buildlists->push_back(make_pair<list<string>, int>(new_list, UNTESTED));
+            }
+        }
+
+        list<string> create_list(string target){
+            // TODO get this going for all races
+            ZergChecker zc = ZergChecker();
+            for(int j = 0; j < 1000; ++j){
+                buildDigList(target);
+                for(int i = 0; i < 30; ++i){
+                    if(digList.empty()){
+                        break;
+                    }
+                    string r = getRandomUnit();
+                    if(r != ""){
+                        addToBuildlist(r);
+                        //printAllLists();
+                    }else{
+                        --i;
+                    }
+                }
+            }
+            list<string> ret = buildList;
+            reset();
+            return ret;
         }
 
         void runDebug(string start){
@@ -55,6 +88,9 @@ class list_builder{
             }
         }
 
+        vector<string>* get_multiple(){
+            return &multiple;
+        }
     protected:
 
     void init(char rf){
@@ -213,6 +249,8 @@ class list_builder{
     }
 
     parser p;
+    string target;
+    RaceType optimRace;
     list<string> used_only_once_zerg = {"evolution_chamber",
          "spore_crawler", "spawning_pool", "spine_crawler", "roach_warren",
          "baneling_nest", "hydralisk_den", "infestation_pit", "nydus_network",

@@ -183,7 +183,13 @@ class Protoss : public Protoss_status{
     }
 
     public:
-    Protoss(const string filename, const string techtree = "", bool dbg = false) {
+    Protoss(const list<string> buildlist_to_run, string techtree = "", bool dbg = false) : buildlist(buildlist_to_run), debug(dbg), techtreepath(techtree){
+        initBuildmap();
+        supply_max = 10;
+        idlebuildings.push_back("nexus_0");
+        energylist.push_back(pair<int,int>(0,0));
+    }
+    Protoss(const string filename, const string techtree = "", bool dbg = false) :  {
         debug = dbg;
         techtreepath = techtree;
         buildlistpath = filename;
