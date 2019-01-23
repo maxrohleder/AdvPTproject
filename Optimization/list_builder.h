@@ -10,6 +10,10 @@
 #include "../Validator/ValidatorZerg.h"
 #include "global_enums.h"
 
+bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
+    return first.second < second.second;
+}
+
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
@@ -34,12 +38,12 @@ class list_builder{
             return *this;
         }
 
-        void append_n_lists(list<pair<list<string>, int>> *buildlists, int n){
+        void append_n_lists(list<pair<list<string>, int>> &buildlists, int n){
             for(int i = 0; i < n; i++)
             {
                 // append n lists to given buildlists pointer
                 list<string> new_list = create_list(target);
-                buildlists->push_back(make_pair<list<string>, int>(new_list, UNTESTED));
+                buildlists->push_back(make_pair(new_list, UNTESTED));
             }
         }
 

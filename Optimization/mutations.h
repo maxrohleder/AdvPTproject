@@ -8,6 +8,10 @@
 
 using namespace std;
 
+// create n mutations
+// cross breeding
+// wenn zeit knapp drüber ist eine einheit entfernen
+// mutation (zufällige mod an einer liste)
 class Mutator{
     private:
     vector<string> *multiple = NULL;
@@ -33,29 +37,29 @@ class Mutator{
     }
 
 
-    void append_n_mutations(list<pair<list<string>, int>> *buildlists, int n){
+    void append_n_mutations(list<pair<list<string>, int>> &buildlists, int n){
         for(int i = 0; i < n; i++)
         {
             int chance = rand() % 2;
             if(chance == 0){
                 // TODO randomly cross breed (and make this nicer :'D)
-                int l1 = rand() % buildlists->size();
-                int l2 = rand() % buildlists->size();
-                auto list1 = buildlists->begin();
+                int l1 = rand() % buildlists.size();
+                int l2 = rand() % buildlists.size();
+                auto list1 = buildlists.begin();
                 advance(list1, l1);
-                auto list2 = buildlists->begin();
+                auto list2 = buildlists.begin();
                 advance(list2, l2);
                 
                 list<string> quick1 = (*list1).first;
 
                 list<string> quick2 = (*list2).first;
 
-                buildlists->push_back(make_pair<list<string>, int>(cross_breed(quick1, quick2), UNTESTED));
+                buildlists.push_back(make_pair<list<string>, int>(cross_breed(quick1, quick2), UNTESTED));
             }
             else if(chance == 1){
                 // TODO randomly add mutations
-                int l1 = rand() % buildlists->size();
-                auto list1 = buildlists->begin();
+                int l1 = rand() % buildlists.size();
+                auto list1 = buildlists.begin();
                 advance(list1, l1);
                 //buildlists->push_back(make_pair(mutate(list1), UNTESTED));
             }

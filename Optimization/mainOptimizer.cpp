@@ -1,9 +1,11 @@
+#pragma once
 #include <iostream>
 #include <list>
 #include <string>
 #include <algorithm>
 
 #include "Opt.h"
+#include "global_enums.h"
 
 using namespace std;
 
@@ -29,13 +31,13 @@ int main(int argc, char *argv[]){
     bool rush = (string(argv[1]) == "rush");
     string unit_to_build = string(argv[2]);
     if(find_if(protoss_units.begin(), protoss_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != protoss_units.end()){
-        Opt O()
+        Opt O(RaceType::PROTOSS, string("techtree_protoss.csv"), unit_to_build, stoi(string(argv[3])), rush);
     }
     else if(find_if(zerg_units.begin(), zerg_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != zerg_units.end()){
-
+        Opt O(RaceType::ZERG, string("techtree_zerg.csv"), unit_to_build, stoi(string(argv[3])), rush);
     }
     else if(find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != terran_units.end()){
-
+        Opt O(RaceType::TERRAN, string("techtree_terran.csv"), unit_to_build, stoi(string(argv[3])), rush);
     }
     else{
 

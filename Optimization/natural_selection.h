@@ -11,9 +11,19 @@
 using namespace std;
 
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
+    // anzahl richtiger einheiten finden und danach sortieren
     return first.second < second.second;
 }
 
+// listen bewerten
+//      nach anderen kriterien als nur zeit zb
+//      rush anzahl der einheiten checken
+// listen sortieren
+// nur die n besten listen durchlassen
+//
+// von Opt wird methode cutNBest aufgerufen
+// 
+// Vincent
 class natural_selector{
     private:
     RaceType rt;
@@ -23,34 +33,13 @@ class natural_selector{
     natural_selector(const &natural_selector n){}
     ~natural_selector(){}
 
-    void sortBuildLists(list<pair<list<string>, int>> *buildlists){
+    void sortBuildLists(list<pair<list<string>, int>> &buildlists){
+
         buildlists->sort(comp);
     }
 
-    void cutNBest(list<pair<list<string>, int>> *buildlists, int n){
+    void cutNBest(list<pair<list<string>, int>> &buildlists, int n){
         runBuilists(buildlists);
-        sortBuildLists(buildlists);
         buildlists->resize(n);
     }
-
-    void runBuilist(list<string> buildlist){
-        // evaluate all buildlists and assign a time to them
-        // TODO implement properly not python style
-        for(int i = 0; i < buildlist.size(); i++)
-        {
-            list<string> single_list = buildlist[i].first;
-            if(r == PROTOSS){
-                // TODO create right objects
-                evaluator = Protoss(single_list);
-            } 
-            else if(r == ZERG){
-                evaluator = Zerg(single_list);
-            }
-            else{
-                evaluator = Terran(single_list);
-            }
-            buildlist[i].second = evaluator.getEndTime();
-        }
-    }
-
 }

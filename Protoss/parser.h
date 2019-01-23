@@ -8,21 +8,21 @@
 
 using namespace std;
 
-class depObj{
+class dependObj{
     public:
-        depObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
+        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
                  name(name), supply(supply), vespene(vesp), dependency(dependency), produced_by(produced_by){}
-        depObj(const depObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
-        ~depObj(){}
+        dependObj(const dependObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
+        ~dependObj(){}
 
-        depObj& operator=(const depObj& n){
+        dependObj& operator=(const dependObj& n){
             vespene = n.vespene;
             dependency = n.dependency;
             produced_by = n.produced_by;
             return *this;
         }
 
-        friend ostream& operator<<(ostream& out, const depObj& obj);
+        friend ostream& operator<<(ostream& out, const dependObj& obj);
 
 
         string name;
@@ -32,7 +32,7 @@ class depObj{
         string produced_by;
 };
 
-ostream& operator<<(ostream& out, const depObj& obj){
+ostream& operator<<(ostream& out, const dependObj& obj){
     out << "\tvespene: " << obj.vespene << "\t\tproduced_by: " << obj.produced_by;
     if(obj.produced_by.length() < 10) out << "\t"; //for fancy output
     out << "\tdependency: " << obj.dependency;
@@ -45,7 +45,7 @@ class parser{
     bool debug = false;
 
     public:
-    map<string, depObj> dependencies;
+    map<string, dependObj> dependencies;
     list<string> buildlist;
 
     parser(){}
@@ -101,8 +101,8 @@ class parser{
             }
             bool vesp = stoi(param[2]) != 0;
             int suppl = stoi(param[5])-stoi(param[4]);
-            dependencies[param[0]] = depObj(param[0], suppl, vesp, param[9], param[10]);
-    //        depObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
+            dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10]);
+    //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 
         }
         file.close();
@@ -133,7 +133,7 @@ class parser{
         return !buildlist.empty();
     }
 
-    depObj* get_obj(const string name){
+    dependObj* get_obj(const string name){
         if(debug) cout << "getting object\n";
         if(dependencies.count(name) == 0) return NULL;
         return &dependencies[name];
@@ -150,7 +150,7 @@ int validate(string techtree, string buildlist, bool debug = false){
     while(p.building()){
         string name = p.buildlist.front();
         // can do this without error checking, constructing buildlist in parser checks that they are declared in dependencies
-        depObj& item = p.dependencies[name];
+        dependObj& item = p.dependencies[name];
         supply += item.supply;
         // it either dependencies or produced_by are not met or supply goes below 0 return 1 and terminate
         /* if( (item.dependency != "NONE" && find(seen.begin(), seen.end(), item.dependency) == seen.end()) ||

@@ -5,32 +5,23 @@
 #include <iostream>
 
 #include "list_builder.h"
-<<<<<<< HEAD
 #include "natural_selection.h"
 #include "mutations.h"
 #include "global_enums.h"
-=======
-#include "../Zerg.h"
-#include "../Terran.h"
-//#include "../Protoss.h"
-#include "../Validator/ValidatorZerg.h"
-#include "../Validator/ValidatorTerran.h"
->>>>>>> f4120ce07d1e03c54b85120a6cc5ed02ae05f53a
 
 using namespace std;
 
 class Opt{
 private:
-        list_builder lb;
-        Mutator mu;
-        natural_selector ns;
-
         int epochs = 30;
         int number_best = 10;
         int number_to_create_to = 1000;
         int number_to_mutate_to = 500;
+        int amount = 1;
+        string target;
+        string techtree;
+        bool rush;
         RaceType r;
-
         list<pair<list<string>, int>> buildlists;
 
 public:
@@ -38,30 +29,49 @@ public:
             cout << "never used, but have to provide a default constructor" << endl;
             exit(-1);
         }
-        Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : r(race){
-            // init listbuilder
-            lb = list_builder(target, tech_tree);
-            // init natural selector
-            ns = natural_selector(race);
-            // init mating and mutations
-            mu = Mutator(lb.get_multiple());
-        }
+        Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : r(race), techtree(tech_tree), amount(amount), target(target), rush(rush){}
         Opt(const Opt& o){}
         ~Opt(){}
 
         list<string> optimize(){
+            // init listbuilder
+            list_builder lb(target, techtree);
+            // init natural selector
+            natural_selector ns(r);
+            // init mating and mutations
+            Mutator mu(lb.get_multiple());
             
             for(size_t i = 0; i < epochs; i++){
                 int size = buildlists.size();
-                //create x buildlists
-                lb.append_n_lists(&buildlists, number_to_create_to-size);
+                //create x buildlists and assign an endtime
+                lb.append_n_lists(buildlists, number_to_create_to-size);
                 size = buildlists.size();
                 //sort and cut buildlists
-                ns.cutNBest(&buildlists, number_best);
+                ns.cutNBest(buildlists, number_best);
                 size = buildlists.size();
                 //mutate buildlists
-                mu.append_n_mutations(&buildlists, number_to_mutate_to-size)
+                mu.append_n_mutations(buildlists, number_to_mutate_to-size);
                 //repeat
             }
+        }
+
+        void runBuildList(list<string> buildlist){
+            //run Validator on List
+            //if not valid time -> max_time
+            //if valid run forward 
+            //time -> runtime
+            //push into buildLists
+            if(r == ZERG){
+                ZergChecker zc = ZergChecker();
+                bool valid = zc.run(buildlist);
+                int end_time = MAX_TIME;
+                if(valid){
+                    Zerg z(buildlist);
+                    end_time = z.getEndTime(50000);
+                }
+                buildlists.push_back(make_pair(buildlist, end_time));
+            }
+           
+          
         }
 };
