@@ -5,8 +5,8 @@
 #include <iostream>
 
 #include "list_builder.h"
-#include "natural_selection.h"
-#include "mutations.h"
+//#include "natural_selection.h"
+//#include "mutations.h"
 #include "global_enums.h"
 
 using namespace std;
@@ -37,9 +37,9 @@ public:
             // init listbuilder
             list_builder lb(target, techtree);
             // init natural selector
-            natural_selector ns(r);
+            //natural_selector ns(r);
             // init mating and mutations
-            Mutator mu(lb.getMultiple());
+            //Mutator mu(lb.getMultiple());
             
             for(size_t i = 0; i < epochs; i++){
                 int size = buildlists.size();
@@ -47,49 +47,23 @@ public:
                 lb.appendNLists(buildlists, number_to_create_to-size);
                 size = buildlists.size();
                 //sort and cut buildlists
-                ns.cutNBest(buildlists, number_best);
+                //ns.cutNBest(buildlists, number_best);
                 size = buildlists.size();
                 //mutate buildlists
-                mu.append_n_mutations(buildlists, number_to_mutate_to-size);
+                //mu.append_n_mutations(buildlists, number_to_mutate_to-size);
                 //repeat
             }
+            list<string> useless_warning_workaround = {"fuckthisshit", "whothefuckneedsreturnstatements"};
+            return useless_warning_workaround;
         }
+        
 
-        void runBuildList(list<string> buildlist){
-            //run Validator on List
-            //if not valid time -> max_time
-            //if valid run forward 
-            //time -> runtime
-            //push into buildLists
-            if(r == ZERG){
-                ZergChecker zc = ZergChecker();
-                bool valid = zc.run(buildlist);
-                int end_time = lstat::MAX_TIME;
-                if(valid){
-                    Zerg z(buildlist);
-                    end_time = z.getEndTime(50000);
-                }
-                buildlists.push_back(make_pair(buildlist, end_time));
-            }
-           
-          
+        void runPureRandomDebug(bool sort = false){
+            list_builder lb(target, techtree, amount, r);
+            lb.appendNLists(buildlists, 100, sort);
+            printBuildlists();
         }
-
-        void runPureRandomDebug(){}
-        /*
-            list_builder lb = list_builder(path_to_techtree, race_flag, amount);
-            for(int i = 0; i < 100; ++i){
-                list<string> new_buildlist = lb.getList(target);
-                runBuildList(new_buildlist);
-                lb.reset();
-            }
-            sortBuildLists();
-        }
-
-        list<string> getBestList(){
-            return buildlists.front().first;
-        }
-        */
+        
 
         void printBuildlists(){
             for(auto& i : buildlists){

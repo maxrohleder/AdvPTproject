@@ -37,22 +37,22 @@ ostream& operator<<(ostream& out, const lineObj& obj){
     return out;
 }
 
-class parser{
+class par{
     protected:
     // ACTUAL DATASTRUCTURE
     bool debug = false;
     map<string, lineObj> dependencies;
 
     public:
-    parser(){}
-    parser (const string techtreefilename, bool dbg = false) :debug(dbg) {
+    par(){}
+    par (const string techtreefilename, bool dbg = false) :debug(dbg) {
         init(techtreefilename);
         if(debug) printMap();
     }
-    parser(const parser& n) : debug(n.debug), dependencies(n.dependencies){}
-    ~parser(){}
+    par(const par& n) : debug(n.debug), dependencies(n.dependencies){}
+    ~par(){}
 
-    parser operator=(const parser& p){
+    par operator=(const par& p){
         debug = p.debug;
         dependencies = p.dependencies;
         return *this;

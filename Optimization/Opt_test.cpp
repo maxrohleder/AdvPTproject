@@ -5,7 +5,6 @@
 
 int main(){
     Opt o(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", "roach", 10, false);
-    o.runPureRandomDebug();
-    o.printBuildlists();
+    o.runPureRandomDebug(true);
     return 0;
 }

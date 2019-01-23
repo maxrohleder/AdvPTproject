@@ -9,6 +9,7 @@
 #include <vector>
 #include "../Validator/ValidatorZerg.h"
 #include "global_enums.h"
+#include "../Zerg.h"
 
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
     return first.second < second.second;
@@ -17,9 +18,9 @@ bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& s
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(string target = "", const string path_to_techtree = "", RaceType r = ZERG, bool debug = false) : race_flag(r), target(target), optimRace(r){
+        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG, bool debug = false) : race_flag(r), target(target), amount(amount){
             init();
-            p = parser(path_to_techtree, debug);
+            p = par(path_to_techtree, debug);
         }
         list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
             init();
@@ -40,38 +41,14 @@ class list_builder{
 
 
         //TODO
-        void appendNLists(list<pair<list<string>, int>> &buildlists, int n){
-            for(int i = 0; i < n; i++)
-            {
-                // append n lists to given buildlists pointer
-                list<string> new_list = createList(target);
-                buildlists.push_back(make_pair(new_list, UNTESTED));
+        void appendNLists(list<pair<list<string>, int>> &buildlists, int n, bool sort = false){
+            for(int i = 0; i < n; i++){
+                list<string> l = createListPush();
+                runAndInsertList(buildlists, l);
             }
-        }
-
-
-        //TODO
-        list<string> createList(string target){
-            // TODO get this going for all races
-            ZergChecker zc = ZergChecker();
-            for(int j = 0; j < 1000; ++j){
-                buildDigList(target);
-                for(int i = 0; i < 30; ++i){
-                    if(digList.empty()){
-                        break;
-                    }
-                    string r = getRandomUnit();
-                    if(r != ""){
-                        addToBuildlist(r);
-                        //printAllLists();
-                    }else{
-                        --i;
-                    }
-                }
+            if(sort){
+                buildlists.sort(comp);
             }
-            list<string> ret = buildList;
-            reset();
-            return ret;
         }
 
         void runDebug(string start){
@@ -101,21 +78,6 @@ class list_builder{
         }
 
 
-        list<string> getList(string target){
-            //only for one unit push 
-            buildDigList(target);
-            for(int i = 1; i < amount; ++i){
-                digList.push_back(target);
-            }
-            while(!digList.empty()){
-                string r = getRandomUnit();
-                if(r != ""){
-                    addToBuildlist(r);
-                }
-            }
-            return buildList;
-        }
-
     protected:
 
 
@@ -128,6 +90,9 @@ class list_builder{
         }else if(race_flag == TERRAN){
             used_only_once = used_only_once_terran;
             initTerran();
+        }else{
+            //used_only_once = used_only_once_protoss;
+            initProtoss();
         }
     }
 
@@ -146,7 +111,47 @@ class list_builder{
 
     //TODO
     void initProtoss(){
+        //TODO
+    }
 
+    //create a single list for push
+    list<string> createListPush(){
+        buildDigList(target);
+        for(int i = 1; i < amount; ++i){
+            digList.push_back(target);
+        }
+        while(!digList.empty()){
+            string r = getRandomUnit();
+            if(r != ""){
+                addToBuildlist(r);
+            }
+        }
+        list<string> ret = buildList;
+        reset();
+        return ret;
+    }
+
+    void runAndInsertList(list<pair<list<string>, int>> &buildlists, list<string> &bl){
+        int time = MAX_TIME;
+        bool valid = true;
+        if(race_flag == ZERG){
+            ZergChecker zc = ZergChecker();
+            valid = zc.run(bl);
+            if(valid){
+                Zerg z(bl);
+                time = z.getEndTime(50000);
+            }
+        }else if(race_flag == TERRAN){
+            //TerranChecker tc = TerranChecker()
+            //valid = tc.run(bl)
+            //if(valid){
+            //    Terran t(bl);
+            //    time = t.getEndTime(50000);
+            //}
+        }else{
+            //TODO?
+        }
+        buildlists.push_back(make_pair(bl, time));        
     }
 
     //add 2 vespene producers
@@ -154,6 +159,10 @@ class list_builder{
         if(race_flag == ZERG){
             once.push_back("extractor");
             once.push_back("extractor");
+        }else if(race_flag == TERRAN){
+            //TODO Terran
+        }else{
+            //TODO Protoss
         }
     }
 
@@ -165,6 +174,10 @@ class list_builder{
         vespene = false;
         if(race_flag == ZERG){
             initZerg();
+        }else if(race_flag == TERRAN){
+            initTerran();
+        }else{
+            initProtoss();
         }
     }
 
@@ -281,9 +294,8 @@ class list_builder{
         buildList.push_back(name);
     }
 
-    parser p;
+    par p;
     string target;
-    RaceType optimRace;
     list<string> used_only_once_zerg = {"evolution_chamber",
          "spore_crawler", "spawning_pool", "spine_crawler", "roach_warren",
          "baneling_nest", "hydralisk_den", "infestation_pit", "nydus_network",
