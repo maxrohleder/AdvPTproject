@@ -38,16 +38,20 @@ class list_builder{
             return *this;
         }
 
-        void append_n_lists(list<pair<list<string>, int>> &buildlists, int n){
+
+        //TODO
+        void appendNLists(list<pair<list<string>, int>> &buildlists, int n){
             for(int i = 0; i < n; i++)
             {
                 // append n lists to given buildlists pointer
-                list<string> new_list = create_list(target);
-                buildlists->push_back(make_pair(new_list, UNTESTED));
+                list<string> new_list = createList(target);
+                buildlists.push_back(make_pair(new_list, UNTESTED));
             }
         }
 
-        list<string> create_list(string target){
+
+        //TODO
+        list<string> createList(string target){
             // TODO get this going for all races
             ZergChecker zc = ZergChecker();
             for(int j = 0; j < 1000; ++j){
@@ -92,9 +96,11 @@ class list_builder{
             }
         }
 
-        vector<string>* get_multiple(){
+        vector<string>* getMultiple(){
             return &multiple;
         }
+
+
         void printBuildList(){
             cout << "buildList: ";
             for(auto i : buildList){
@@ -131,8 +137,10 @@ class list_builder{
 
     protected:
 
+
+    //TODO Raceflags
     void init(char rf){
-        srand(0);
+        srand(seed);
         if(rf == 'z'){
             used_only_once = used_only_once_zerg;
             initZerg();
@@ -150,8 +158,14 @@ class list_builder{
         once.push_back("extractor");
     }
 
+    //TODO
     void initTerran(){
         //TODO
+    }
+
+    //TODO
+    void initProtoss(){
+
     }
 
     //add 2 vespene producers
@@ -274,13 +288,18 @@ class list_builder{
          "spore_crawler", "spawning_pool", "spine_crawler", "roach_warren",
          "baneling_nest", "hydralisk_den", "infestation_pit", "nydus_network",
          "ultralisk_cavern", "greater_spire", "spire"};
+
     list<string> used_only_once_terran = {"engineering bay", "armory", "fusion_core", "ghost_academy"};
+
+    // TODO protoss used_only_once
+
+
     list<string>& used_only_once = used_only_once_zerg;
     vector<string> once;
     vector<string> multiple;
     list<string> digList;
     bool vespene = false;
-    char race_flag = 'd';
+    char race_flag = 'd'; //TODO not needed
     list<string> buildList;
     int amount = 1;
 

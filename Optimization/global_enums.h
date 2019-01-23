@@ -11,5 +11,7 @@ typedef enum RaceType{
 typedef enum list_status{
     UNTESTED = -33,
     INVALID = -404,
-    MAX_TIME = INT_MAX
+    MAX_TIME = INT32_MAX
 } lstat;
+
+int seed = 666;

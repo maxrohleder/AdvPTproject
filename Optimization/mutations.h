@@ -19,7 +19,7 @@ class Mutator{
     public:
     Mutator(){}
     Mutator(vector<string> *multi): multiple(multi){
-         srand(3333);
+         srand(seed);
     }
     Mutator(const Mutator &m){}
     ~Mutator(){}
