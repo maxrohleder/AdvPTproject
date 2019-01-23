@@ -17,12 +17,12 @@ bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& s
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(string target = "", const string path_to_techtree = "", char rf = 'd', bool debug = false, RaceType r = ZERG) : race_flag(rf), target(target), optimRace(r){
-            init(rf);
+        list_builder(string target = "", const string path_to_techtree = "", RaceType r = ZERG, bool debug = false) : race_flag(r), target(target), optimRace(r){
+            init();
             p = parser(path_to_techtree, debug);
         }
         list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
-            init(lb.race_flag);
+            init();
         }
         ~list_builder(){};
 
@@ -101,25 +101,6 @@ class list_builder{
         }
 
 
-        void printBuildList(){
-            cout << "buildList: ";
-            for(auto i : buildList){
-                cout << i << " ";
-            }
-            cout << endl;
-        }
-
-        void reset(){
-            once.clear();
-            multiple.clear();
-            buildList.clear();
-            digList.clear();
-            vespene = false;
-            if(race_flag == 'z'){
-                initZerg();
-            }
-        }
-
         list<string> getList(string target){
             //only for one unit push 
             buildDigList(target);
@@ -139,12 +120,12 @@ class list_builder{
 
 
     //TODO Raceflags
-    void init(char rf){
+    void init(){
         srand(seed);
-        if(rf == 'z'){
+        if(race_flag == ZERG){
             used_only_once = used_only_once_zerg;
             initZerg();
-        }else if(rf == 't'){
+        }else if(race_flag == TERRAN){
             used_only_once = used_only_once_terran;
             initTerran();
         }
@@ -170,9 +151,20 @@ class list_builder{
 
     //add 2 vespene producers
     void addVespene(){
-        if(race_flag == 'z'){
+        if(race_flag == ZERG){
             once.push_back("extractor");
             once.push_back("extractor");
+        }
+    }
+
+    void reset(){
+        once.clear();
+        multiple.clear();
+        buildList.clear();
+        digList.clear();
+        vespene = false;
+        if(race_flag == ZERG){
+            initZerg();
         }
     }
 
@@ -207,6 +199,14 @@ class list_builder{
         if(find(once.begin(), once.end(), name) == once.end()){
             once.push_back(name);
         }
+    }
+
+    void printBuildList(){
+        cout << "buildList: ";
+        for(auto i : buildList){
+            cout << i << " ";
+        }
+        cout << endl;
     }
 
     void printDigList(){
@@ -299,7 +299,7 @@ class list_builder{
     vector<string> multiple;
     list<string> digList;
     bool vespene = false;
-    char race_flag = 'd'; //TODO not needed
+    RaceType race_flag; //TODO not needed
     list<string> buildList;
     int amount = 1;
 
