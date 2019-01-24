@@ -32,7 +32,11 @@ struct depTerran{
 };
 
 struct resTerran{
+    int scv = 7;
     int supply = 11;
+    int bases = 1;
+    int command_center = 1;
+    int orbital_command = 0;
     
 };
 
@@ -123,6 +127,41 @@ private:
     }
 
     void initResources(){
+        resMap["scv"] = resObj();
+        resMap["marine"] = resObj(); 
+        resMap["marauder"] = resObj();
+        resMap["reaper"] = resObj();
+        resMap["ghost"] = resObj();
+        resMap["hellion"] = resObj();
+        resMap["siege_tank"] = resObj();
+        resMap["thor"] = resObj();
+        resMap["medivac"] = resObj();
+        resMap["viking"] = resObj();
+        resMap["raven"] = resObj();
+        resMap["banshee"] = resObj();
+        resMap["battlecruiser"] = resObj();
+        //buildings
+        resMap["command_center"] = resObj();
+        resMap["orbital_command"] = resObj();
+        resMap["planetary_fortress"] = resObj();
+        resMap["refinery"] = resObj();
+        resMap["engineering_bay"] = resObj();
+        resMap["missile_turret"] = resObj();
+        resMap["sensor_tower"] = resObj();
+        resMap["barracks"] = resObj();
+        resMap["factory"] = resObj();
+        resMap["armory"] = resObj();
+        resMap["bunker"] = resObj();
+        resMap["ghost_academy"] = resObj();
+        resMap["starport"] = resObj();
+        resMap["fusion_core"] = resObj();
+        resMap["supply_depot"] = resObj();
+        resMap["barracks_with_reactor"] = resObj();
+        resMap["barracks_with_tech_lab"] = resObj();
+        resMap["starport_with_reactor"] = resObj();
+        resMap["starport_with_tech_lab"] = resObj();
+        resMap["factory_with_reactor"] = resObj();
+        resMap["factory_with_tech_lab"] = resObj();
 
     }
 

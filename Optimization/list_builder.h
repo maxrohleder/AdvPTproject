@@ -106,7 +106,12 @@ class list_builder{
 
     //TODO
     void initTerran(){
-        //TODO
+        //TODO keine Ahnung ob das stimmt
+        multiple.push_back("scv");
+        multiple.push_back("command_center");
+        multiple.push_back("supply_depot");
+        once.push_back("refinery");
+        once.push_back("refinery");
     }
 
     //TODO
