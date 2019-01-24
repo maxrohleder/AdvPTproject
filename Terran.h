@@ -1226,9 +1226,33 @@ public:
         return 1;
     }
 
-    int getEndTime(){
+    int getEndTime(int endTime){
         // TODO: do one forward simulation and return only the endtime of the last item
-        return 42;
+        for(; timestep < endTime; ++timestep){
+            updateResources();
+            updateEventlist();
+            bool forMule = false;
+            if(!buildlist.empty()){
+                forMule = updateBuildlist();
+            }
+            if(!forMule){
+                muleBuild();
+            }
+            redistributeWorkers();
+            if(!printlist.empty()){
+                print(timestep);
+                bool eventEmpty = false;
+                if(!eventlist.empty()){
+                    eventEmpty = eventlist.begin()->function == &Terran::muleFinish;
+                }
+                if((buildlist.empty() && eventEmpty) || (buildlist.empty() && eventlist.empty())){
+                    return timestep;
+                }
+            }
+        }
+        return timestep;
+       
+        
     }
 
 };
