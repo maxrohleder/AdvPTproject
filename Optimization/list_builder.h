@@ -18,9 +18,9 @@ bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& s
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG, bool debug = false) : race_flag(r), target(target), amount(amount){
+        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG, bool rush = false) : race_flag(r), target(target), amount(amount), rush(rush){
             init();
-            p = par(path_to_techtree, debug);
+            p = par(path_to_techtree, false);
         }
         list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
             init();
@@ -51,28 +51,6 @@ class list_builder{
             }
         }
 
-        void runDebug(string start){
-            for(int j = 0; j < 1000; ++j){
-                ZergChecker zc = ZergChecker();
-                buildDigList(start);
-                for(int i = 0; i < 30; ++i){
-                    if(digList.empty()){
-                        break;
-                    }
-                    string r = getRandomUnit();
-                    if(r != ""){
-                        addToBuildlist(r);
-                        //printAllLists();
-                    }else{
-                        --i;
-                    }
-                }
-                printBuildList();
-                cout << zc.run(buildList) << endl;
-                reset();
-            }
-        }
-
         vector<string>* getMultiple(){
             return &multiple;
         }
@@ -84,6 +62,9 @@ class list_builder{
     //TODO Raceflags
     void init(){
         srand(seed);
+        if(rush){
+            to_build = 0;
+        }
         if(race_flag == ZERG){
             used_only_once = used_only_once_zerg;
             initZerg();
@@ -165,7 +146,8 @@ class list_builder{
             once.push_back("extractor");
             once.push_back("extractor");
         }else if(race_flag == TERRAN){
-            //TODO Terran
+            once.push_back("refinery");
+            once.push_back("refinery");
         }else{
             //TODO Protoss
         }
@@ -177,6 +159,11 @@ class list_builder{
         buildList.clear();
         digList.clear();
         vespene = false;
+        if(!rush){
+            to_build = amount;
+        }else{
+            to_build = 0;
+        }
         if(race_flag == ZERG){
             initZerg();
         }else if(race_flag == TERRAN){
@@ -208,7 +195,14 @@ class list_builder{
     //add producable to either once or multiple
     void addToProducable(string name){
         if(find(used_only_once.begin(), used_only_once.end(), name) == used_only_once.end()){
-            multiple.push_back(name);
+            if(name == target){
+                --to_build;
+                if(to_build < 1){
+                    multiple.push_back(name);
+                }
+            }else{
+                multiple.push_back(name);
+            }
         }
     }
 
@@ -316,14 +310,16 @@ class list_builder{
     vector<string> multiple;
     list<string> digList;
     bool vespene = false;
-    RaceType race_flag; //TODO not needed
+    RaceType race_flag;
     list<string> buildList;
     int amount = 1;
+    int to_build = amount;
+    bool rush = false;
 
     //test for more valid lists
     //probabilitys:
     int prob_max = 30;
-    int prob_mult = 15;
+    int prob_mult = 20;
     int prob_once = prob_mult + 5;
     int prob_dig = prob_max - prob_mult - prob_once;
     
