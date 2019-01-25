@@ -10,6 +10,8 @@
 #include "../Validator/ValidatorZerg.h"
 #include "global_enums.h"
 #include "../Zerg.h"
+//#include "../Protoss.h"
+//#include "../Terran.h"
 
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
     return first.second < second.second;
@@ -72,7 +74,7 @@ class list_builder{
             used_only_once = used_only_once_terran;
             initTerran();
         }else{
-            //used_only_once = used_only_once_protoss;
+            used_only_once = used_only_once_protoss;
             initProtoss();
         }
     }
@@ -95,9 +97,12 @@ class list_builder{
         once.push_back("refinery");
     }
 
-    //TODO
     void initProtoss(){
-        //TODO
+        multiple.push_back("probe");
+        multiple.push_back("nexus");
+        multiple.push_back("pylon");
+        once.push_back("assimilator");
+        once.push_back("assimilator");
     }
 
     //create a single list for push
@@ -120,6 +125,7 @@ class list_builder{
     void runAndInsertList(list<pair<list<string>, int>> &buildlists, list<string> &bl){
         int time = MAX_TIME;
         bool valid = true;
+        // TODO generalize to all races
         if(race_flag == ZERG){
             ZergChecker zc = ZergChecker();
             valid = zc.run(bl);
@@ -134,6 +140,8 @@ class list_builder{
             //    Terran t(bl);
             //    time = t.getEndTime(50000);
             //}
+        }else if(race_flag == PROTOSS){
+            // TODO resolve include issues and setup testing
         }else{
             //TODO?
         }
@@ -149,7 +157,8 @@ class list_builder{
             once.push_back("refinery");
             once.push_back("refinery");
         }else{
-            //TODO Protoss
+            once.push_back("assimilator");
+            once.push_back("assimilator");
         }
     }
 
@@ -196,6 +205,7 @@ class list_builder{
     void addToProducable(string name){
         if(find(used_only_once.begin(), used_only_once.end(), name) == used_only_once.end()){
             if(name == target){
+                // what does to_build to? maybe indicate that dependencies are all build so now we can build target?
                 --to_build;
                 if(to_build < 1){
                     multiple.push_back(name);
@@ -302,7 +312,9 @@ class list_builder{
 
     list<string> used_only_once_terran = {"engineering bay", "armory", "fusion_core", "ghost_academy"};
 
-    // TODO protoss used_only_once
+    // all buildings which are never listed as produced_by only dependencies...
+    list<string> used_only_once_protoss = { "cybernetics_core","robotics_bay","twilight_council","templar_archives",
+                                            "dark_shrine","fleet_beacon","forge"};
 
 
     list<string>& used_only_once = used_only_once_zerg;

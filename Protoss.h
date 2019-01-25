@@ -9,7 +9,7 @@
 #include <fstream>
 
 #include "Protoss/Protoss_status.h"
-#include "Protoss/parser.h"
+#include "Protoss/parser_protoss.h"
 
 using namespace std;
 
@@ -160,37 +160,25 @@ class Protoss : public Protoss_status{
     bool validateBuildlist(){
         if(techtreepath != ""){
             return (validate(techtreepath, buildlistpath, debug) == 0);
+        }else{
+            cerr << "techtree not configured" << endl;
+            exit(1);
         }
-
-        auto mocked_buildlist = buildlist;
-        for( funcBool item : mocked_buildlist )
-        {
-            mock_resources();
-            if(!(this->*(item))()){
-                // something could not be build despite infinite resources(excl. supply)
-                if(debug) cerr << "buildlist invalid at " <<  item << "\n";
-                return false;
-            }                
-            end_event event = eventlist.front();
-            // assume instant build
-            (this->*(event.func))("");
-            eventlist.pop_front();
-            //assert(eventlist.size() == 0);
-            if(debug && eventlist.size() != 0) cerr << "eventlist not empty [validation error]\n";
-        }
-        // successfully built all items
-        default_setup();
-        return true;
     }
 
     public:
-    Protoss(const list<string> buildlist_to_run, string techtree = "", bool dbg = false) : buildlist(buildlist_to_run), debug(dbg), techtreepath(techtree){
+    Protoss(const list<string> buildlist_to_run, string techtree = "", bool dbg = false) {
+        debug = dbg;
+        techtreepath = techtree;
         initBuildmap();
+        for(string item: buildlist_to_run){
+            buildlist.push_back(buildmap[item]);
+        }
         supply_max = 10;
         idlebuildings.push_back("nexus_0");
         energylist.push_back(pair<int,int>(0,0));
     }
-    Protoss(const string filename, const string techtree = "", bool dbg = false) :  {
+    Protoss(const string filename, const string techtree = "", bool dbg = false){
         debug = dbg;
         techtreepath = techtree;
         buildlistpath = filename;

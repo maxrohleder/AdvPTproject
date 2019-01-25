@@ -70,7 +70,7 @@ class par{
     void init(string filename){
         fstream file(filename);
         if(!file.is_open()){
-            cerr << "cant read techtree file" << endl;
+            cerr << "[parser]: cant read techtree file (" << filename << ")" << endl;
             exit(-1);
         } 
 

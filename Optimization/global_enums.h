@@ -16,3 +16,6 @@ typedef enum list_status{
 } lstat;
 
 int seed = 666;
+
+// helps to compile away analytics (writing out avg and best statistics every epoch)
+const bool analytics = false;

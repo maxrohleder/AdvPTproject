@@ -1,4 +1,3 @@
-#pragma once
 #include <iostream>
 #include <list>
 #include <string>
@@ -27,19 +26,26 @@ const static list<string> terran_units = { "scv","marine","marauder","reaper","g
 int main(int argc, char *argv[]){
     if(argc != 4){
         cout << "usage: " << argv[0] << " <rush/push> <unit> <seconds/amount>" << endl;
+        exit(1);
     }
     bool rush = (string(argv[1]) == "rush");
     string unit_to_build = string(argv[2]);
     if(find_if(protoss_units.begin(), protoss_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != protoss_units.end()){
-        Opt O(RaceType::PROTOSS, string("techtree_protoss.csv"), unit_to_build, stoi(string(argv[3])), rush);
+        Opt O(RaceType::PROTOSS, string("../../Optimization/techtree_protoss.csv"), unit_to_build, stoi(string(argv[3])), rush);
+        O.optimize();       
+        O.printWinner(); 
     }
     else if(find_if(zerg_units.begin(), zerg_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != zerg_units.end()){
-        Opt O(RaceType::ZERG, string("techtree_zerg.csv"), unit_to_build, stoi(string(argv[3])), rush);
+        Opt O(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", unit_to_build, stoi(string(argv[3])), rush);
+        O.optimize();
+        O.printWinner();
     }
     else if(find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != terran_units.end()){
-        Opt O(RaceType::TERRAN, string("techtree_terran.csv"), unit_to_build, stoi(string(argv[3])), rush);
+        Opt O(RaceType::TERRAN, string("../../Optimization/techtree_terran.csv"), unit_to_build, stoi(string(argv[3])), rush);
+        O.optimize();
+        O.printWinner();
     }
     else{
-
+        cout << "item not recognized!" << endl;
     }
 }

@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
+# needed in Opt.h. hope it works for all
+set(CMAKE_CXX_STANDARD 17)
 
 
 project(simulation)
