@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char *argv[]){
     if(argc != 2 && argc != 3 && argc != 4){
-        cout << "usage: " << argv[0] << " <string filename> (optional) <string techtreepath> (optional0/1) <int debug>" << endl;
+        cout << "usage: " << argv[0] << " <string filename> <string techtreepath> (optional0/1) <int debug>" << endl;
         exit(-1);
     }
     int status;

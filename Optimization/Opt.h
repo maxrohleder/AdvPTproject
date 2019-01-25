@@ -55,7 +55,7 @@ public:
             
             for(size_t i = 0; i < epochs; i++){
                 for(int j = 0; j < iterations_per_epoch; j++){
-                    //int size = buildlists.size();
+                    int size = buildlists.size();
                     list<string> lst = {"probe", "probe", "assimilator", "probe", "pylon", "nexus"};
                     buildlists.push_back(make_pair(lst, i*iterations_per_epoch+j));
                     //create x buildlists and assign an endtime

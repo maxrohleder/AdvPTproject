@@ -24,6 +24,7 @@ class Protoss : public Protoss_status{
     private:
     string buildlistpath;
     string techtreepath;
+    list<string> buildlist_strings;
     bool printToFile = false;
     ofstream *fileToWriteTo;
 
@@ -159,7 +160,13 @@ class Protoss : public Protoss_status{
     // checks only for hard dependencies and supply (timeout not detected)
     bool validateBuildlist(){
         if(techtreepath != ""){
-            return (validate(techtreepath, buildlistpath, debug) == 0);
+            if(buildlistpath != ""){
+                parser p(techtreepath, buildlistpath, debug);
+                return (validate(p, debug) == 0);
+            }else{
+                parser p(techtreepath, buildlist_strings, debug);
+                return validate(p, debug);
+            }
         }else{
             cerr << "techtree not configured" << endl;
             exit(1);
@@ -170,6 +177,8 @@ class Protoss : public Protoss_status{
     Protoss(const list<string> buildlist_to_run, string techtree = "", bool dbg = false) {
         debug = dbg;
         techtreepath = techtree;
+        buildlistpath = "";
+        buildlist_strings = buildlist_to_run;
         initBuildmap();
         for(string item: buildlist_to_run){
             buildlist.push_back(buildmap[item]);
