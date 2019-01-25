@@ -49,6 +49,7 @@ public:
             // init mating and mutations
             //Mutator mu(lb.getMultiple());
             if constexpr(analytics){
+                // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
             }
             
@@ -101,6 +102,11 @@ public:
         }
 
         void printWinner(){
-            cout << "test success" << endl;
+            pair<list<string>, int> winner = buildlists.back();
+            // TODO print JSON LOG or return list to main and print there idc
+            for(string j : winner.first){
+                    cout << j << endl;
+            }
+            cout << "total endtime: " << winner.second << endl;
         }
 };
