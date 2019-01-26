@@ -11,8 +11,8 @@ using namespace std;
 
 class dependObj{
     public:
-        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
-                 name(name), supply(supply), vespene(vesp), dependency(dependency), produced_by(produced_by){}
+        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "", bool b = false) :
+                 name(name), supply(supply), vespene(vesp), dependency(dependency), produced_by(produced_by), building(b){}
         dependObj(const dependObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
         ~dependObj(){}
 
@@ -33,6 +33,7 @@ class dependObj{
         bool vespene; // needs vespene
         string dependency;
         string produced_by;
+        bool building;
 };
 
 ostream& operator<<(ostream& out, const dependObj& obj){
@@ -109,7 +110,8 @@ class parser{
             }
             bool vesp = stoi(param[2]) != 0;
             int suppl = stoi(param[5])-stoi(param[4]);
-            dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10]);
+            bool is_building = (string(param[9]) == "b");
+            dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10], is_building);
     //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 
         }
@@ -155,13 +157,13 @@ class parser{
 // for further information on why the list is invalid set debug to true and see extensive prints
 int validate(parser &p, bool debug = false){
     // keeping track of built items
-    list<string> seen = {"probe", "nexus"};
-    int supply = 10;
+    list<string> seen = {"scv", "command_center"};
+    int supply = 11;
     bool has_assimilator = false;
     while(p.building()){
         string name = p.buildlist.front();
         // can do this without error checking, constructing buildlist in parser checks that they are declared in dependencies
-        if(name == "assimilator"){
+        if(name == "refinery"){
             has_assimilator = true;
         }
         dependObj& item = p.dependencies[name];
@@ -185,7 +187,16 @@ int validate(parser &p, bool debug = false){
             if(debug) cout << "VESPENE INVALID AT " << name << endl;
             return 1;
         }
-        else if(item.produced_by)
+        else if(item.building && item.produced_by != "scv"){
+            auto i = find(seen.begin(), seen.end(), item.produced_by);
+            if(i == seen.end()){
+                if(debug) cout << "UPGRADE ERROR AT " << name << endl;
+                return 1;
+            }
+            seen.erase(i);
+            seen.push_front(name);
+            p.buildlist.pop_front();
+        }
         else
         {
             seen.push_front(name);
