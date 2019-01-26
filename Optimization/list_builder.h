@@ -131,8 +131,7 @@ class list_builder{
             }
         }else if(race_flag == TERRAN){
             parser p (path_techtree_terran, bl, false);
-            
-            if(validate(p, false)){
+            if(!validate(p, false)){
                 Terran t(bl);
                 time = t.getEndTime(50000);
             }
