@@ -8,12 +8,11 @@
 #include <array>
 
 using namespace std;
-
 class dependObj{
     public:
         dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "", bool b = false) :
                  name(name), supply(supply), vespene(vesp), dependency(dependency), produced_by(produced_by), building(b){}
-        dependObj(const dependObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by){}
+        dependObj(const dependObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by), building(n.building){}
         ~dependObj(){}
 
         dependObj& operator=(const dependObj& n){
@@ -22,6 +21,7 @@ class dependObj{
             vespene = n.vespene;
             dependency = n.dependency;
             produced_by = n.produced_by;
+            building = n.building;
             return *this;
         }
 
@@ -37,16 +37,14 @@ class dependObj{
 };
 
 ostream& operator<<(ostream& out, const dependObj& obj){
-    out << "\tvespene: " << obj.vespene << "\t\tproduced_by: " << obj.produced_by;
-    if(obj.produced_by.length() < 10) out << "\t"; //for fancy output
-    out << "\tdependency: " << obj.dependency;
+    out << "\t" << obj.supply << "\t" << obj.vespene << "\t" << obj.dependency << "\t" << obj.produced_by << "\t" << obj.building;
     return out;
 }
 
 class parser{
     protected:
     // ACTUAL DATASTRUCTURE
-    bool debug = true;
+    bool debug = false;
 
     public:
     map<string, dependObj> dependencies;
@@ -111,7 +109,6 @@ class parser{
             bool vesp = stoi(param[2]) != 0;
             int suppl = stoi(param[5])-stoi(param[4]);
             bool is_building = (string(param[8]) == "b");
-            cout << param[0] << ": " << is_building << endl;
             dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10], is_building);
     //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 
