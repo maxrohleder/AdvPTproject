@@ -30,22 +30,40 @@ int main(int argc, char *argv[]){
     }
     bool rush = (string(argv[1]) == "rush");
     string unit_to_build = string(argv[2]);
+    int amount = stoi(string(argv[3]));
+    //just for running purpose:
+
+    if(rush){
+        amount = 1;
+    }
+
+    //
+
+
+
     if(find_if(protoss_units.begin(), protoss_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != protoss_units.end()){
-        Opt O(RaceType::PROTOSS, string("../../Optimization/techtree_protoss.csv"), unit_to_build, stoi(string(argv[3])), rush);
-        O.optimize();       
-        O.printWinner(); 
+        Opt O(RaceType::PROTOSS, string("../../Optimization/techtree_protoss.csv"), unit_to_build, amount, rush);
+        //O.optimize();
+        O.optimize_fake();       
+        //O.printWinner();
+        O.runWinner(); 
     }
     else if(find_if(zerg_units.begin(), zerg_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != zerg_units.end()){
-        Opt O(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", unit_to_build, stoi(string(argv[3])), rush);
-        O.optimize();
-        O.printWinner();
+        Opt O(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", unit_to_build, amount, rush);
+        //O.optimize();
+        O.optimize_fake();       
+        //O.printWinner();
+        O.runWinner(); 
     }
     else if(find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != terran_units.end()){
-        Opt O(RaceType::TERRAN, string("../../Optimization/techtree_terran.csv"), unit_to_build, stoi(string(argv[3])), rush);
-        O.optimize();
-        O.printWinner();
+        Opt O(RaceType::TERRAN, string("../../Optimization/techtree_terran.csv"), unit_to_build, amount, rush);
+        //O.optimize();
+        O.optimize_fake();       
+        //O.printWinner();
+        O.runWinner(); 
     }
     else{
         cout << "item not recognized!" << endl;
     }
+    return 0;
 }

@@ -41,6 +41,9 @@ public:
         Opt(const Opt& o){}
         ~Opt(){}
 
+
+        /*
+
         void optimize(){
             // init listbuilder
             //list_builder lb(target, techtree, amount, r);
@@ -82,13 +85,19 @@ public:
                 analyticsfile.close();
             }
         }
+
+        */
+
+        void optimize_fake(){
+            runPureRandomDebug(true);
+        }
         
 
         void runPureRandomDebug(bool sort = false){
             list_builder lb(target, techtree, amount, r);
-            lb.appendNLists(buildlists, 1000, sort);
+            lb.appendNLists(buildlists, 10000, sort);
             //printBuildlists();
-            printWinner();
+            //printWinner();
         }
         
 
@@ -109,5 +118,18 @@ public:
                     cout << j << endl;
             }
             cout << "total endtime: " << winner.second << endl;
+        }
+
+        void runWinner(){
+            pair<list<string>, int> winner = buildlists.front();
+            if(r == ZERG){
+                Zerg z(winner.first);
+                z.runTest(5000);
+            }else if(r == TERRAN){
+                Terran t(winner.first);
+                t.testRun(5000);
+            }else{
+                //TODO run winner on protoss
+            }
         }
 };

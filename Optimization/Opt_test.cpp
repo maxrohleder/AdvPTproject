@@ -5,7 +5,7 @@
 
 int main(){
     //Opt o(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", "spire", 3, false);
-    Opt o(RaceType::TERRAN, "../../Optimization/techtree_terran.csv", "marine", 3, false);
+    Opt o(RaceType::TERRAN, "../../Optimization/techtree_terran.csv", "battlecruiser", 1, false);
     o.runPureRandomDebug(true);
     return 0;
 }
