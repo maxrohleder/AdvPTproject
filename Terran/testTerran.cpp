@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
     //Terran ter(argv[1]);
     //int i = ter.testRun(200000);
     parser p("../../Optimization/techtree_terran.csv", "../../Terran/terran3.txt");
-    cout << validate(p,false);
+    cout << validate(p,false) << endl;
     //cout << i << endl;
     return 0;
 }

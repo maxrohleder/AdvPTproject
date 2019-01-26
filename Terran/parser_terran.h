@@ -111,6 +111,7 @@ class parser{
             bool vesp = stoi(param[2]) != 0;
             int suppl = stoi(param[5])-stoi(param[4]);
             bool is_building = (string(param[8]) == "b");
+            cout << param[0] << ": " << is_building << endl;
             dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10], is_building);
     //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 
