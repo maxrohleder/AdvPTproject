@@ -170,7 +170,7 @@ int validate(parser &p, bool debug = false){
             if(debug) cout << "DEPENDENCY INVALID AT " << name << endl;
             return 1;
         }
-        else if(item.produced_by != "NONE" && find(seen.begin(), seen.end(), item.produced_by) == seen.end())
+        else if(item.produced_by != "NONE" && find_if(seen.begin(), seen.end(), [item] (const string &s) {return (s.find(item.produced_by) != string::npos);}) == seen.end())
         {
             if(debug) cout << "PODUCED_BY INVALID AT " << name << endl;
             return 1;
