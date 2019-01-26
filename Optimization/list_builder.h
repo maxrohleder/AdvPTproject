@@ -11,7 +11,7 @@
 #include "global_enums.h"
 #include "../Zerg.h"
 #include "../Protoss.h"
-//#include "../Terran.h"
+#include "../Terran.h"
 
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
     return first.second < second.second;
@@ -130,12 +130,12 @@ class list_builder{
                 time = z.getEndTime(5000);
             }
         }else if(race_flag == TERRAN){
-            //TerranChecker tc = TerranChecker()
-            //valid = tc.run(bl)
-            //if(valid){
-            //    Terran t(bl);
-            //    time = t.getEndTime(50000);
-            //}
+            parser p (path_techtree_terran, bl, false);
+            
+            if(validate(p, false)){
+                Terran t(bl);
+                time = t.getEndTime(50000);
+            }
         }else {
             // TODO resolve include issues and setup testing
         }
