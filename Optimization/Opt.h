@@ -87,7 +87,8 @@ public:
         void runPureRandomDebug(bool sort = false){
             list_builder lb(target, techtree, amount, r);
             lb.appendNLists(buildlists, 1000, sort);
-            printBuildlists();
+            //printBuildlists();
+            printWinner();
         }
         
 
@@ -102,7 +103,7 @@ public:
         }
 
         void printWinner(){
-            pair<list<string>, int> winner = buildlists.back();
+            pair<list<string>, int> winner = buildlists.front();
             // TODO print JSON LOG or return list to main and print there idc
             for(string j : winner.first){
                     cout << j << endl;

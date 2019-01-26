@@ -10,7 +10,7 @@
 #include "../Validator/ValidatorZerg.h"
 #include "global_enums.h"
 #include "../Zerg.h"
-//#include "../Protoss.h"
+#include "../Protoss.h"
 //#include "../Terran.h"
 
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
@@ -20,7 +20,7 @@ bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& s
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG, bool rush = false) : race_flag(r), target(target), amount(amount), rush(rush){
+        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG) : race_flag(r), target(target), amount(amount){
             init();
             p = par(path_to_techtree, false);
         }
@@ -42,7 +42,7 @@ class list_builder{
         }
 
 
-        //TODO
+        
         void appendNLists(list<pair<list<string>, int>> &buildlists, int n, bool sort = false){
             for(int i = 0; i < n; i++){
                 list<string> l = createListPush();
@@ -64,9 +64,6 @@ class list_builder{
     //TODO Raceflags
     void init(){
         srand(seed);
-        if(rush){
-            to_build = 0;
-        }
         if(race_flag == ZERG){
             used_only_once = used_only_once_zerg;
             initZerg();
@@ -87,9 +84,8 @@ class list_builder{
         once.push_back("extractor");
     }
 
-    //TODO
+
     void initTerran(){
-        //TODO keine Ahnung ob das stimmt
         multiple.push_back("scv");
         multiple.push_back("command_center");
         multiple.push_back("supply_depot");
@@ -122,7 +118,7 @@ class list_builder{
         return ret;
     }
 
-    void runAndInsertList(list<pair<list<string>, int>> &buildlists, list<string> &bl){
+    void runAndInsertList(list<pair<list<string>, int>>& buildlists, list<string> &bl){
         int time = MAX_TIME;
         bool valid = true;
         // TODO generalize to all races
@@ -131,7 +127,7 @@ class list_builder{
             valid = zc.run(bl);
             if(valid){
                 Zerg z(bl);
-                time = z.getEndTime(50000);
+                time = z.getEndTime(5000);
             }
         }else if(race_flag == TERRAN){
             //TerranChecker tc = TerranChecker()
@@ -140,10 +136,8 @@ class list_builder{
             //    Terran t(bl);
             //    time = t.getEndTime(50000);
             //}
-        }else if(race_flag == PROTOSS){
+        }else {
             // TODO resolve include issues and setup testing
-        }else{
-            //TODO?
         }
         buildlists.push_back(make_pair(bl, time));        
     }
@@ -168,11 +162,6 @@ class list_builder{
         buildList.clear();
         digList.clear();
         vespene = false;
-        if(!rush){
-            to_build = amount;
-        }else{
-            to_build = 0;
-        }
         if(race_flag == ZERG){
             initZerg();
         }else if(race_flag == TERRAN){
@@ -205,11 +194,7 @@ class list_builder{
     void addToProducable(string name){
         if(find(used_only_once.begin(), used_only_once.end(), name) == used_only_once.end()){
             if(name == target){
-                // what does to_build to? maybe indicate that dependencies are all build so now we can build target?
-                --to_build;
-                if(to_build < 1){
-                    multiple.push_back(name);
-                }
+                return;
             }else{
                 multiple.push_back(name);
             }
@@ -325,8 +310,6 @@ class list_builder{
     RaceType race_flag;
     list<string> buildList;
     int amount = 1;
-    int to_build = amount;
-    bool rush = false;
 
     //test for more valid lists
     //probabilitys:
