@@ -30,7 +30,6 @@ struct resZerg{
     int overlord = 1;
     int zergling = 0;
     int corruptor = 0;
-    int bases = 1;
     int hatchery = 1;
     int lair = 0;
     int supply = 4;
@@ -155,8 +154,7 @@ class ZergChecker{
         }
         void initResources(){
             resMap["drone"] = resObj({rTU(&resources.drones, 1), rTU(&resources.supply, -1)});
-            resMap["hatchery"] = resObj({rTU(&resources.hatchery, 1), rTU(&resources.bases, 1),
-                 rTU(&resources.extractor_slots, 2), rTU(&resources.supply, 2)});
+            resMap["hatchery"] = resObj({rTU(&resources.hatchery, 1), rTU(&resources.extractor_slots, 2), rTU(&resources.supply, 2)});
             resMap["spawning_pool"] = resObj({rTU(&resources.drones, -1),rTU(&resources.supply, 1)});
             resMap["zergling"] = resObj({rTU(&resources.zergling, 2), rTU(&resources.supply, -1)});
             resMap["overlord"] = resObj({rTU(&resources.overlord, 1), rTU(&resources.supply, 8)});

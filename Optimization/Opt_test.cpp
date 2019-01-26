@@ -4,7 +4,7 @@
 #include "global_enums.h"
 
 int main(){
-    Opt o(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", "roach", 20, false);
+    Opt o(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", "spire", 3, false);
     o.runPureRandomDebug(true);
     return 0;
 }
