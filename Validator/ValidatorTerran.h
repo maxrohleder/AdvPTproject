@@ -11,23 +11,16 @@ struct depTerran{
     int command_center = 1;
     int orbital_command = 0;
     int planetary_fortress = 0;
-    int refinery = 0;
+    //int refinery = 0;
     int engineering_bay = 0;
-    int missile_turret = 0;
-    int sensor_tower = 0;
     int barracks = 0;
     int factory = 0;
     int armory = 0;
-    int bunker = 0;
     int ghost_academy = 0;
     int starport = 0;
     int fusion_core = 0;
-    int supply_depot = 0;
-    int barracks_with_reactor = 0;
     int barracks_with_tech_lab = 0;
-    int starport_with_reactor = 0;
     int starport_with_tech_lab = 0;
-    int factory_with_reactor = 0;
     int factory_with_tech_lab = 0;
 };
 
@@ -37,7 +30,9 @@ struct resTerran{
     int bases = 1;
     int command_center = 1;
     int orbital_command = 0;
-    
+    int barracks = 0;
+    int factory = 0;
+    int starport = 0;
 };
 
 

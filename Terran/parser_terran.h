@@ -46,7 +46,7 @@ ostream& operator<<(ostream& out, const dependObj& obj){
 class parser{
     protected:
     // ACTUAL DATASTRUCTURE
-    bool debug = false;
+    bool debug = true;
 
     public:
     map<string, dependObj> dependencies;
@@ -110,7 +110,7 @@ class parser{
             }
             bool vesp = stoi(param[2]) != 0;
             int suppl = stoi(param[5])-stoi(param[4]);
-            bool is_building = (string(param[9]) == "b");
+            bool is_building = (string(param[8]) == "b");
             dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10], is_building);
     //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 

@@ -11,7 +11,6 @@ viking;150;75;42;2;0;0;0;terran;starport;NONE
 raven;100;200;60;2;0;0;0;terran;starport_with_tech_lab;NONE
 banshee;150;100;60;3;0;0;0;terran;starport_with_tech_lab;NONE
 battlecruiser;400;300;90;6;0;0;0;terran;starport_with_tech_lab;fusion_core
-
 command_center;400;0;100;0;11;0;0;terran;scv;NONE
 orbital_command;150;0;35;0;11;50;200;b;command_center;barracks
 planetary_fortress;150;150;50;0;11;0;0;b;command_center;engineering_bay
