@@ -11,7 +11,7 @@
 
 using namespace std;
 
-bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
+bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second, string rushedUnit){
     // anzahl richtiger einheiten finden und danach sortieren
     return first.second < second.second;
 }
@@ -34,10 +34,12 @@ class natural_selector{
     //natural_selector(const &natural_selector n){}
     ~natural_selector(){}
 
-    /* void sortBuildLists(list<pair<list<string>, int>> &buildlists){
-
-        buildlists->sort(comp);
-    } */
+    void sortBuildLists(list<pair<list<string>, int>> &buildlists, string rushedUnit){
+        for (auto const& i : buildlists) {
+            buildlists.sort(comp());
+        }
+        
+    }
 
     void cutNBest(list<pair<list<string>, int>> &buildlists, int n){
         //runBuilists(buildlists);
