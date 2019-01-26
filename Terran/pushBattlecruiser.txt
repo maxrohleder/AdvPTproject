@@ -10,9 +10,6 @@ barracks
 scv
 scv
 factory
-barracks
-supply_depot
-supply_depot
 starport
 fusion_core
 starport_with_tech_lab

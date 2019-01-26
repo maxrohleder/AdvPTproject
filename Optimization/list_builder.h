@@ -133,7 +133,7 @@ class list_builder{
             parser p (path_techtree_terran, bl, false);
             if(validate(p, false)){
                 Terran t(bl);
-                time = t.getEndTime(50000);
+                time = t.getEndTime(2000);
             }
         }else {
             // TODO resolve include issues and setup testing

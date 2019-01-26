@@ -97,7 +97,7 @@ public:
             list_builder lb(target, techtree, amount, r);
             lb.appendNLists(buildlists, 10000, sort);
             //printBuildlists();
-            //printWinner();
+            printWinner();
         }
         
 
