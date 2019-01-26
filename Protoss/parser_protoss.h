@@ -185,7 +185,6 @@ int validate(parser &p, bool debug = false){
             if(debug) cout << "VESPENE INVALID AT " << name << endl;
             return 1;
         }
-        else if(item.produced_by)
         else
         {
             seen.push_front(name);
