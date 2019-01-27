@@ -276,6 +276,7 @@ class Zerg : public Zerg_header{
         }else{
             minerals -= 10000;
             vespene -= 10000;
+            --nydus_network;
             addToPrintlist("build-start", "nydus_worm");
             addToEventlist(20, &Zerg::NydusWormFinish);
             return true;
@@ -284,6 +285,7 @@ class Zerg : public Zerg_header{
 
     void NydusWormFinish(){
         ++nydus_worm;
+        ++nydus_network;
         addToPrintlist("build-end", "nydus_worm");
     }
 

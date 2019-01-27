@@ -77,6 +77,11 @@ class list_builder{
     }
 
     void initZerg(){
+        if(target == "drone"){
+            amount -= 6;
+        }else if(target == "overlord" || target == "hatchery"){
+            --amount;
+        }
         multiple.push_back("drone");
         multiple.push_back("hatchery");
         multiple.push_back("overlord");
@@ -133,7 +138,7 @@ class list_builder{
             parser p (path_techtree_terran, bl, false);
             if(validate(p, false)){
                 Terran t(bl);
-                time = t.getEndTime(50000);
+                time = t.getEndTime(5000);
             }
         }else {
             // TODO resolve include issues and setup testing

@@ -95,7 +95,7 @@ public:
 
         void runPureRandomDebug(bool sort = false){
             list_builder lb(target, techtree, amount, r);
-            lb.appendNLists(buildlists, 10000, sort);
+            lb.appendNLists(buildlists, 1000, sort);
             //printBuildlists();
             //printWinner();
         }
