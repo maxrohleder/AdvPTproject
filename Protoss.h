@@ -33,6 +33,9 @@ class Protoss : public Protoss_status{
     void updateResources(){
         minerals += minerals_rate*workers_minerals;
         vespene += vesp_rate*workers_vesp;
+        for(auto &nex : energylist){
+            nex.second = min(1000000, nex.second + energy_rate);
+        }
     }
 
     void buildBuildlist(const string filename){
@@ -60,7 +63,6 @@ class Protoss : public Protoss_status{
 
     void chronoBoost(){
         for(auto& nex : energylist){
-            nex.second = min(1000000, nex.second + energy_rate);
             if(debug) cout << "energy of nexus_" << to_string(nex.first) << ": " << nex.second << endl; 
             if(nex.second >= 250000){
                 if(activebuildings.size() == 0)
@@ -70,24 +72,35 @@ class Protoss : public Protoss_status{
                 list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [this](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && !p.boosted && p.end_time > time && p.end_time-time >= 20 && p.type == "build-end");});
                 if(i == eventlist.end()){
                     // omit criterion of lasting at least 20 seconds from now
-                    building_to_be_boosted = activebuildings.front();
-                    i = find_if(eventlist.begin(), eventlist.end(), [this, building_to_be_boosted](const end_event p){return p.producerID == building_to_be_boosted && p.end_time > time && !p.boosted && p.type == "build-end";});
+                    //building_to_be_boosted = activebuildings.front(); false cant just take a random building
+
+                    i = find_if(eventlist.begin(), eventlist.end(), [this, building_to_be_boosted](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && p.end_time > time && !p.boosted && p.type == "build-end");});
                     if(i == eventlist.end()){
-                        continue;
+                        // die Eventlist MUSS ein build-end event in der Zukunft besitzen, wenn noch active buildings vorhanden sind.
+                        cout << "no boostable building: " << building_to_be_boosted << " at time: " << time << endl;
+                        cout << "boosted buildings:" << endl;
+                        for(auto &build : boostedbuildings){
+                            cout << "\t" << build <<  endl;
+                        }
+                        cout << "activebuildings:" << endl;
+                        for(auto &act : activebuildings){
+                            cout << "\t" << act <<  endl;
+                        }
+                        return;
                     }
                 }
+                if(debug) cout << "--------------------CHRONOBOOST----------------" << "\non building: " << building_to_be_boosted << endl;
                 // either we found one with the first search or the second, doesnt matter now
                 building_to_be_boosted = i->producerID;
                 boostedbuildings.push_back(building_to_be_boosted);
                 // 50% faster means speedup by 2/3
                 if(debug) cout << "endtime: " << i->end_time << " time: " << time;
                 double fac = (double)2/(double)3;
+                // TODO check if to ceil floor round etc
                 i->end_time = time + (int) ceil(((double)i->end_time-(double)time)*fac);
                 if(debug) cout << " new endtime: " << i->end_time << endl;
-                
                 i->boosted = true;
                 nex.second -= 250000;
-                if(debug) cout << "--------------------CHRONOBOOST----------------" << "\non building: " << building_to_be_boosted << endl;
                 // add endevent to eventlist which moves endevent back ( true, so that we do not find a boosted endevent by accident )
                 addToEventList(20, &Protoss_status::boostEnd, building_to_be_boosted, true, "chrono");
                 // and print that shit
@@ -98,17 +111,16 @@ class Protoss : public Protoss_status{
 
     void revise_chrono(){
         // if we built something new, see if the building is boosted
-        if(boostedbuildings.size() != 0){
-            for(string b : boostedbuildings){
-                // if there is a building in eventlist, that is not boosted, but should be, boost it
-                list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [b](const end_event p){return (p.producerID == b && !p.boosted && p.type == "build-end");});
-                if(i != eventlist.end()){
-                    i->boosted = true;
-                    double fac = (double)2/(double)3;
-                    i->end_time = time + (int) ceil(((double)i->end_time-(double)time)*fac);
-                }
+        for(string b : boostedbuildings){
+            // if there is a building in eventlist, that is not boosted, but should be, boost it
+            list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [b](const end_event p){return (p.producerID == b && !p.boosted && p.type == "build-end");});
+            if(i != eventlist.end()){
+                i->boosted = true;
+                double fac = (double)2/(double)3;
+                i->end_time = time + (int) ceil(((double)i->end_time-(double)time)*fac);
             }
-        }   
+        }
+        
     }
 
     void updateEventlist(){
@@ -118,7 +130,6 @@ class Protoss : public Protoss_status{
                 return;
             }else{
                 (this->*(i->func))(i->producerID);
-                if(i->producerID != "") idlebuildings.push_front(i->producerID);
                 eventlist.erase(i);
             }
         }
@@ -159,25 +170,17 @@ class Protoss : public Protoss_status{
 
     // checks only for hard dependencies and supply (timeout not detected)
     bool validateBuildlist(){
-        if(techtreepath != ""){
-            if(buildlistpath != ""){
-                if(debug) cout << "[protoss.h]: init parser with file" << endl;
-                cout << techtreepath << "\t" << buildlistpath << "\t" << debug << endl;
-                parser p(techtreepath, buildlistpath, debug);
-                //parser p = parser(techtreepath, buildlistpath, true);
-                if(debug) cout << "[protoss.h]: validating with file" << endl;
-
-                return !validate(p, debug);
-            }else{
-                if(debug) cout << "[protoss.h]: init parser with list<string>" << endl;
-                parser p(techtreepath, buildlist_strings, debug);
-                if(debug) cout << "[protoss.h]: validating with list<string>" << endl;
-
-                return !validate(p, debug);
-            }
-        }else{
+        if(techtreepath == ""){
             cerr << "techtree not configured" << endl;
             exit(1);
+        }
+
+        if(buildlistpath != ""){
+            parser p(techtreepath, buildlistpath, debug);
+            return !validate(p, debug);
+        }else{
+            parser p(techtreepath, buildlist_strings, debug);
+            return !validate(p, debug);
         }
     }
 
@@ -233,10 +236,10 @@ class Protoss : public Protoss_status{
                     // ideal worker distro has changed as we are now 
                     // looking foreward to build something different
                     revision_requested = true;
-                    revise_chrono();
+                    //revise_chrono();
                 }
                 else{
-                    chronoBoost();
+                    //chronoBoost();
                 }
             }
             // printing
@@ -256,8 +259,30 @@ class Protoss : public Protoss_status{
         return simulation_timeout; // timelimit reached; no successful simulation
     }
 
-    int getEndTime(){
-        // TODO: do one forward simulation and return only the endtime of the last item
-        return 42;
+    int getEndTime(int maxtime){
+        for(; time < maxtime; ++time)
+        {
+            updateResources();  // 1. reevealuates resources
+            updateEventlist();  // 2. checks eventlist for events
+            if(!buildlist.empty()){
+                if(updateBuildlist()){
+                    revision_requested = true;
+                    revise_chrono();
+                }
+                else{
+                    chronoBoost();
+                }
+            }
+            if(!printlist.empty()){
+                print(time);
+                if(buildlist.empty() && eventlist.empty()){
+                    return time;
+                    sout.clear();
+                }else{
+                    sout.clear();
+                }
+            }
+        }
+        return INT_MAX; // timelimit reached; no successful simulation
     }
 };

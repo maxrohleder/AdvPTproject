@@ -16,26 +16,31 @@ class Protoss_status : public Race{
     // only for debug prints
     bool debug = true;
     int time = 1;
-    // 12950 / 7250 == total cost of min/vesp
-    // ideal ratio of workers_min to workers_total is sum over all units costs ratio
-    double ratio = 0.64; // DEPRECATED WITH ADAPTIVE RATIO
     // revision is state of worker distro
     bool revision_requested = true;
 
     void boostEnd(string ID){
-        list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [ID](const end_event p){return (p.producerID == ID && p.boosted && p.type == "build-end");});
+        list<end_event>::iterator i = find_if(eventlist.begin(), eventlist.end(), [ID, this](const end_event p){return (p.end_time >= time && p.producerID == ID && p.boosted && p.type == "build-end");});
         if(i == eventlist.end()){
             // item was build, before chronoboost ended
             if(debug) cout << "there is no itemident produced by " << ID << " at time " << time << endl;
             return;
         }
         // normal speed results in later endtime
+        if(debug)cout << "________________________CHRONO END________________________\n";
         if(debug)cout << "endtime: " << i->end_time << " time: " << time;
         i->end_time = time + (int) ceil(((double)(i->end_time-time)*1.5));
         if(debug)cout << " new endtime: " << i->end_time <<  endl;
         // reset, so that the same item could be boosted twice
         i->boosted = false;
+        cout << ">>>  boosted remove <<<" << endl;
+        for(auto a : boostedbuildings){
+            cout << a << endl;
+        }
         boostedbuildings.remove(ID);
+        for(auto a : boostedbuildings){
+            cout << a << endl;
+        }
     }
 
     protected:
@@ -78,14 +83,13 @@ class Protoss_status : public Race{
 
     void deactivateBuilding(string ID){
         list<string>::iterator i = find_if(activebuildings.begin(), activebuildings.end(), [ID](const string p){return p == ID;});
-        if(i != activebuildings.end()){
-            string id = *i;
-            activebuildings.erase(i);
-            idlebuildings.push_back(id);
-        } else{
-            if(debug) cout << "deactivateBuilding";
+        if(i == activebuildings.end()){
+            if(debug) cout << "deactivateBuilding error protoss.h";
             exit(-1);
         }
+        string id = *i;
+        activebuildings.erase(i);
+        idlebuildings.push_back(id);
     }
 
     // redistribute workers, so that they are in same ratio as next planned build
@@ -124,6 +128,7 @@ class Protoss_status : public Race{
             return true;
         }
         else {
+            // nur wenn nicht direkt gebaut werden konnte soll worker distributation getriggert werden 
             if(revision_requested){
                 bool report = true;
                 if(!printlist.empty()) report = false;
@@ -169,70 +174,6 @@ class Protoss_status : public Race{
         buildmap["forge"] = &Protoss_status::forgeBuild;
         buildmap["photon_cannon"] = &Protoss_status::photoncannonBuild;
 
-    }
-
-    void mock_resources(){
-        minerals = INT_MAX;
-        vespene = INT_MAX;
-    }
-
-    void default_setup(){
-        //resources
-        minerals = 5000;
-        vespene = 0;
-        supply_used = 6;
-        supply_max = 10; //racedependent (change in constructor)
-
-        //workers
-        workers = 6;
-        workers_minerals = 6;
-        workers_vesp = 0;
-        workers_vesp_max = 0;
-
-        //list-structures    
-        printlist.clear();
-        eventlist.clear();
-        activebuildings.clear();
-        idlebuildings.clear();
-        energylist.clear();
-
-        idlebuildings.push_back("nexus_0");
-        energylist.push_back(pair<int,int>(0, 0));
-
-        //structures
-        bases = 1; // deprecated??
-        geyser_max = 2; // deprecated??
-
-        //units
-        zealot = 0;
-        stalker = 0;
-        sentry = 0;
-        warp_prism = 0;
-        immortal = 0;
-        observer = 0;
-        colossus = 0;
-        high_templar = 0;
-        dark_templar = 0;
-        mothership = 0;
-        phoenix = 0;
-        void_ray = 0;
-        carrier = 0;
-
-        // buildings
-        nexus = 1;
-        pylon = 0;
-        gateway = 0;
-        cybernetics_core = 0;
-        robotics_facility = 0;
-        robotics_bay = 0;
-        twilight_council = 0;
-        templar_archives = 0;
-        dark_shrine = 0;
-        stargate = 0;
-        fleet_beacon = 0;
-        assimilator = 0;
-        forge = 0;
-        photon_cannon = 0;
     }
 
     //units execept for probes (in Race as worker)

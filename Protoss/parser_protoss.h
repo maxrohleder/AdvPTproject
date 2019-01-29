@@ -79,7 +79,7 @@ class parser{
         for(auto i : dependencies){
             cout << i.first << ":";
             if(i.first.length() < 7) cout << "\t"; //for fancy output
-            if(i.first.length() < 15) cout << "\t" << i.first.length(); //for fancy output
+            if(i.first.length() < 15) cout << "\t"; //for fancy output
             cout << i.second << endl;;
         }
     }
@@ -96,6 +96,7 @@ class parser{
         array<string, 11> param;
 
         while(file >> line){
+            if(line == "") continue;
             size_t pos_start = 0;
             for(int i = 0; i < 11; ++i){
                 size_t pos_end = line.find(';', pos_start);
