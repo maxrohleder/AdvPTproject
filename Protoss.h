@@ -161,11 +161,19 @@ class Protoss : public Protoss_status{
     bool validateBuildlist(){
         if(techtreepath != ""){
             if(buildlistpath != ""){
+                if(debug) cout << "[protoss.h]: init parser with file" << endl;
+                cout << techtreepath << "\t" << buildlistpath << "\t" << debug << endl;
                 parser p(techtreepath, buildlistpath, debug);
-                return (validate(p, debug) == 0);
+                //parser p = parser(techtreepath, buildlistpath, true);
+                if(debug) cout << "[protoss.h]: validating with file" << endl;
+
+                return !validate(p, debug);
             }else{
+                if(debug) cout << "[protoss.h]: init parser with list<string>" << endl;
                 parser p(techtreepath, buildlist_strings, debug);
-                return validate(p, debug);
+                if(debug) cout << "[protoss.h]: validating with list<string>" << endl;
+
+                return !validate(p, debug);
             }
         }else{
             cerr << "techtree not configured" << endl;

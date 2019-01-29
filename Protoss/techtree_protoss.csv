@@ -1,9 +1,8 @@
-﻿
-probe;50;0;17;1;0;0;0;protoss;nexus;NONE
-zealot;100;0;38;2;0;0;0;protoss;gateway;NONE
+﻿zealot;100;0;38;2;0;0;0;protoss;gateway;NONE
 stalker;125;50;42;2;0;0;0;protoss;gateway;cybernetics_core
 sentry;50;100;37;2;0;0;0;protoss;gateway;cybernetics_core
 warp_prism;200;0;50;2;0;0;0;protoss;robotics_facility;NONE
+probe;50;0;17;1;0;0;0;protoss;nexus;NONE
 immortal;250;100;55;3;0;0;0;protoss;robotics_facility;NONE
 observer;25;75;30;1;0;0;0;protoss;robotics_facility;NONE
 colossus;300;200;75;6;0;0;0;protoss;robotics_facility;robotics_bay

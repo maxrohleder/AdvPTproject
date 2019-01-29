@@ -1,4 +1,9 @@
-﻿probe;50;0;17;1;0;0;0;protoss;nexus;NONE
+﻿
+
+
+
+
+probe;50;0;17;1;0;0;0;protoss;nexus;NONE
 zealot;100;0;38;2;0;0;0;protoss;gateway;NONE
 stalker;125;50;42;2;0;0;0;protoss;gateway;cybernetics_core
 sentry;50;100;37;2;0;0;0;protoss;gateway;cybernetics_core

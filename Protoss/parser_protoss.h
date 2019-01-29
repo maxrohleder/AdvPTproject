@@ -27,7 +27,6 @@ class dependObj{
 
         friend ostream& operator<<(ostream& out, const dependObj& obj);
 
-
         string name;
         int supply;
         bool vespene; // needs vespene
@@ -36,9 +35,10 @@ class dependObj{
 };
 
 ostream& operator<<(ostream& out, const dependObj& obj){
-    out << "\tvespene: " << obj.vespene << "\t\tproduced_by: " << obj.produced_by;
-    if(obj.produced_by.length() < 10) out << "\t"; //for fancy output
-    out << "\tdependency: " << obj.dependency;
+    out << "\t" << obj.supply << "\t" << obj.vespene << "\t" << obj.dependency << "\t";
+    if(obj.dependency.length() < 8) out << "\t"; //for fancy output
+    if(obj.dependency.length() < 15) out << "\t"; //for fancy output  
+    out << obj.produced_by << "\t";
     return out;
 }
 
@@ -52,15 +52,15 @@ class parser{
     list<string> buildlist = {};
 
     parser(){}
-    parser (const string techtreefilename, bool dbg = false) :debug(dbg) {
+    parser (const string techtreefilename, bool dbg = false) : debug(dbg) {
         init(techtreefilename);
         if(debug) printMap();
     }
-    parser (const string techtreefilename, list<string> &blist, bool dbg = false) :debug(dbg), buildlist(blist){
+    parser (const string techtreefilename, list<string> &blist, bool dbg = false) : debug(dbg), buildlist(blist){
         init(techtreefilename);
         if(debug) printMap();
     }
-    parser (const string techtreefilename,const string buildlistname, bool dbg = false) : debug(dbg) {
+    parser (const string techtreefilename, const string buildlistname, bool dbg = false) : debug(dbg) {
         init(techtreefilename);
         if(debug) printMap();
         init_buildlist(buildlistname);
@@ -79,7 +79,7 @@ class parser{
         for(auto i : dependencies){
             cout << i.first << ":";
             if(i.first.length() < 7) cout << "\t"; //for fancy output
-            if(i.first.length() < 15) cout << "\t"; //for fancy output
+            if(i.first.length() < 15) cout << "\t" << i.first.length(); //for fancy output
             cout << i.second << endl;;
         }
     }
@@ -90,13 +90,12 @@ class parser{
         if(!file.is_open()){
             cerr << "cant read techtree file" << endl;
             exit(-1);
-        } 
+        }
 
         string line;
         array<string, 11> param;
 
         while(file >> line){
-            if(line == "") continue;
             size_t pos_start = 0;
             for(int i = 0; i < 11; ++i){
                 size_t pos_end = line.find(';', pos_start);
@@ -107,11 +106,9 @@ class parser{
                 }
                 pos_start = pos_end + 1;
             }
-            bool vesp = stoi(param[2]) != 0;
-            int suppl = stoi(param[5])-stoi(param[4]);
+            bool vesp = (stoi(string(param[2])) != 0);
+            int suppl = stoi(string(param[5]))-stoi(string(param[4]));
             dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10]);
-    //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
-
         }
         file.close();
     }
