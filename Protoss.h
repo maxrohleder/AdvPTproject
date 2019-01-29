@@ -152,7 +152,7 @@ class Protoss : public Protoss_status{
     /*does final printing from stringstream sout*/
     void printFinish(bool valid){
         if(valid){
-            sout << "\t],\n" << endl;
+            sout << "\t]," << endl;
             sout << "\"initialUnits\" : { \"probe\" : [ \"larry_der_fleissige\", \"1\", \"2\", \"3\", \"4\", \"5\" ],\n\"nexus\": [ \"nexus_0\" ] \n}\n}\n";
         }else{
             if(debug) cout << sout.str() << "\n\n\nnow real output:\n\n\n";
@@ -246,7 +246,7 @@ class Protoss : public Protoss_status{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    sout << "\r\t\t}  " << endl; // get rid of ,
+                    sout << endl; // get rid of ,
                     printFinish(true);  // end json
                     return simulation_success; // simulation success
                 }else{
