@@ -11,7 +11,7 @@
 #include "global_enums.h"
 #include "../Zerg.h"
 #include "../Protoss.h"
-//#include "../Terran.h"
+#include "../Terran.h"
 
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
     return first.second < second.second;
@@ -77,6 +77,11 @@ class list_builder{
     }
 
     void initZerg(){
+        if(target == "drone"){
+            amount -= 6;
+        }else if(target == "overlord" || target == "hatchery"){
+            --amount;
+        }
         multiple.push_back("drone");
         multiple.push_back("hatchery");
         multiple.push_back("overlord");
@@ -130,12 +135,15 @@ class list_builder{
                 time = z.getEndTime(5000);
             }
         }else if(race_flag == TERRAN){
-            //TerranChecker tc = TerranChecker()
-            //valid = tc.run(bl)
-            //if(valid){
-            //    Terran t(bl);
-            //    time = t.getEndTime(50000);
-            //}
+            parser p (path_techtree_terran, bl, false);
+            if(validate(p, false)){
+                Terran t(bl);
+<<<<<<< HEAD
+                time = t.getEndTime(5000);
+=======
+                time = t.getEndTime(2000);
+>>>>>>> 2ac51bd226858dad94e8ac896dcc26b108518e33
+            }
         }else {
             // TODO resolve include issues and setup testing
         }

@@ -1,0 +1,3 @@
+-parser um refinery 3mal bauen check erweitern
+-compare methode schreiben
+

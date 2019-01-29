@@ -2,7 +2,7 @@ overlord;100;0;25;0;8;0;0;zerg;NONE;NONE
 overseer;50;50;17;0;8;0;0;zerg;overlord;lair
 hydralisk;100;50;33;2;0;0;0;zerg;NONE;hydralisk_den
 drone;50;0;17;1;0;0;0;zerg;NONE;NONE
-queen;150;0;50;2;0;25;200;zerg;base;spawning_pool
+queen;150;0;50;2;0;25;200;zerg;NONE;spawning_pool
 zergling;50;0;24;0.5;0;0;0;zerg;NONE;spawning_pool
 baneling;25;25;20;0.5;0;0;0;zerg;zergling;baneling_nest
 roach;75;25;27;2;0;0;0;zerg;NONE;roach_warren

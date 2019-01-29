@@ -1188,7 +1188,19 @@ public:
         buildBuildlist(filename);
         printHeader(1);
     }
-
+    Terran(const list<string>& randomList){
+        buildBuildmap();
+        supply_max = 11;
+        for(auto unit_name : randomList){
+            if(unit_name == "") continue;
+                if(buildmap.find(unit_name) == buildmap.end()){
+                    cerr << "bad unitname: " << unit_name << endl;
+                    exit(1);
+                }
+                buildlist.push_back(buildmap[unit_name]);
+        }
+        printHeader(1);
+    }
     ~Terran() {}
 
     int run (){
