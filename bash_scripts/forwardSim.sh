@@ -11,7 +11,7 @@ if [ ! -d "build" ]; then
 fi
 
 if [ "$1" == "sc2-hots-protoss" ]; then
-    build/Protoss/mainProtoss "$2" "Validator/validator_by_file/techtree_protoss.csv"
+    build/Protoss/mainProtoss "$2" "Protoss/techtree_protoss.csv" 0
 fi
 
 if [ "$1" == "sc2-hots-terran" ]; then

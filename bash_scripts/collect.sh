@@ -23,7 +23,7 @@ cp Protoss.h collection/
 cp Protoss/CMakeLists.txt collection/Protoss/
 cp Protoss/mainProtoss.cpp collection/Protoss/
 cp Protoss/Protoss_status.h collection/Protoss/
-cp Protoss/parser.h collection/Protoss/
+cp Protoss/parser_protoss.h collection/Protoss/
 cp Protoss/techtree_protoss.csv collection/Protoss/
 
 #Terran
