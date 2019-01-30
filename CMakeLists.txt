@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 # needed in Opt.h. hope it works for all
-set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD 17) 
+#change back to 11 later. just to evaluate performance locally
+set(CMAKE_CXX_STANDARD 11) 
 
 
 project(simulation)

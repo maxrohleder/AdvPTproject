@@ -171,8 +171,8 @@ class Protoss : public Protoss_status{
     // checks only for hard dependencies and supply (timeout not detected)
     bool validateBuildlist(){
         if(techtreepath == ""){
-            cerr << "techtree not configured" << endl;
-            exit(1);
+            // if no techtree is specified, list was validated before
+            return true;
         }
 
         if(buildlistpath != ""){
@@ -185,9 +185,22 @@ class Protoss : public Protoss_status{
     }
 
     public:
-    Protoss(const list<string> buildlist_to_run, string techtree = "", bool dbg = false) {
+    Protoss(const list<string> buildlist_to_run, string techtree, bool dbg = false) {
         debug = dbg;
         techtreepath = techtree;
+        buildlistpath = "";
+        buildlist_strings = buildlist_to_run;
+        initBuildmap();
+        for(string item: buildlist_to_run){
+            buildlist.push_back(buildmap[item]);
+        }
+        supply_max = 10;
+        idlebuildings.push_back("nexus_0");
+        energylist.push_back(pair<int,int>(0,0));
+    }
+    Protoss(const list<string> buildlist_to_run, bool dbg = false) {
+        debug = dbg;
+        techtreepath = "";
         buildlistpath = "";
         buildlist_strings = buildlist_to_run;
         initBuildmap();

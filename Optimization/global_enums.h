@@ -1,8 +1,11 @@
 #pragma once
 #include <iostream>
-#include <stdlib.h>
-#include <algorithm>
 #include <string>
+#include <stdlib.h>
+#include <map>
+#include <list>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
@@ -23,6 +26,12 @@ int seed = 666;
 // helps to compile away analytics (writing out avg and best statistics every epoch)
 const bool analytics = false;
 
-string path_techtree_terran = "Optimization/techtree_terran.csv";
-string path_techtree_protoss = "Optimization/techtree_protoss.csv";
-string path_techtree_zerg = "Optimization/techtree_zerg.csv";
+string path_techtree_terran = "../../Optimization/techtree_terran.csv";
+string path_techtree_protoss = "../../Optimization/techtree_protoss.csv";
+string path_techtree_zerg = "../../Optimization/techtree_zerg.csv";
+
+// who added param rushedUnit? makes no sense in comp of two pairs
+bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
+    // anzahl richtiger einheiten finden und danach sortieren
+    return first.second < second.second;
+}

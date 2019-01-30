@@ -15,11 +15,11 @@ using namespace std;
 class Opt{
 private:
         // hyperparameters generic algorithm
-        int epochs = 30;
-        int iterations_per_epoch = 100;
-        int number_best = 10;
+        int epochs = 1;                     // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
+        int iterations_per_epoch = 1;
+        //int number_best = 10;
         int number_to_create_to = 1000;
-        int number_to_mutate_to = 500;
+        //int number_to_mutate_to = 500;
         // target spezific vars
         int amount = 1;
         string target;
@@ -37,30 +37,27 @@ public:
             cout << "never used, but have to provide a default constructor" << endl;
             exit(-1);
         }
-        Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : r(race), techtree(tech_tree), amount(amount), target(target), rush(rush){}
+        Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : amount(amount), target(target), techtree(tech_tree), rush(rush), r(race){}
         Opt(const Opt& o){}
         ~Opt(){}
-
-
-        /*
-
-        void optimize(){
+        
+        void optimize(bool sort = true){
             // init listbuilder
-            //list_builder lb(target, techtree, amount, r);
-            // init natural selector
+            list_builder lb(target, techtree, amount, r);
+            // init natural selector (under construction, dont comment in before it works)
             //natural_selector ns(r);
-            // init mating and mutations
+            // init mating and mutations (under construction)
             //Mutator mu(lb.getMultiple());
-            if constexpr(analytics){
+            if (analytics){
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
             }
-            
+     
             for(size_t i = 0; i < epochs; i++){
                 for(int j = 0; j < iterations_per_epoch; j++){
                     int size = buildlists.size();
-                    list<string> lst = {"probe", "probe", "assimilator", "probe", "pylon", "nexus"};
-                    buildlists.push_back(make_pair(lst, i*iterations_per_epoch+j));
+                    // create 1000 lists
+                    lb.appendNLists(buildlists, number_to_create_to-size, sort);
                     //create x buildlists and assign an endtime
                     //lb.appendNLists(buildlists, number_to_create_to-size);
                     //size = buildlists.size();
@@ -70,34 +67,25 @@ public:
                     //mutate buildlists
                     //mu.append_n_mutations(buildlists, number_to_mutate_to-size);
                 }
-                if constexpr(analytics){
+                if (analytics){
                     // evaluate effectiveness of algorithm and determine point to stop it
                     pair<list<string>, int> best = buildlists.back();
                     analyticsfile << best.second << endl;
                 }
                 //repeat
             }
-            // assuring the lists are sorted before termination of this method, 
-            // so we can either start to optimize again or print the winner, e.g. first entry
-            buildlists.sort(comp);
             // close analytics
-            if constexpr(analytics){
+            if(rush){
+                // remove compiler warnings
+            }
+            if (analytics){
                 analyticsfile.close();
             }
         }
 
-        */
-
-        void optimize_fake(){
-            runPureRandomDebug(true);
-        }
-        
-
         void runPureRandomDebug(bool sort = false){
             list_builder lb(target, techtree, amount, r);
             lb.appendNLists(buildlists, 1000, sort);
-            //printBuildlists();
-            printWinner();
         }
         
 
@@ -111,17 +99,9 @@ public:
             }
         }
 
-        void printWinner(){
-            pair<list<string>, int> winner = buildlists.front();
-            // TODO print JSON LOG or return list to main and print there idc
-            for(string j : winner.first){
-                    cout << j << endl;
-            }
-            cout << "total endtime: " << winner.second << endl;
-        }
-
         void runWinner(){
             pair<list<string>, int> winner = buildlists.front();
+            // winner must be valid as no validation is performed
             if(r == ZERG){
                 Zerg z(winner.first);
                 z.runTest(5000);
@@ -129,7 +109,8 @@ public:
                 Terran t(winner.first);
                 t.testRun(5000);
             }else{
-                //TODO run winner on protoss
+                Protoss p(winner.first);
+                p.run(5000);
             }
         }
 };
