@@ -24,16 +24,16 @@ const static list<string> terran_units = { "scv","marine","marauder","reaper","g
                                     "factory_with_tech_lab"};
 
 int main(int argc, char *argv[]){
-    if(argc != 4 || argc != 5){
+    if(argc < 4 || argc > 5){
         cout << "usage: " << argv[0] << " <rush/push> <unit> <seconds/amount> (optional) <from_bash>" << endl;
         exit(1);
     }
 
     // set path to techtrees if were calling this from bashscript
     if(argc == 5 && stoi(string(argv[4])) == 1){
-        path_techtree_protoss = "Optimizer/techtree_protoss.csv";
-        path_techtree_terran = "Optimizer/techtree_protoss.csv";
-        path_techtree_zerg = "Optimizer/techtree_protoss.csv";
+        path_techtree_protoss = "Optimization/techtree_protoss.csv";
+        path_techtree_terran = "Optimization/techtree_terran.csv";
+        path_techtree_zerg = "Optimization/techtree_zerg.csv";
     }
     bool rush = (string(argv[1]) == "rush");
     string unit_to_build = string(argv[2]);
