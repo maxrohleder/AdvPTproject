@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -10,11 +11,6 @@
 #include "../Terran.h"
 
 using namespace std;
-
-bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second, string rushedUnit){
-    // anzahl richtiger einheiten finden und danach sortieren
-    return first.second < second.second;
-}
 
 // listen bewerten
 //      nach anderen kriterien als nur zeit zb
@@ -36,7 +32,7 @@ class natural_selector{
 
     void sortBuildLists(list<pair<list<string>, int>> &buildlists, string rushedUnit){
         for (auto const& i : buildlists) {
-            buildlists.sort(comp());
+            buildlists.sort(comp);
         }
         
     }

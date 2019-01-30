@@ -13,14 +13,11 @@
 #include "../Protoss.h"
 #include "../Terran.h"
 
-bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
-    return first.second < second.second;
-}
 
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG) : race_flag(r), target(target), amount(amount){
+        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG) : target(target), race_flag(r), amount(amount){
             init();
             p = par(path_to_techtree, false);
         }
@@ -138,14 +135,14 @@ class list_builder{
             parser p (path_techtree_terran, bl, false);
             if(validate(p, false)){
                 Terran t(bl);
-<<<<<<< HEAD
                 time = t.getEndTime(5000);
-=======
-                time = t.getEndTime(2000);
->>>>>>> 2ac51bd226858dad94e8ac896dcc26b108518e33
             }
         }else {
-            // TODO resolve include issues and setup testing
+            parser p (path_techtree_protoss, bl, false);
+            if(validate(p, false)){
+                Protoss P(bl);
+                time = P.getEndTime(5000);
+            }
         }
         buildlists.push_back(make_pair(bl, time));        
     }
