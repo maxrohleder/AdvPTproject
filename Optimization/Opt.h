@@ -40,8 +40,6 @@ public:
         Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : amount(amount), target(target), techtree(tech_tree), rush(rush), r(race){}
         Opt(const Opt& o){}
         ~Opt(){}
-
-
         
         void optimize(bool sort = true){
             // init listbuilder
@@ -54,7 +52,7 @@ public:
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
             }
-            
+     
             for(size_t i = 0; i < epochs; i++){
                 for(int j = 0; j < iterations_per_epoch; j++){
                     int size = buildlists.size();
@@ -76,9 +74,6 @@ public:
                 }
                 //repeat
             }
-            // assuring the lists are sorted before termination of this method, 
-            // so we can either start to optimize again or print the winner, e.g. first entry
-            // buildlists.sort(comp);
             // close analytics
             if(rush){
                 // remove compiler warnings
@@ -88,16 +83,9 @@ public:
             }
         }
 
-        void optimize_fake(){
-            runPureRandomDebug(true);
-        }
-        
-
         void runPureRandomDebug(bool sort = false){
             list_builder lb(target, techtree, amount, r);
             lb.appendNLists(buildlists, 1000, sort);
-            //printBuildlists();
-            printWinner();
         }
         
 
@@ -109,15 +97,6 @@ public:
                 }
                 cout << endl;
             }
-        }
-
-        void printWinner(){
-            pair<list<string>, int> winner = buildlists.front();
-            // TODO print JSON LOG or return list to main and print there idc
-            for(string j : winner.first){
-                    cout << j << endl;
-            }
-            cout << "total endtime: " << winner.second << endl;
         }
 
         void runWinner(){

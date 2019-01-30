@@ -10,4 +10,4 @@ if [ ! -d "build" ]; then
     exit 1
 fi
 
-build/Optimization/mainOptimizer "$1" "$2" "$3"
+build/Optimization/mainOptimizer "$1" "$2" "$3" 1

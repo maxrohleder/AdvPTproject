@@ -24,9 +24,16 @@ const static list<string> terran_units = { "scv","marine","marauder","reaper","g
                                     "factory_with_tech_lab"};
 
 int main(int argc, char *argv[]){
-    if(argc != 4){
-        cout << "usage: " << argv[0] << " <rush/push> <unit> <seconds/amount>" << endl;
+    if(argc != 4 || argc != 5){
+        cout << "usage: " << argv[0] << " <rush/push> <unit> <seconds/amount> (optional) <from_bash>" << endl;
         exit(1);
+    }
+
+    // set path to techtrees if were calling this from bashscript
+    if(argc == 5 && stoi(string(argv[4])) == 1){
+        path_techtree_protoss = "Optimizer/techtree_protoss.csv";
+        path_techtree_terran = "Optimizer/techtree_protoss.csv";
+        path_techtree_zerg = "Optimizer/techtree_protoss.csv";
     }
     bool rush = (string(argv[1]) == "rush");
     string unit_to_build = string(argv[2]);
@@ -38,21 +45,21 @@ int main(int argc, char *argv[]){
     }
 
     if(find_if(protoss_units.begin(), protoss_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != protoss_units.end()){
-        Opt O(RaceType::PROTOSS, string("../../Optimization/techtree_protoss.csv"), unit_to_build, amount, rush);
+        Opt O(RaceType::PROTOSS, string(path_techtree_protoss), unit_to_build, amount, rush);
         O.optimize();
         //O.optimize_fake();       
         //O.printWinner();
         O.runWinner(); 
     }
     else if(find_if(zerg_units.begin(), zerg_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != zerg_units.end()){
-        Opt O(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", unit_to_build, amount, rush);
+        Opt O(RaceType::ZERG, path_techtree_zerg, unit_to_build, amount, rush);
         O.optimize();
         //O.optimize_fake();       
         //O.printWinner();
         O.runWinner(); 
     }
     else if(find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != terran_units.end()){
-        Opt O(RaceType::TERRAN, string("../../Optimization/techtree_terran.csv"), unit_to_build, amount, rush);
+        Opt O(RaceType::TERRAN, string(path_techtree_terran), unit_to_build, amount, rush);
         O.optimize();
         //O.optimize_fake();       
         //O.printWinner();

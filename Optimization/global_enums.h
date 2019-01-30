@@ -28,6 +28,7 @@ const bool analytics = false;
 
 string path_techtree_terran = "../../Optimization/techtree_terran.csv";
 string path_techtree_protoss = "../../Optimization/techtree_protoss.csv";
+string path_techtree_zerg = "../../Optimization/techtree_zerg.csv";
 
 // who added param rushedUnit? makes no sense in comp of two pairs
 bool comp(const pair<list<string>, int>& first, const pair<list<string>, int>& second){
