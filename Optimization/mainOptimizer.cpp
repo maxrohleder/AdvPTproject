@@ -42,21 +42,21 @@ int main(int argc, char *argv[]){
 
 
     if(find_if(protoss_units.begin(), protoss_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != protoss_units.end()){
-        Opt O(RaceType::PROTOSS, string("../../Optimization/techtree_protoss.csv"), unit_to_build, amount, rush);
+        Opt O(RaceType::PROTOSS, path_techtree_protoss, unit_to_build, amount, rush);
         //O.optimize();
         O.optimize_fake();       
         //O.printWinner();
         O.runWinner(); 
     }
     else if(find_if(zerg_units.begin(), zerg_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != zerg_units.end()){
-        Opt O(RaceType::ZERG, "../../Optimization/techtree_zerg.csv", unit_to_build, amount, rush);
+        Opt O(RaceType::ZERG, path_techtree_zerg, unit_to_build, amount, rush);
         //O.optimize();
         O.optimize_fake();       
         //O.printWinner();
         O.runWinner(); 
     }
     else if(find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n){return n == unit_to_build;}) != terran_units.end()){
-        Opt O(RaceType::TERRAN, string("../../Optimization/techtree_terran.csv"), unit_to_build, amount, rush);
+        Opt O(RaceType::TERRAN, path_techtree_terran, unit_to_build, amount, rush);
         //O.optimize();
         O.optimize_fake();       
         //O.printWinner();
