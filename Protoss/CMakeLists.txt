@@ -1,5 +1,5 @@
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 add_executable(mainProtoss mainProtoss.cpp)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/testProtoss.cpp")
-    add_executable(testProtoss testProtoss.cpp)
-endif()
+#if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/testProtoss.cpp")
+#    add_executable(testProtoss testProtoss.cpp)
+#endif()

@@ -524,7 +524,7 @@ class Protoss_status : public Race{
     bool nexusBuild(){
         if(checkResources(40000)){
             minerals -= 40000;
-            addToEventList(100, &Protoss_status::nexusFinish);
+            addToEventList(100, &Protoss_status::nexusFinish, to_string(1 + buildlist.size()));
             addToPrintList("build-start", "nexus");
             return true;
         }
@@ -534,9 +534,9 @@ class Protoss_status : public Race{
     void nexusFinish(string ID){
         supply_max += 10;
         ++nexus;
-        energylist.push_back(pair<int,int>(nexus, 0));
-        idlebuildings.push_back("nexus_" + to_string(nexus));
-        addToPrintList("build-end", "nexus", "nexus_" + to_string(nexus));
+        energylist.push_back(pair<int,int>(stoi(ID), 0));
+        idlebuildings.push_back("nexus_" + ID);
+        addToPrintList("build-end", "nexus", "nexus_" + ID);
     }
 
     //pylon 
@@ -560,7 +560,7 @@ class Protoss_status : public Race{
         if(checkResources(15000)){
             if(pylon <= 0) return false;
             minerals -= 15000;
-            addToEventList(65, &Protoss_status::gatewayFinish);
+            addToEventList(65, &Protoss_status::gatewayFinish, to_string(1 + buildlist.size()));
             addToPrintList("build-start", "gateway");
             return true;
         }
@@ -568,8 +568,8 @@ class Protoss_status : public Race{
     }
 
     void gatewayFinish(string ID){
-        idlebuildings.push_back("gateway_" + to_string(gateway));
-        addToPrintList("build-end", "gateway", "gateway_" + to_string(gateway));
+        idlebuildings.push_back("gateway_" + ID);
+        addToPrintList("build-end", "gateway", "gateway_" + ID);
         ++gateway;
     }
 
@@ -596,7 +596,7 @@ class Protoss_status : public Race{
             if(cybernetics_core <= 0) return false;
             minerals -= 20000;
             vespene -= 10000;
-            addToEventList(65, &Protoss_status::roboticsfacilityFinish);
+            addToEventList(65, &Protoss_status::roboticsfacilityFinish, to_string(1 + buildlist.size()));
             addToPrintList("build-start", "robotics_facility");
             return true;
         }
@@ -604,9 +604,9 @@ class Protoss_status : public Race{
     }
 
     void roboticsfacilityFinish(string ID){
-        idlebuildings.push_back("robotics_facility_" + to_string(robotics_facility));
+        idlebuildings.push_back("robotics_facility_" + ID);
         ++robotics_facility;
-        addToPrintList("build-end", "robotics_facility", "robotics_facility_" + to_string(robotics_facility));
+        addToPrintList("build-end", "robotics_facility", "robotics_facility_" + ID);
     }
 
     // robotics_bay
@@ -687,7 +687,7 @@ class Protoss_status : public Race{
             if(cybernetics_core <= 0) return false;
             minerals -= 15000;
             vespene -= 15000;
-            addToEventList(60, &Protoss_status::stargateFinish);
+            addToEventList(60, &Protoss_status::stargateFinish, to_string(1 + buildlist.size()));
             addToPrintList("build-start", "stargate");
             return true;
         }
@@ -695,9 +695,9 @@ class Protoss_status : public Race{
     }
 
     void stargateFinish(string ID){
-        idlebuildings.push_back("stargate_" + to_string(stargate));
+        idlebuildings.push_back("stargate_" + ID);
         ++stargate;
-        addToPrintList("build-end", "stargate", "stargate_" + to_string(stargate));
+        addToPrintList("build-end", "stargate", "stargate_" + ID);
     }
 
     // fleet_beacon

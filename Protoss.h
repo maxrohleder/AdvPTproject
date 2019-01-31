@@ -231,7 +231,7 @@ class Protoss : public Protoss_status{
         fileToWriteTo = file;
     }
 
-    int run(int endtime = 1000){
+    int run(int endtime = 5000){
         // print all invalid game
         if(!validateBuildlist()){
             printFinish(false);
@@ -272,7 +272,7 @@ class Protoss : public Protoss_status{
         return simulation_timeout; // timelimit reached; no successful simulation
     }
 
-    int getEndTime(int maxtime){
+    int getEndTime(int maxtime = 5000){
         for(; time < maxtime; ++time)
         {
             updateResources();  // 1. reevealuates resources
@@ -280,10 +280,10 @@ class Protoss : public Protoss_status{
             if(!buildlist.empty()){
                 if(updateBuildlist()){
                     revision_requested = true;
-                    revise_chrono();
+                    //revise_chrono();
                 }
                 else{
-                    chronoBoost();
+                    //chronoBoost();
                 }
             }
             if(!printlist.empty()){

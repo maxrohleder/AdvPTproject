@@ -12,7 +12,7 @@ probe;50;0;17;1;0;0;0;protoss;nexus;NONE
 phoenix;150;100;35;2;0;0;0;protoss;stargate;NONE
 void_ray;250;150;60;3;0;0;0;protoss;stargate;NONE
 carrier;350;250;120;6;0;0;0;protoss;stargate;fleet_beacon
-nexus;400;0;100;0;10;0;100;protoss;probe;NONE
+nexus;400;0;100;0;10;0;100;protoss;NONE;NONE
 pylon;100;0;25;0;8;0;0;protoss;probe;NONE
 gateway;150;0;65;0;0;0;0;protoss;probe;pylon
 cybernetics_core;150;0;50;0;0;0;0;protoss;probe;gateway
