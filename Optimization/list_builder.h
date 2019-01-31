@@ -75,11 +75,6 @@ class list_builder{
     }
 
     void initZerg(){
-        if(target == "drone"){
-            amount -= 6;
-        }else if(target == "overlord" || target == "hatchery"){
-            --amount;
-        }
         multiple.push_back("drone");
         multiple.push_back("hatchery");
         multiple.push_back("overlord");
@@ -107,8 +102,15 @@ class list_builder{
     //create a single list for push
     list<string> createListPush(){
         buildDigList(target);
-        for(int i = 1; i < amount; ++i){
-            digList.push_back(target);
+        if(target == "greater_spire"){
+            for(int i = 1; i < amount; ++i){
+                digList.push_back("spire");
+                digList.push_back(target);
+            }
+        }else{
+            for(int i = 1; i < amount; ++i){
+                digList.push_back(target);
+            }
         }
         while(!digList.empty()){
             string r = getRandomUnit();

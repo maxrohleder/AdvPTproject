@@ -12,7 +12,7 @@ const static list<string> protoss_units = {"probe","zealot","stalker","sentry","
                                     "dark_templar","mothership","phoenix","void_ray","carrier","nexus","pylon","gateway","cybernetics_core",
                                     "robotics_facility","robotics_bay","twilight_council","templar_archives","dark_shrine","stargate",
                                     "fleet_beacon","assimilator","forge","photon_cannon"};
-const static list<string> zerg_units = {   "overlord","overseer","hydralisk","drone","queen","larva","zergling","baneling","roach","infestor",
+const static list<string> zerg_units = {   "overlord","overseer","hydralisk","drone","queen","zergling","baneling","roach","infestor",
                                     "nydus_worm","ultralisk","brood_lord","corruptor","mutalisk","hatchery","evolution_chamber",
                                     "spore_crawler","lair","spawning_pool","extractor","spine_crawler","roach_warren","baneling_nest",
                                     "hydralisk_den","infestation_pit","hive","nydus_network","ultralisk_cavern","greater_spire","spire"};
