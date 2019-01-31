@@ -3,3 +3,5 @@ check:
     - chronoboost not entirely correct as the same building could be boosted twice and therefore boost items build later
     - optimize boosting strategy so that we dont boost something that ends in a second
     - is boostedBuildingsList really necessary?
+    - why always int max as result?
+    

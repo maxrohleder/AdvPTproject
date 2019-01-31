@@ -6,8 +6,8 @@
 #include <fstream>
 
 #include "list_builder.h"
-//#include "natural_selection.h"
-//#include "mutations.h"
+#include "natural_selection.h"
+#include "mutations.h"
 #include "global_enums.h"
 
 using namespace std;
@@ -15,11 +15,11 @@ using namespace std;
 class Opt{
 private:
         // hyperparameters generic algorithm
-        int epochs = 1;                     // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
-        int iterations_per_epoch = 1;
-        //int number_best = 10;
-        int number_to_create_to = 1000;
-        //int number_to_mutate_to = 500;
+        int epochs = 20;                     // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
+        int iterations_per_epoch = 200;
+        int number_best = 1;
+        int number_to_create_to = 20;
+        int number_to_mutate_to = 500;
         // target spezific vars
         int amount = 1;
         string target;
@@ -45,9 +45,9 @@ public:
             // init listbuilder
             list_builder lb(target, techtree, amount, r);
             // init natural selector (under construction, dont comment in before it works)
-            //natural_selector ns(r);
+            natural_selector ns(r);
             // init mating and mutations (under construction)
-            //Mutator mu(lb.getMultiple());
+            Mutator mu(lb.getMultiple(), r);
             if (analytics){
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
@@ -62,15 +62,15 @@ public:
                     //lb.appendNLists(buildlists, number_to_create_to-size);
                     //size = buildlists.size();
                     //sort and cut buildlists
-                    //ns.cutNBest(buildlists, number_best);
+                    ns.cutNBest(buildlists, number_best);
                     //size = buildlists.size();
                     //mutate buildlists
-                    //mu.append_n_mutations(buildlists, number_to_mutate_to-size);
+                    mu.append_n_mutations(buildlists, number_to_mutate_to-size, rush, target);
                 }
                 if (analytics){
                     // evaluate effectiveness of algorithm and determine point to stop it
-                    pair<list<string>, int> best = buildlists.back();
-                    analyticsfile << best.second << endl;
+                    pair<list<string>, int> best = buildlists.front();
+                    analyticsfile << i*iterations_per_epoch << "\t" << best.second << endl;
                 }
                 //repeat
             }

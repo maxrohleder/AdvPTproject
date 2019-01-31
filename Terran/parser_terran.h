@@ -8,14 +8,14 @@
 #include <array>
 
 using namespace std;
-class dependObj{
+class depObjTerr{
     public:
-        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "", bool b = false) :
+        depObjTerr(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "", bool b = false) :
                  name(name), supply(supply), vespene(vesp), dependency(dependency), produced_by(produced_by), building(b){}
-        dependObj(const dependObj& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by), building(n.building){}
-        ~dependObj(){}
+        depObjTerr(const depObjTerr& n) : name(n.name), supply(n.supply), vespene(n.vespene), dependency(n.dependency), produced_by(n.produced_by), building(n.building){}
+        ~depObjTerr(){}
 
-        dependObj& operator=(const dependObj& n){
+        depObjTerr& operator=(const depObjTerr& n){
             name = n.name;
             supply = n.supply;
             vespene = n.vespene;
@@ -25,7 +25,7 @@ class dependObj{
             return *this;
         }
 
-        friend ostream& operator<<(ostream& out, const dependObj& obj);
+        friend ostream& operator<<(ostream& out, const depObjTerr& obj);
 
 
         string name;
@@ -36,38 +36,38 @@ class dependObj{
         bool building;
 };
 
-ostream& operator<<(ostream& out, const dependObj& obj){
+ostream& operator<<(ostream& out, const depObjTerr& obj){
     out << "\t" << obj.supply << "\t" << obj.vespene << "\t" << obj.dependency << "\t" << obj.produced_by << "\t" << obj.building;
     return out;
 }
 
-class parser{
+class parser_terran{
     protected:
     // ACTUAL DATASTRUCTURE
     bool debug = false;
 
     public:
-    map<string, dependObj> dependencies;
+    map<string, depObjTerr> dependencies;
     list<string> buildlist = {};
 
-    parser(){}
-    parser (const string techtreefilename, bool dbg = false) :debug(dbg) {
+    parser_terran(){}
+    parser_terran (const string techtreefilename, bool dbg = false) : debug(dbg) {
         init(techtreefilename);
         if(debug) printMap();
     }
-    parser (const string techtreefilename, list<string> &blist, bool dbg = false) :debug(dbg), buildlist(blist){
+    parser_terran (const string techtreefilename, list<string> &blist, bool dbg = false) :debug(dbg), buildlist(blist){
         init(techtreefilename);
         if(debug) printMap();
     }
-    parser (const string techtreefilename,const string buildlistname, bool dbg = false) : debug(dbg) {
+    parser_terran (const string techtreefilename,const string buildlistname, bool dbg = false) : debug(dbg) {
         init(techtreefilename);
         if(debug) printMap();
         init_buildlist(buildlistname);
     }
-    parser(const parser& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
-    ~parser(){}
+    parser_terran(const parser_terran& n) : debug(n.debug), dependencies(n.dependencies), buildlist(n.buildlist){}
+    ~parser_terran(){}
 
-    parser& operator=(const parser& p){
+    parser_terran& operator=(const parser_terran& p){
         debug = p.debug;
         dependencies = p.dependencies;
         buildlist = p.buildlist;
@@ -109,8 +109,8 @@ class parser{
             bool vesp = stoi(param[2]) != 0;
             int suppl = stoi(param[5])-stoi(param[4]);
             bool is_building = (string(param[8]) == "b");
-            dependencies[param[0]] = dependObj(param[0], suppl, vesp, param[9], param[10], is_building);
-    //        dependObj(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
+            dependencies[param[0]] = depObjTerr(param[0], suppl, vesp, param[9], param[10], is_building);
+    //        depObjTerr(string name = "", int supply = 0, bool vesp = true, string produced_by = "", string dependency = "") :
 
         }
         file.close();
@@ -141,7 +141,7 @@ class parser{
         return !buildlist.empty();
     }
 
-    dependObj* get_obj(const string name){
+    depObjTerr* get_obj(const string name){
         if(debug) cout << "getting object\n";
         if(dependencies.count(name) == 0) return NULL;
         return &dependencies[name];
@@ -153,7 +153,7 @@ class parser{
 };
 
 // for further information on why the list is invalid set debug to true and see extensive prints
-int validate(parser &p, bool debug = false){
+int validate(parser_terran &p, bool debug = false){
     // keeping track of built items
     list<string> seen = {"scv", "command_center"};
     int supply = 11;
@@ -164,7 +164,7 @@ int validate(parser &p, bool debug = false){
         if(name == "refinery"){
             has_assimilator = true;
         }
-        dependObj& item = p.dependencies[name];
+        depObjTerr& item = p.dependencies[name];
         supply += item.supply;
         if( (item.dependency != "NONE" && find(seen.begin(), seen.end(), item.dependency) == seen.end())){
             if(debug) cout << "DEPENDENCY INVALID AT " << name << endl;

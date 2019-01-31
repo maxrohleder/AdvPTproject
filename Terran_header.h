@@ -1,3 +1,4 @@
+#pragma once
 #include "Race.h"
 
 class Terran_header : public Race{

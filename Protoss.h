@@ -77,12 +77,9 @@ class Protoss : public Protoss_status{
                     i = find_if(eventlist.begin(), eventlist.end(), [this, building_to_be_boosted](const end_event p){return ((find(activebuildings.begin(), activebuildings.end(), p.producerID) != activebuildings.end()) && p.end_time > time && !p.boosted && p.type == "build-end");});
                     if(i == eventlist.end()){
                         // die Eventlist MUSS ein build-end event in der Zukunft besitzen, wenn noch active buildings vorhanden sind.
-                        cout << "no boostable building: " << building_to_be_boosted << " at time: " << time << endl;
-                        cout << "boosted buildings:" << endl;
                         for(auto &build : boostedbuildings){
                             cout << "\t" << build <<  endl;
                         }
-                        cout << "activebuildings:" << endl;
                         for(auto &act : activebuildings){
                             cout << "\t" << act <<  endl;
                         }
@@ -289,8 +286,8 @@ class Protoss : public Protoss_status{
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
-                    return time;
                     sout.clear();
+                    return time;
                 }else{
                     sout.clear();
                 }

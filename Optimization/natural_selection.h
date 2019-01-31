@@ -38,13 +38,6 @@ class natural_selector{
     }
 
     void cutNBest(list<pair<list<string>, int>> &buildlists, int n){
-        //runBuilists(buildlists);
-        //buildlists->resize(n);
-
-        list<pair<list<string>, int>>::iterator position_n, position_end;
-        position_n = position_end = buildlists.begin();
-        advance(position_n, n);
-        advance(position_end, buildlists.end());
-        buildlists.erase(position_n, position_end);
+        buildlists.resize(n);
     }
 };

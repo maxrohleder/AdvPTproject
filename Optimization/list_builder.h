@@ -3,7 +3,7 @@
 #include <list>
 #include <map>
 #include <iostream>
-#include "./parser.h"
+#include "parser.h"
 #include <algorithm>
 #include <stdlib.h>
 #include <vector>
@@ -12,6 +12,7 @@
 #include "../Zerg.h"
 #include "../Protoss.h"
 #include "../Terran.h"
+#include "../Terran/parser_terran.h"
 
 
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
@@ -132,14 +133,14 @@ class list_builder{
                 time = z.getEndTime(5000);
             }
         }else if(race_flag == TERRAN){
-            parser p (path_techtree_terran, bl, false);
-            if(validate(p, false)){
+            parser_terran p (path_techtree_terran, bl, false);
+            if(!validate(p, false)){
                 Terran t(bl);
                 time = t.getEndTime(5000);
             }
         }else {
             parser p (path_techtree_protoss, bl, false);
-            if(validate(p, false)){
+            if(!validate(p, false)){
                 Protoss P(bl);
                 time = P.getEndTime(5000);
             }

@@ -12,10 +12,12 @@ int main(int argc, char *argv[]){
 
 
     bool rush = false;
-    string unit_to_build = "mothership";
+    string unit_to_build = "dark_templar";
     int amount = 1;
 
-    Opt O(RaceType::PROTOSS, string(path_techtree_protoss), unit_to_build, amount, rush);
+    path_techtree_protoss = "../Protoss/techtree_protoss.csv";
+
+    Opt O(RaceType::PROTOSS, path_techtree_protoss, unit_to_build, amount, rush);
     O.optimize();
     O.runWinner(); 
     
