@@ -15,11 +15,11 @@ using namespace std;
 class Opt{
 private:
         // hyperparameters generic algorithm
-        int epochs = 20;                     // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
-        int iterations_per_epoch = 200;
-        int number_best = 1;
+        int epochs = 100;                        // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
+        int iterations_per_epoch = 20;
+        int number_best = 2;                    // should be minimum 2, as mutations use 2 lists
         int number_to_create_to = 20;
-        int number_to_mutate_to = 500;
+        int number_to_mutate_to = 10;
         // target spezific vars
         int amount = 1;
         string target;
@@ -52,6 +52,8 @@ public:
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
             }
+            int stagnation = 0;
+            int best_runtime = -1;
      
             for(size_t i = 0; i < epochs; i++){
                 for(int j = 0; j < iterations_per_epoch; j++){
@@ -67,18 +69,31 @@ public:
                     //mutate buildlists
                     mu.append_n_mutations(buildlists, number_to_mutate_to-size, rush, target);
                 }
-                if (analytics){
-                    // evaluate effectiveness of algorithm and determine point to stop it
-                    pair<list<string>, int> best = buildlists.front();
-                    analyticsfile << i*iterations_per_epoch << "\t" << best.second << endl;
+                // alternative abbruch kriterion
+                pair<list<string>, int> best = buildlists.front();
+                if(best_runtime == best.second){
+                    ++stagnation;
+                } else if (best_runtime == -1){
+                    best_runtime = best.second;                    
+                } else{
+                    stagnation = 0;
+                    best_runtime = best.second;
                 }
-                //repeat
+                // evaluate effectiveness of algorithm and determine point to stop it
+                if (analytics){
+                    analyticsfile << "iteration: " << i*iterations_per_epoch << "\ttime: " << best.second << " (" << stagnation << "/20.)" << endl;
+                }
+                // break if best time doesnt change for 20 iterations
+                if(stagnation >= 20){
+                    break;  
+                } 
             }
             // close analytics
             if(rush){
                 // remove compiler warnings
             }
             if (analytics){
+                analyticsfile << "stagnation count: " << stagnation << endl;
                 analyticsfile.close();
             }
         }
