@@ -18,42 +18,46 @@
 //this will generate a buildlist out of digList for dependencies, once for units only needed once and multiple for units needed multiple times
 class list_builder{
     public:
-        list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG) : target(target), race_flag(r), amount(amount){
-            init();
-            p = par(path_to_techtree, false);
-        }
-        list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
-            init();
-        }
-        ~list_builder(){};
+    list_builder(string target = "", const string path_to_techtree = "", int amount = 1, RaceType r = ZERG) : target(target), race_flag(r), amount(amount){
+        init();
+        p = par(path_to_techtree, false);
+    }
+    list_builder(const list_builder& lb) : p(lb.p), race_flag(lb.race_flag){
+        init();
+    }
+    ~list_builder(){};
 
-        list_builder operator=(const list_builder& lb){
-            p = lb.p;
-            used_only_once = lb.used_only_once;
-            once = lb.once;
-            multiple = lb.multiple;
-            digList = lb.digList;
-            vespene = lb.vespene;
-            race_flag = lb.race_flag;
-            buildList = lb.buildList;
-            return *this;
-        }
+    list_builder operator=(const list_builder& lb){
+        p = lb.p;
+        used_only_once = lb.used_only_once;
+        once = lb.once;
+        multiple = lb.multiple;
+        digList = lb.digList;
+        vespene = lb.vespene;
+        race_flag = lb.race_flag;
+        buildList = lb.buildList;
+        return *this;
+    }
 
 
-        
-        void appendNLists(list<pair<list<string>, int>> &buildlists, int n, bool sort = false){
-            for(int i = 0; i < n; i++){
-                list<string> l = createListPush();
-                runAndInsertList(buildlists, l);
-            }
-            if(sort){
-                buildlists.sort(comp);
-            }
+    
+    void appendNLists(list<pair<list<string>, int>> &buildlists, int n, bool sort = false){
+        for(int i = 0; i < n; i++){
+            list<string> l = createListPush();
+            runAndInsertList(buildlists, l);
         }
+        if(sort){
+            buildlists.sort(comp);
+        }
+    }
 
-        vector<string>* getMultiple(){
-            return &multiple;
-        }
+    vector<string> &getMultiple(){
+        return multiple;
+    }
+
+    par &getParser(){
+        return p;
+    }
 
 
     protected:

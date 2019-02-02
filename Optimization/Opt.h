@@ -47,7 +47,7 @@ public:
             // init natural selector (under construction, dont comment in before it works)
             natural_selector ns(r);
             // init mating and mutations (under construction)
-            Mutator mu(lb.getMultiple(), r);
+            Mutator mu(lb.getMultiple(), lb.getParser(), r);
             if (analytics){
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);

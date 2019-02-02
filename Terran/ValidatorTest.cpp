@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
     }
     string list = string(argv[2]);
     string tree = string(argv[1]);
-    parser p(tree, list);
+    parser_terran p(tree, list);
     cout << validate(p) << endl;
 
     /* list<string> blist = {"scv", "scv", "command_center"};
