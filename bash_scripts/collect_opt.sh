@@ -31,6 +31,7 @@ cp Terran.h collection/
 cp Terran_header.h collection/
 cp Terran/CMakeLists.txt collection/Terran/
 cp Terran/mainTerran.cpp collection/Terran/
+cp Terran/parser_terran.h collection/Terran/
 
 #Zerg
 cp Zerg.h collection/
