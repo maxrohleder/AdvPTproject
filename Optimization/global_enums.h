@@ -24,7 +24,7 @@ typedef enum list_status{
 int seed = 666;
 
 // helps to compile away analytics (writing out avg and best statistics every epoch)
-const bool analytics = true;
+const bool analytics = false;
 
 string path_techtree_terran = "../../Optimization/techtree_terran.csv";
 string path_techtree_protoss = "../../Optimization/techtree_protoss.csv";
