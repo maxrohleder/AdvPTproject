@@ -15,7 +15,7 @@
 #include "parser.h"
 
 using namespace std;
-
+// https://www.tutorialspoint.com/genetic_algorithms/genetic_algorithms_mutation.htm
 // create n mutations
 // cross breeding
 // wenn zeit knapp drüber ist eine einheit entfernen
