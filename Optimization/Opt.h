@@ -49,7 +49,7 @@ public:
             iterations_per_epoch = it;
             number_to_create_to = noc;
             stagnation_abbruch = stag;
-            number_best = max((int)((double)noc*(1/10)), 2);
+            number_best = max((int)((double)noc/10), 2);
             number_to_mutate_to = max((int)((double)noc/2), 5);
         }
         
