@@ -40,6 +40,14 @@ public:
         Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : amount(amount), target(target), techtree(tech_tree), rush(rush), r(race){}
         Opt(const Opt& o){}
         ~Opt(){}
+
+        void setHyper(int ep, int it, int noc){
+            epochs = ep;
+            iterations_per_epoch = it;
+            number_to_create_to = noc;
+            number_best = max((int)((double)noc*(1/10)), 2);
+            number_to_mutate_to = max((int)((double)noc/2), 5);
+        }
         
         void optimize(bool sort = true){
             // init listbuilder
