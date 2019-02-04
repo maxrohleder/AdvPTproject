@@ -82,6 +82,7 @@ class list_builder{
         multiple.push_back("drone");
         multiple.push_back("hatchery");
         multiple.push_back("overlord");
+        //multiple.push_back("queen");
         once.push_back("extractor");
         once.push_back("extractor");
     }
@@ -136,19 +137,19 @@ class list_builder{
             valid = zc.run(bl);
             if(valid){
                 Zerg z(bl);
-                time = z.getEndTime(5000);
+                time = z.getEndTime(rushpush_max_time);
             }
         }else if(race_flag == TERRAN){
             parser_terran p (path_techtree_terran, bl, false);
             if(!validate(p, false)){
                 Terran t(bl);
-                time = t.getEndTime(5000);
+                time = t.getEndTime(rushpush_max_time);
             }
         }else {
             parser p (path_techtree_protoss, bl, false);
             if(!validate(p, false)){
                 Protoss P(bl);
-                time = P.getEndTime(5000);
+                time = P.getEndTime(rushpush_max_time);
             }
         }
         buildlists.push_back(make_pair(bl, time));        
@@ -204,10 +205,13 @@ class list_builder{
 
     //add producable to either once or multiple
     void addToProducable(string name){
+        if(name == "spawning_pool"){
+            multiple.push_back("queen");
+        }
         if(find(used_only_once.begin(), used_only_once.end(), name) == used_only_once.end()){
             if(name == target){
                 return;
-            }else{
+            } else{
                 multiple.push_back(name);
             }
         }
@@ -281,6 +285,7 @@ class list_builder{
         if(list_to_use < prob_mult){
             new_unit = getFromMultiple();
         }else if(list_to_use < prob_once){
+            // only for vespene producers
             if(vespene){
                 new_unit = getFromOnce();
             }else{

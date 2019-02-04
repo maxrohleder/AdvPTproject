@@ -6,5 +6,5 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 make
 cd ..
-cgdb --args build/Optimization/mainOptimizer rush void_ray 30 1
+cgdb --args build/Optimization/mainOptimizer rush zergling 360 1
 

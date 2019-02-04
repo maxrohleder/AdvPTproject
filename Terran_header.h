@@ -92,7 +92,7 @@ protected:
     int armory = 0;
     int bunker = 0;
     int ghost_academy = 0;
-    int starport = 0;
+    int starport = 0;   
     int fusion_core = 0;
     int supply_depot = 0;
     int barracks_with_reactor = 0;

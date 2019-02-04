@@ -46,15 +46,13 @@ class Mutator{
 
     list<string> cross_breed(list<string> list1, list<string> list2){
         // common ground cross breeding (length reduction)
-        int 
-
         return list1;
     }
 
     list<string> mutate(list<string> list1){
         // TODO insert an item from multiple at a random position TOIMPLEMENT
         int pos = rand() % multiple->size();
-        string insert_unit = multiple->at(pos); // TODO multiple[pos]
+        string insert_unit = multiple->at(pos);
         int pos2 = rand()%list1.size();
         auto init_pos = list1.begin();
         advance(init_pos, pos2);
@@ -165,7 +163,7 @@ class Mutator{
             }
         }else if(race_flag == TERRAN){
             parser_terran p (path_techtree_terran, bl, false);
-            if(validate(p, false)){
+            if(!validate(p, false)){
                 Terran t(bl);
                 time = t.getEndTime(5000);
             }
