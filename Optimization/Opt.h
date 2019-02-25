@@ -73,8 +73,8 @@ public:
      
             for(size_t i = 0; i < epochs; i++){
                 for(int j = 0; j < iterations_per_epoch; j++){
-                    seed += 69;
-                    srand(seed);
+                    /* seed += 69;
+                    srand(seed); */
                     int size = buildlists.size();
                     // create 1000 lists
                     lb.appendNLists(buildlists, number_to_create_to-size, sort);

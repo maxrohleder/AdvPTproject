@@ -60,5 +60,5 @@ cp Validator/ValidatorZerg.h collection/Validator
 cp bash_scripts/build.sh collection/
 cp bash_scripts/forwardSim.sh collection/
 cp bash_scripts/optimize.sh collection/
- 
+zip -r project.zip collection/
 cd bash_scripts
