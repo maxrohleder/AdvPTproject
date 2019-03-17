@@ -193,6 +193,7 @@ class Protoss_status : public Race{
 
     // buildings
     int nexus = 1;
+    int nexus_total = 1;
     int pylon = 0;
     int gateway = 0;
     int cybernetics_core = 0;
@@ -473,6 +474,7 @@ class Protoss_status : public Race{
         deactivateBuilding(ID);
         addToPrintList("build-end", "phoenix", "smaug_"+to_string(phoenix), ID);
     }  
+
     //void_ray
     bool voidrayBuild(){
         if(checkResources(25000, 3, 15000)){
@@ -483,7 +485,7 @@ class Protoss_status : public Race{
             supply_used += 3;
             string producer = getBuildingIdOfType("stargate");
             addToPrintList("build-start", "void_ray", producer);
-            addToEventList(60, &Protoss_status::phoenixFinish, producer);
+            addToEventList(60, &Protoss_status::voidrayFinish, producer);
             return true;
         }
         return false;
@@ -493,7 +495,7 @@ class Protoss_status : public Race{
         ++void_ray;
         ++stargate;  // give free stargate place
         deactivateBuilding(ID);
-        addToPrintList("build-end", "void_ray", "leerer_rochen_"+to_string(void_ray), ID);
+        addToPrintList("build-end", "void_ray", "void_ray_"+to_string(void_ray), ID);
     }  
     //carrier
    bool carrierBuild(){
@@ -534,6 +536,7 @@ class Protoss_status : public Race{
     void nexusFinish(string ID){
         supply_max += 10;
         ++nexus;
+        ++nexus_total;
         energylist.push_back(pair<int,int>(stoi(ID), 0));
         idlebuildings.push_back("nexus_" + ID);
         addToPrintList("build-end", "nexus", "nexus_" + ID);
@@ -721,6 +724,7 @@ class Protoss_status : public Race{
     // assimilator
     bool assimilatorBuild(){
         if(checkResources(7500)){
+            if((2*nexus_total)-assimilator <= 0) return false;
             minerals -= 7500;
             addToEventList(30, &Protoss_status::assimilatorFinish);
             addToPrintList("build-start", "assimilator");

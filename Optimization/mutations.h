@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <vector>
+#include <iterator>
 
 #include "global_enums.h"
 // only neccessary to get an endtime
@@ -27,6 +28,7 @@ class Mutator{
     RaceType race_flag;
     string worker;
     int worker_insertion = 4;
+    int maxTargetInsert = 5;
     
     public: 
     Mutator(){}
@@ -43,16 +45,14 @@ class Mutator{
     ~Mutator(){}
 
     list<string> cross_breed(list<string> list1, list<string> list2){
-        // TODO mix through two lists creating a new one
-        // could be either equally long or shorter/longer, but should only be able 
-        // to remove elements not beeing in multiple
+        // common ground cross breeding (length reduction)
         return list1;
     }
 
     list<string> mutate(list<string> list1){
         // TODO insert an item from multiple at a random position TOIMPLEMENT
         int pos = rand() % multiple->size();
-        string insert_unit = multiple->at(pos); // TODO multiple[pos]
+        string insert_unit = multiple->at(pos);
         int pos2 = rand()%list1.size();
         auto init_pos = list1.begin();
         advance(init_pos, pos2);
@@ -62,7 +62,8 @@ class Mutator{
 
     // dedicated to maximize rush scenario
     list<string> moreWorkersAtRandomPositions(list<string> list1){
-        for(int i = 0; i < worker_insertion; i++){
+        int workers_to_insert = rand()%worker_insertion;
+        for(int i = 0; i < workers_to_insert; i++){
             int pos2 = rand()%list1.size();
             auto init_pos = list1.begin();
             advance(init_pos, pos2);
@@ -73,7 +74,7 @@ class Mutator{
 
     list<string> moreTargetUnitsAfterDependency(list<string> list1, string target){
         // essential to a rush scenario
-        int numberOfTargetsToInsert = rand()%5;
+        int numberOfTargetsToInsert = rand()%maxTargetInsert;
         lineObj* lo = p->get_obj(target);
         // determine min position where its okay to insert (dependency etc)
         list<string>::iterator start = getMinInsertPosition(list1, lo->dependency, lo->produced_by);
@@ -90,7 +91,7 @@ class Mutator{
     }
 
     /// if this returns a .end() then some dependency or producer is not found!
-    list<string>::iterator getMinInsertPosition(list<string> l, string d, string p){
+    list<string>::iterator getMinInsertPosition(list<string> &l, string d, string p){
         // if no dependency or producer is set. we can insert from beginning on
         if(d == "NONE" && p == "NONE") return l.begin();
 
@@ -117,7 +118,7 @@ class Mutator{
             n = n-ndrittel;
             for(int i = 0; i < ndrittel; i++){
                 int l1 = rand() % buildlists.size();
-                auto list1 = buildlists.begin();
+                list<pair<list<string>, int>>::iterator list1 = buildlists.begin();
                 advance(list1, l1);
                 list<string> res = moreTargetUnitsAfterDependency(list1->first, target);
                 runAndInsertList(buildlists, res);
@@ -162,7 +163,7 @@ class Mutator{
             }
         }else if(race_flag == TERRAN){
             parser_terran p (path_techtree_terran, bl, false);
-            if(validate(p, false)){
+            if(!validate(p, false)){
                 Terran t(bl);
                 time = t.getEndTime(5000);
             }

@@ -4,7 +4,7 @@
 cd ../collection
 ./build.sh
 START=$(date +%s.%N)
-./optimize.sh rush mothership 1 > zealot360 &
+./optimize.sh rush zergling 360 > zealot360 &
 OPTPID="$!"
 sleep 1
 tail -f ga_analytics.log &

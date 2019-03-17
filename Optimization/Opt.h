@@ -15,11 +15,12 @@ using namespace std;
 class Opt{
 private:
         // hyperparameters generic algorithm
-        int epochs = 100;                        // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
+        int epochs = 200;                        // TODO gescheite werte herausfinden. zu testzwecken jetzt nur ein durchlauf
         int iterations_per_epoch = 20;
         int number_best = 2;                    // should be minimum 2, as mutations use 2 lists
         int number_to_create_to = 20;
         int number_to_mutate_to = 10;
+        int stagnation_abbruch = 100;
         // target spezific vars
         int amount = 1;
         string target;
@@ -37,15 +38,30 @@ public:
             cout << "never used, but have to provide a default constructor" << endl;
             exit(-1);
         }
-        Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : amount(amount), target(target), techtree(tech_tree), rush(rush), r(race){}
+        Opt(RaceType race, string tech_tree, string target, int amount, bool rush) : amount(amount), target(target), techtree(tech_tree), rush(rush), r(race){
+            if(rush) rushpush_max_time = amount;
+        }
         Opt(const Opt& o){}
         ~Opt(){}
+
+        void setHyper(int ep, int it, int noc, int stag){
+            epochs = ep;
+            iterations_per_epoch = it;
+            number_to_create_to = noc;
+            stagnation_abbruch = stag;
+            number_best = max((int)((double)noc/10), 2);
+            number_to_mutate_to = max((int)((double)noc/2), 5);
+        }
         
         void optimize(bool sort = true){
             // init listbuilder
+            if(rush){
+                // in a rush scenario we want to generate buildlists with only 1 target and add more in mutations
+                amount = 1;
+            }
             list_builder lb(target, techtree, amount, r);
             // init natural selector (under construction, dont comment in before it works)
-            natural_selector ns(r);
+            natural_selector ns(r, rush, target);
             // init mating and mutations (under construction)
             Mutator mu(lb.getMultiple(), lb.getParser(), r);
             if (analytics){
@@ -57,15 +73,16 @@ public:
      
             for(size_t i = 0; i < epochs; i++){
                 for(int j = 0; j < iterations_per_epoch; j++){
+                    seed += 69;
+                    srand(seed);
                     int size = buildlists.size();
                     // create 1000 lists
                     lb.appendNLists(buildlists, number_to_create_to-size, sort);
                     //create x buildlists and assign an endtime
-                    //lb.appendNLists(buildlists, number_to_create_to-size);
-                    //size = buildlists.size();
+                    size = buildlists.size();
                     //sort and cut buildlists
                     ns.cutNBest(buildlists, number_best);
-                    //size = buildlists.size();
+                    size = buildlists.size();
                     //mutate buildlists
                     mu.append_n_mutations(buildlists, number_to_mutate_to-size, rush, target);
                 }
@@ -81,10 +98,10 @@ public:
                 }
                 // evaluate effectiveness of algorithm and determine point to stop it
                 if (analytics){
-                    analyticsfile << "iteration: " << i*iterations_per_epoch << "\ttime: " << best.second << " (" << stagnation << "/20.)" << endl;
+                    analyticsfile << "iteration: " << (i+1)*iterations_per_epoch << "\ttime: " << best.second << " (" << stagnation << "/" << stagnation_abbruch << ")" << endl;
                 }
                 // break if best time doesnt change for 20 iterations
-                if(stagnation >= 20){
+                if(stagnation >= stagnation_abbruch){
                     break;  
                 } 
             }
