@@ -791,6 +791,7 @@ private:
         }else{
             minerals -= 7500;
             --workers;
+            ++refinery;
             --workers_minerals;
             addToPrintlist("build-start","refinery");
             addToEventlist(timestep + 30, &Terran::refineryFinish);
@@ -802,7 +803,6 @@ private:
         ++workers_minerals;
         ++workers;
         workers_vesp_max += 3;
-        ++refinery;
         addToPrintlist("build-end","refinery");
     }
 
