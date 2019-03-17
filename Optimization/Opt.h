@@ -59,6 +59,7 @@ public:
                 // in a rush scenario we want to generate buildlists with only 1 target and add more in mutations
                 amount = 1;
             }
+            srand(seed);
             list_builder lb(target, techtree, amount, r);
             // init natural selector (under construction, dont comment in before it works)
             natural_selector ns(r, rush, target);
@@ -72,9 +73,10 @@ public:
             int best_runtime = -1;
      
             for(size_t i = 0; i < epochs; i++){
+                cout << "epoch: " << i << endl; // test
                 for(int j = 0; j < iterations_per_epoch; j++){
-                    seed += 69;
-                    srand(seed);
+                    //seed += 69;
+                    //srand(seed);
                     int size = buildlists.size();
                     // create 1000 lists
                     lb.appendNLists(buildlists, number_to_create_to-size, sort);
@@ -129,6 +131,17 @@ public:
                 }
                 cout << endl;
             }
+        }
+
+        void printWinner(){
+            cout << buildlists.begin()->second << ": ";
+            int target_count = 0;
+            for(auto& i : buildlists.begin()->first){
+                cout << i << " ";
+                if (i == target) ++target_count;
+            }
+            cout << endl;
+            cout << target_count << endl;
         }
 
         void runWinner(){

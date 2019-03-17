@@ -49,6 +49,10 @@ class Mutator{
         return list1;
     }
 
+    list<string> singleSwap(list<string> list1, list<string> list2){
+        int pos1 = rand() % list1.size();
+    }
+
     list<string> mutate(list<string> list1){
         // TODO insert an item from multiple at a random position TOIMPLEMENT
         int pos = rand() % multiple->size();
@@ -113,14 +117,21 @@ class Mutator{
     void append_n_mutations(list<pair<list<string>, int>> &buildlists, int n, bool rush, string target){
 
         // always needed in a rush scenario, as "as many as possible" is not covered by list_builder
-        if(rush){
+        if(rush){ 
             int ndrittel = (int)((double) n / 3);
             n = n-ndrittel;
             for(int i = 0; i < ndrittel; i++){
                 int l1 = rand() % buildlists.size();
                 list<pair<list<string>, int>>::iterator list1 = buildlists.begin();
                 advance(list1, l1);
-                list<string> res = moreTargetUnitsAfterDependency(list1->first, target);
+                //list<string> res = moreTargetUnitsAfterDependency(list1->first, target);
+                int copy_or_overwrite = rand() % 2;
+                list<string> res = {};
+                if(copy_or_overwrite == 0){
+                    res = mutateCopyToRandom(list1->first);
+                }else{
+                    res = mutateOverwriteAtRandom(list1->first);
+                }
                 runAndInsertList(buildlists, res);
             }
         }
@@ -177,5 +188,39 @@ class Mutator{
         buildlists.push_back(make_pair(bl, time));        
     }
 
+    //copy one element to random position
+    list<string> mutateCopyToRandom(list<string> l){
+        size_t length = l.size();
+        size_t pos_from = rand() % length;
+        size_t pos_to = rand() % length;
+        auto it_to = l.begin();
+        for(size_t i = 0; i < pos_to; ++i){
+            ++it_to;
+        }
+        auto it_from = l.begin();
+        for(size_t i = 0; i < pos_from; ++i){
+            ++it_from; 
+        }
+        string to_insert = *it_from;
+        l.insert(it_to, to_insert);
+        return l;
+    }
 
+    //overwrite element at random position
+    list<string> mutateOverwriteAtRandom(list<string> l){
+        size_t length = l.size();
+        size_t pos_from = rand() % length;
+        size_t pos_to = rand() % length;
+        auto it_to = l.begin();
+        for(size_t i = 0; i < pos_to; ++i){
+            ++it_to;
+        }
+        auto it_from = l.begin();
+        for(size_t i = 0; i < pos_from; ++i){
+            ++it_from; 
+        }
+        string to_insert = *it_from;
+        *it_to = to_insert;
+        return l;
+    }
 };
