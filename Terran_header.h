@@ -11,7 +11,7 @@ protected:
     void printFinish(bool valid){
         if(valid){
             sout << "\t]," << endl;
-            sout << "\t\"initialUnits\": {\"scv\": [\"Fred\", \"Bob\", \"Steve\", \"Walter\", \"George\", \"Muserworker\"]," << endl;
+            sout << "\t\"initialUnits\": {\"scv\": [\"Tom1\", \"Tom2\", \"Tom3\", \"Tom4\", \"Tom5\", \"Musterworker\"]," << endl;
             sout << "\t\t\t\"command_center\": [\"command_center_0\"]\n\t\t}" << endl;
             sout << "}" << endl;
         }else{
