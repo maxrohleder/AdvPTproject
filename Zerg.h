@@ -47,6 +47,7 @@ class Zerg : public Zerg_header{
         if(minerals < min || vespene < vesp || (supply_max - supply_used) < supp ){
             return true;
         }
+        redistributeWorkersNext(min, vesp);
         return false;
     }
     
@@ -861,7 +862,7 @@ class Zerg : public Zerg_header{
             if(!new_building && queen > 0){
                 Injection();
             }
-            redistributeWorkers();
+            //redistributeWorkers();
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){
@@ -888,7 +889,7 @@ class Zerg : public Zerg_header{
             if(!new_building && queen > 0){
                 Injection();
             }
-            redistributeWorkers();
+            //redistributeWorkers();
             if(!printlist.empty()){
                 print(time);
                 if(buildlist.empty() && eventlist.empty()){

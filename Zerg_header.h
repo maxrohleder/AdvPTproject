@@ -276,6 +276,27 @@ class Zerg_header : public Race{
         return;
     }
 
+    void redistributeWorkersNext(double minerals_next, double vespene_next){
+        double minerals_to_next = minerals_next - minerals;
+        double vespene_to_next = vespene_next - vespene;
+        if(vespene_to_next < 1 && minerals_to_next < 1){
+            return;
+        }else if(vespene_to_next < 1){
+            workers_vesp = 0;
+            workers_minerals = workers;
+        }else if(minerals_to_next < 1){
+            workers_vesp = min(workers, workers_vesp_max);
+            workers_minerals = workers - workers_vesp;
+        }else{
+            double rate_vesp_to_all = (vespene_to_next * 2) / (vespene_to_next * 2 + minerals_to_next);
+            workers_vesp = min((int) (workers * rate_vesp_to_all), workers_vesp_max);
+            workers_vesp = min(workers_vesp, workers);
+            workers_minerals = workers - workers_vesp;
+        }
+        printlist.push_front(printstruct("", ""));
+        return;
+    }
+
     bool getWorker(){
         if(workers_minerals < 1){
             if(workers_vesp < 1){

@@ -49,8 +49,22 @@ class Mutator{
         return list1;
     }
 
-    list<string> singleSwap(list<string> list1, list<string> list2){
-        int pos1 = rand() % list1.size();
+    list<string> singleSwap(list<string> list1, list<string> list2, string target){
+        int pos1 = rand() % (list1.size() - 1);
+        int pos2 = rand() % list2.size();
+        auto it1 = list1.begin();
+        auto it2 = list2.begin();
+        for(size_t i = 0; i < pos1; ++i){
+            ++it1; 
+        }
+        for(size_t i = 0; i < pos2; ++i){
+            ++it2; 
+        }
+        if(*it1 == target || *it2 == target){
+            return list1;
+        }
+        *it1 = *it2;
+        return list1;        
     }
 
     list<string> mutate(list<string> list1){
@@ -130,7 +144,7 @@ class Mutator{
                 if(copy_or_overwrite == 0){
                     res = mutateCopyToRandom(list1->first);
                 }else{
-                    res = mutateOverwriteAtRandom(list1->first);
+                    res = mutateOverwriteAtRandom(list1->first, target);
                 }
                 runAndInsertList(buildlists, res);
             }
@@ -148,7 +162,8 @@ class Mutator{
                 int l2 = rand() % buildlists.size();
                 auto list2 = buildlists.begin();
                 advance(list2, l2);
-                res = cross_breed(list1->first, list2->first);
+                //res = cross_breed(list1->first, list2->first);
+                res = singleSwap(list1->first, list2->first, target);
                 runAndInsertList(buildlists, res);
             }
             else if(chance == 1){
@@ -207,10 +222,10 @@ class Mutator{
     }
 
     //overwrite element at random position
-    list<string> mutateOverwriteAtRandom(list<string> l){
+    list<string> mutateOverwriteAtRandom(list<string> l, string target){
         size_t length = l.size();
         size_t pos_from = rand() % length;
-        size_t pos_to = rand() % length;
+        size_t pos_to = rand() % (length - 1);
         auto it_to = l.begin();
         for(size_t i = 0; i < pos_to; ++i){
             ++it_to;
@@ -220,6 +235,9 @@ class Mutator{
             ++it_from; 
         }
         string to_insert = *it_from;
+        if(to_insert == target){
+            return l;
+        }
         *it_to = to_insert;
         return l;
     }
