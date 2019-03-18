@@ -45,9 +45,9 @@ class Zerg : public Zerg_header{
     //helper for resource-check
     bool checkResources(int min, int supp = 0, int vesp = 0){
         if(minerals < min || vespene < vesp || (supply_max - supply_used) < supp ){
+            redistributeWorkersNext(min, vesp);
             return true;
         }
-        redistributeWorkersNext(min, vesp);
         return false;
     }
     
