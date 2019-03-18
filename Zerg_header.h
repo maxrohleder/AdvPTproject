@@ -276,9 +276,10 @@ class Zerg_header : public Race{
         return;
     }
 
-    void redistributeWorkersNext(double minerals_next, double vespene_next){
-        double minerals_to_next = minerals_next - minerals;
-        double vespene_to_next = vespene_next - vespene;
+    void redistributeWorkersNext(int minerals_next, int vespene_next){
+        int minerals_to_next = minerals_next - minerals;
+        int vespene_to_next = vespene_next - vespene;
+        //cout << "here: " << vespene_to_next << " " << minerals_to_next << endl;
         if(vespene_to_next < 1 && minerals_to_next < 1){
             return;
         }else if(vespene_to_next < 1){
@@ -288,7 +289,8 @@ class Zerg_header : public Race{
             workers_vesp = min(workers, workers_vesp_max);
             workers_minerals = workers - workers_vesp;
         }else{
-            double rate_vesp_to_all = (vespene_to_next * 2) / (vespene_to_next * 2 + minerals_to_next);
+            double rate_vesp_to_all = (double) (vespene_to_next * 2) / (double) (vespene_to_next * 2 + minerals_to_next);
+            //cout << "rate: " << rate_vesp_to_all << endl;
             workers_vesp = min((int) (workers * rate_vesp_to_all), workers_vesp_max);
             workers_vesp = min(workers_vesp, workers);
             workers_minerals = workers - workers_vesp;
