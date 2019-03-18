@@ -267,6 +267,13 @@ private:
         mule_worker -=4;
     }
 
+    bool checkResources(int min, int supp = 0, int vesp = 0){
+        if(minerals < min || vespene < vesp || (supply_max - supply_used) < supp ){
+            return true;
+        }
+        return false;
+    }
+    
 /*
     lists and map
 */
@@ -373,7 +380,7 @@ private:
 */
 
     bool scvBuild(){
-        if(minerals < 5000 || ( supply_max - supply_used ) < 1 || command_center_buildslots < 1 ){
+        if(checkResources(5000, 1) || command_center_buildslots < 1 ){
             return false;
         }else{
             minerals -= 5000;
@@ -393,7 +400,7 @@ private:
     }
 
     bool marineBuild(){
-        if(minerals < 5000 || ( supply_max -supply_used ) < 1 || (barracks_buildslots < 1 && barracks_with_tech_lab_buildslots < 1 ) ){
+        if(checkResources(5000, 1) || (barracks_buildslots < 1 && barracks_with_tech_lab_buildslots < 1 ) ){
             return false;
         }else{
             minerals -= 5000;
@@ -429,7 +436,7 @@ private:
     }
 
     bool marauderBuild(){
-        if(minerals < 10000 || vespene < 2500 || (supply_max - supply_used) <2 || barracks_with_tech_lab_buildslots < 1){
+        if(checkResources(10000, 2, 2500) || barracks_with_tech_lab_buildslots < 1){
             return false;
         }else{
             minerals -= 10000;
@@ -451,7 +458,7 @@ private:
     }
     
     bool reaperBuild(){
-        if(minerals < 5000 || vespene < 5000 || (supply_max - supply_used) < 1 || barracks_with_tech_lab_buildslots < 1){
+        if(checkResources(5000, 1, 5000) || barracks_with_tech_lab_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -473,7 +480,7 @@ private:
     }
 
     bool ghostBuild(){
-        if(minerals < 20000 || vespene < 10000 || (supply_max - supply_used) < 2 || barracks_with_tech_lab_buildslots < 1 || ghost_academy < 1){
+        if(checkResources(20000, 2, 10000) || barracks_with_tech_lab_buildslots < 1 || ghost_academy < 1){
             return false;
         }else{
             minerals -= 20000;
@@ -495,7 +502,7 @@ private:
     }
 
     bool hellionBuild(){
-        if(minerals < 10000 || (supply_max - supply_used) < 2 || (factory_buildslots < 1 && factory_with_tech_lab_buildslots < 1)){
+        if(checkResources(10000, 2) || (factory_buildslots < 1 && factory_with_tech_lab_buildslots < 1)){
             return false;
         }else{
             minerals -= 10000;
@@ -530,7 +537,7 @@ private:
     }
 
     bool siegeTankBuild(){
-        if(minerals < 15000 || vespene < 12500 || (supply_max - supply_used) < 3 || factory_with_tech_lab_buildslots < 1){
+        if(checkResources(15000, 3, 12500) || factory_with_tech_lab_buildslots < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -552,7 +559,7 @@ private:
     }    
 
     bool thorBuild(){
-        if(minerals < 30000 || vespene < 20000 || (supply_max - supply_used) < 6 || factory_with_tech_lab_buildslots < 1 || armory < 1){
+        if(checkResources(30000,6, 20000) || factory_with_tech_lab_buildslots < 1 || armory < 1){
             return false;
         }else{
             minerals -= 30000;
@@ -574,7 +581,7 @@ private:
     }    
 
     bool medivacBuild(){
-        if(minerals < 10000 || vespene < 10000 || (supply_max - supply_used) < 2 || (starport_buildslots < 1 && starport_with_tech_lab_buildslots < 1)){
+        if(checkResources(10000, 2, 10000) || (starport_buildslots < 1 && starport_with_tech_lab_buildslots < 1)){
             return false;
         }else{
             minerals -= 10000;
@@ -611,7 +618,7 @@ private:
     }   
 
     bool vikingBuild(){
-        if(minerals < 15000 || vespene < 7500 || (supply_max - supply_used) < 2 || (starport_buildslots < 1 && starport_with_tech_lab_buildslots < 1)){
+        if(checkResources(15000, 2, 7500) || (starport_buildslots < 1 && starport_with_tech_lab_buildslots < 1)){
             return false;
         }else{
             minerals -= 15000;
@@ -650,7 +657,7 @@ private:
     }
 
     bool ravenBuild(){
-        if(minerals < 10000 || vespene < 20000 || (supply_max - supply_used) < 2 || starport_with_tech_lab_buildslots < 1){
+        if(checkResources(10000, 2, 20000) || starport_with_tech_lab_buildslots < 1){
             return false;
         }else{
             minerals -= 10000;
@@ -672,7 +679,7 @@ private:
     } 
 
     bool bansheeBuild(){
-        if(minerals < 15000 || vespene < 10000 || (supply_max - supply_used) < 3 || starport_with_tech_lab_buildslots < 1){
+        if(checkResources(15000, 3, 10000) || starport_with_tech_lab_buildslots < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -694,7 +701,7 @@ private:
     }
 
     bool battlecruiserBuild(){
-        if(minerals < 40000 || vespene < 30000 || (supply_max - supply_used) < 6 || starport_with_tech_lab_buildslots < 1 || fusion_core < 1){
+        if(checkResources(40000, 6, 30000) || starport_with_tech_lab_buildslots < 1 || fusion_core < 1){
             return false;
         }else{
             minerals -= 40000;
