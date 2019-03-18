@@ -750,7 +750,7 @@ private:
 */
 
     bool commandCenterBuild(){
-        if(minerals < 40000 || workers < 1){
+        if(checkResources(40000) || workers < 1){
             return false;
         }else{
             minerals -= 40000;
@@ -774,7 +774,7 @@ private:
 
     //TODO energie eigenschaften hinzufügen
     bool orbitalCommandBuild(){
-        if(minerals < 15000 || command_center < 1 || barracks_total < 1 || command_center_buildslots < 1 ){
+        if(checkResources(15000) || command_center < 1 || barracks_total < 1 || command_center_buildslots < 1 ){
             return false;
         }else{
             minerals -= 15000;
@@ -794,7 +794,7 @@ private:
     }
 
     bool planetaryFortressBuild(){
-        if(minerals < 15000 || vespene < 15000 || command_center < 1 || engineering_bay < 1 || command_center_buildslots < 1){
+        if(checkResources(15000, 0, 15000) || command_center < 1 || engineering_bay < 1 || command_center_buildslots < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -814,7 +814,7 @@ private:
     }
 
     bool refineryBuild(){
-        if(minerals < 7500 || workers < 1 || refinery + 1 > bases * geyser_max){
+        if(checkResources(7500) || workers < 1 || refinery + 1 > bases * geyser_max){
             return false;
         }else{
             minerals -= 7500;
@@ -835,7 +835,7 @@ private:
     }
 
     bool engineeringBayBuild(){
-        if(minerals < 12500 || workers < 1){
+        if(checkResources(12500) || workers < 1){
             return false;
         }else{
             minerals -= 12500;
@@ -855,7 +855,7 @@ private:
     }
 
     bool missileTurretBuild(){
-        if(minerals < 10000 || workers < 1 || engineering_bay < 1){
+        if(checkResources(10000) || workers < 1 || engineering_bay < 1){
             return false;
         }else{
             minerals -= 10000;
@@ -875,7 +875,7 @@ private:
     }
 
     bool sensorTowerBuild(){
-        if(minerals < 12500 || vespene < 10000 || workers < 1 || engineering_bay < 1){
+        if(checkResources(12500, 0, 10000) || workers < 1 || engineering_bay < 1){
             return false;
         }else{
             minerals -= 12500;
@@ -896,7 +896,7 @@ private:
     }
 
     bool barracksBuild(){
-        if(minerals < 15000 || supply_depot < 1 || workers < 1){
+        if(checkResources(15000) || supply_depot < 1 || workers < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -920,7 +920,7 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool barracksWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || barracks < 1 || barracks_buildslots < 1){
+        if(checkResources(5000, 0, 5000) || barracks < 1 || barracks_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -942,7 +942,7 @@ private:
     }
 
     bool barrackswithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || barracks < 1 || barracks_buildslots < 1){
+        if(checkResources(5000, 0, 2500) || barracks < 1 || barracks_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -964,7 +964,7 @@ private:
     }
 
     bool factoryBuild(){
-        if(minerals < 15000 || vespene < 10000 || workers < 1 || barracks_total < 1){
+        if(checkResources(15000, 0, 10000) || workers < 1 || barracks_total < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -989,7 +989,7 @@ private:
 
     //TODO buildslot sperren????
     bool factoryWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || factory < 1 || factory_buildslots < 1){
+        if(checkResources(5000, 0, 5000) || factory < 1 || factory_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -1011,7 +1011,7 @@ private:
     }    
 
     bool factorywithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || factory < 1 ||factory_buildslots < 1){
+        if(checkResources(5000, 0, 2500) || factory < 1 ||factory_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -1033,7 +1033,7 @@ private:
     }       
 
     bool armoryBuild(){
-        if(minerals < 15000 || vespene < 10000 || workers < 1 || factory_total < 1){
+        if(checkResources(15000, 0, 10000) || workers < 1 || factory_total < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -1054,7 +1054,7 @@ private:
     }
 
     bool bunkerBuild(){
-        if(minerals < 10000 || workers < 1 || barracks_total < 1){
+        if(checkResources(10000) || workers < 1 || barracks_total < 1){
             return false;
         }else{
             minerals -= 10000;
@@ -1074,7 +1074,7 @@ private:
     }
 
     bool ghostAcademyBuild(){
-        if(minerals < 15000 || vespene < 5000 || workers < 1 || barracks_total < 1){
+        if(checkResources(15000, 0, 5000) || workers < 1 || barracks_total < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -1095,7 +1095,7 @@ private:
     }
 
     bool starportBuild(){
-        if(minerals < 15000 || vespene < 10000 || workers < 1 || factory_total < 1){
+        if(checkResources(15000, 0, 10000) || workers < 1 || factory_total < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -1121,7 +1121,7 @@ private:
 
     //TODO während upgrade buildslot gesperrt????
     bool starportWithReactorBuild(){
-        if(minerals < 5000 || vespene < 5000 || starport < 1 || starport_buildslots < 1){
+        if(checkResources(5000, 0, 5000) || starport < 1 || starport_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -1143,7 +1143,7 @@ private:
     }
 
     bool starportwithTechLabBuild(){
-        if(minerals < 5000 || vespene < 2500 || starport < 1 || starport_buildslots < 1){
+        if(checkResources(5000, 0, 2500) || starport < 1 || starport_buildslots < 1){
             return false;
         }else{
             minerals -= 5000;
@@ -1165,7 +1165,7 @@ private:
     }
 
     bool fusionCoreBuild(){
-        if(minerals < 15000 || vespene < 15000 || workers < 1 || starport_total < 1){
+        if(checkResources(15000, 0, 15000) || workers < 1 || starport_total < 1){
             return false;
         }else{
             minerals -= 15000;
@@ -1186,7 +1186,7 @@ private:
     }    
 
     bool supplyDepotBuild(){
-        if(minerals < 10000 || workers < 1){
+        if(checkResources(10000) || workers < 1){
             return false;
         }else{
             minerals -= 10000;
