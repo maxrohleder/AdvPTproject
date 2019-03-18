@@ -269,11 +269,32 @@ private:
 
     bool checkResources(int min, int supp = 0, int vesp = 0){
         if(minerals < min || vespene < vesp || (supply_max - supply_used) < supp ){
+            redistributeWorkersNext(min, vesp);
             return true;
-        }
+        }        
         return false;
     }
     
+    void redistributeWorkersNext(double minerals_next, double vespene_next){
+        double minerals_to_next = minerals_next - minerals;
+        double vespene_to_next = vespene_next - vespene;
+        if(vespene_to_next < 1 && minerals_to_next < 1){
+            return;
+        }else if(vespene_to_next < 1){
+            workers_vesp = 0;
+            workers_minerals = workers;
+        }else if(minerals_to_next < 1){
+            workers_vesp = min(workers, workers_vesp_max);
+            workers_minerals = workers - workers_vesp;
+        }else{
+            double rate_vesp_to_all = (vespene_to_next * 2) / (vespene_to_next * 2 + minerals_to_next);
+            workers_vesp = min((int) (workers * rate_vesp_to_all), workers_vesp_max);
+            workers_vesp = min(workers_vesp, workers);
+            workers_minerals = workers - workers_vesp;
+        }
+        printlist.push_front(printstruct("", ""));
+        return;
+    }
 /*
     lists and map
 */
@@ -1226,7 +1247,7 @@ public:
             if(!forMule){
                 muleBuild();
             }
-            redistributeWorkers();
+            //redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
                 bool eventEmpty = false;
@@ -1258,7 +1279,7 @@ public:
             if(!forMule){
                 muleBuild();
             }
-            redistributeWorkers();
+            //redistributeWorkers();
             if(!printlist.empty()){
                 print(timestep);
                 bool eventEmpty = false;
