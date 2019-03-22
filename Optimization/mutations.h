@@ -49,6 +49,22 @@ class Mutator{
         return list1;
     }
 
+    list<string> crossBreedSimple(list<string> list1, list<string> list2){
+        size_t length_min = min(list1.size(), list2.size());
+        list<string> l = {};
+        int pos = rand() % length_min;
+        auto it1 = list1.begin();
+        auto it2 = list2.begin();
+        for(int i = 0; i < length_min; ++i, ++it1, ++it2){
+            if(i < pos){
+                l.push_back(*it1);
+            }else{
+                l.push_back(*it2);
+            }
+        }
+        return l;
+    }
+
     list<string> singleSwap(list<string> list1, list<string> list2, string target){
         int pos1 = rand() % (list1.size() - 1);
         int pos2 = rand() % list2.size();
@@ -65,6 +81,16 @@ class Mutator{
         }
         *it1 = *it2;
         return list1;        
+    }
+
+    list<string> cutOneOut(list<string> l){
+        int pos = rand() % (l.size() - 1);
+        auto it = l.begin();
+        for(size_t i = 0; i < pos; ++i){
+            ++it; 
+        }
+        l.erase(it);
+        return l;
     }
 
     list<string> mutate(list<string> list1){
@@ -139,10 +165,12 @@ class Mutator{
                 list<pair<list<string>, int>>::iterator list1 = buildlists.begin();
                 advance(list1, l1);
                 //list<string> res = moreTargetUnitsAfterDependency(list1->first, target);
-                int copy_or_overwrite = rand() % 2;
+                int choose = rand() % 3;
                 list<string> res = {};
-                if(copy_or_overwrite == 0){
+                if(choose == 0){
                     res = mutateCopyToRandom(list1->first);
+                }else if(choose == 1){
+                    res = cutOneOut(list1->first);
                 }else{
                     res = mutateOverwriteAtRandom(list1->first, target);
                 }
@@ -152,16 +180,16 @@ class Mutator{
 
         for(int i = 0; i < n; i++)
         {
-            int chance = rand() % 3;
+            int chance = rand() % 4;
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
             advance(list1, l1);
             // new buildlist created by one of the following methods
             list<string> res;
+            int l2 = rand() % buildlists.size();
+            auto list2 = buildlists.begin();
+            advance(list2, l2);
             if(chance == 0){
-                int l2 = rand() % buildlists.size();
-                auto list2 = buildlists.begin();
-                advance(list2, l2);
                 //res = cross_breed(list1->first, list2->first);
                 res = singleSwap(list1->first, list2->first, target);
                 runAndInsertList(buildlists, res);
@@ -171,6 +199,9 @@ class Mutator{
             }
             else if(chance == 2){
                 res = moreWorkersAtRandomPositions(list1->first);
+            }
+            else if(chance == 3){
+                res = crossBreedSimple(list1->first, list2->first);
             }
             runAndInsertList(buildlists, res);
         }
