@@ -45,8 +45,18 @@ class Mutator{
     ~Mutator(){}
 
     list<string> cross_breed(list<string> list1, list<string> list2){
-        // common ground cross breeding (length reduction)
-        return list1;
+        // taking one from each list alternatingly
+        list<string>::iterator iter1 = list1.begin();
+        list<string>::iterator iter2 = list2.begin();
+
+        list<string> res = {};
+        while(iter1 != list1.end() and iter2 != list2.end()){
+            res.push_back(*iter1);
+            advance(iter1, 2);
+            res.push_back(*iter2);
+            advance(iter2, 2);
+        }
+        return res;
     }
 
     list<string> singleSwap(list<string> list1, list<string> list2, string target){
