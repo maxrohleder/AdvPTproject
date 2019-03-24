@@ -64,7 +64,7 @@ public:
             // init natural selector (under construction, dont comment in before it works)
             natural_selector ns(r, rush, target);
             // init mating and mutations (under construction)
-            Mutator mu(lb.getMultiple(), lb.getParser(), r);
+            Mutator mu(lb.getMultiple(), lb.getParser(), r, rush, target);
             if (analytics){
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
@@ -83,7 +83,7 @@ public:
                     //create x buildlists and assign an endtime
                     size = buildlists.size();
                     //sort and cut buildlists
-                    ns.cutNBest(buildlists, number_best);
+                    ns.cutNBest(buildlists, number_best, amount);
                     size = buildlists.size();
                     //mutate buildlists
                     mu.append_n_mutations(buildlists, number_to_mutate_to-size, rush, target);
