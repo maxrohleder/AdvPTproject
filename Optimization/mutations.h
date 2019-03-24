@@ -4,14 +4,15 @@
 #include <iostream>
 #include <vector>
 #include <iterator>
-
 #include "global_enums.h"
+
 // only neccessary to get an endtime
 #include "../Zerg.h"
 #include "../Protoss.h"
 #include "../Terran.h"
 #include "../Terran/parser_terran.h"
 #include "../Validator/ValidatorZerg.h"
+
 // neccesary for push scenario dependency info
 #include "parser.h"
 
@@ -190,7 +191,8 @@ class Mutator{
 
         for(int i = 0; i < n; i++)
         {
-            int chance = rand() % 4;
+            int chance = rand() % 5;
+            cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
             advance(list1, l1);
@@ -212,7 +214,10 @@ class Mutator{
             }
             else if(chance == 3){
                 res = crossBreedSimple(list1->first, list2->first);
-            }
+            } 
+            else {
+                res = cross_breed(list1->first, list2->first);
+            }   
             runAndInsertList(buildlists, res);
         }
     }
