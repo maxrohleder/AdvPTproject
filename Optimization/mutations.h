@@ -197,8 +197,8 @@ class Mutator{
 
         for(int i = 0; i < n; i++)
         {
-            int chance = rand() % 5;
-            cout << "made it";
+            int chance = rand() % 4;
+            //cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
             advance(list1, l1);
@@ -208,7 +208,6 @@ class Mutator{
             auto list2 = buildlists.begin();
             advance(list2, l2);
             if(chance == 0){
-                //res = cross_breed(list1->first, list2->first);
                 res = singleSwap(list1->first, list2->first, target);
             }
             else if(chance == 1){
