@@ -4,14 +4,15 @@
 #include <iostream>
 #include <vector>
 #include <iterator>
-
 #include "global_enums.h"
+
 // only neccessary to get an endtime
 #include "../Zerg.h"
 #include "../Protoss.h"
 #include "../Terran.h"
 #include "../Terran/parser_terran.h"
 #include "../Validator/ValidatorZerg.h"
+
 // neccesary for push scenario dependency info
 #include "parser.h"
 
@@ -47,8 +48,18 @@ class Mutator{
     ~Mutator(){}
 
     list<string> cross_breed(list<string> list1, list<string> list2){
-        // common ground cross breeding (length reduction)
-        return list1;
+        // taking one from each list alternatingly
+        list<string>::iterator iter1 = list1.begin();
+        list<string>::iterator iter2 = list2.begin();
+
+        list<string> res = {};
+        while(iter1 != list1.end() and iter2 != list2.end()){
+            res.push_back(*iter1);
+            advance(iter1, 2);
+            res.push_back(*iter2);
+            advance(iter2, 2);
+        }
+        return res;
     }
 
     list<string> crossBreedSimple(list<string> list1, list<string> list2){
@@ -186,7 +197,8 @@ class Mutator{
 
         for(int i = 0; i < n; i++)
         {
-            int chance = rand() % 4;
+            int chance = rand() % 5;
+            cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
             advance(list1, l1);
@@ -198,7 +210,6 @@ class Mutator{
             if(chance == 0){
                 //res = cross_breed(list1->first, list2->first);
                 res = singleSwap(list1->first, list2->first, target);
-                runAndInsertList(buildlists, res, rush);
             }
             else if(chance == 1){
                 res = mutate(list1->first);
@@ -208,7 +219,10 @@ class Mutator{
             }
             else if(chance == 3){
                 res = crossBreedSimple(list1->first, list2->first);
-            }
+            } 
+            else {
+                //res = cross_breed(list1->first, list2->first);
+            }   
             runAndInsertList(buildlists, res, rush);
         }
     }
