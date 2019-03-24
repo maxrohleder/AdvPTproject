@@ -4,9 +4,10 @@
 cd ../collection
 ./build.sh
 START=$(date +%s.%N)
-./optimize.sh push void_ray 1 > void_ray1p &
+./optimize.sh push brood_lord 1 > brood_lord1p &
 OPTPID="$!"
 sleep 1
+echo "pushing 1 void_ray. Time to beat: 10min aka 600s\n"
 tail -f ga_analytics.log &
 wait $OPTPID || {echo "error"}
 END=$(date +%s.%N)
