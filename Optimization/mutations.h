@@ -50,14 +50,15 @@ class Mutator{
     list<string> cross_breed(list<string> list1, list<string> list2){
         // taking one from each list alternatingly
         list<string>::iterator iter1 = list1.begin();
+        ++iter1;
         list<string>::iterator iter2 = list2.begin();
 
         list<string> res = {};
-        while(iter1 != list1.end() and iter2 != list2.end()){
+        while(iter1 != list1.end() && iter2 != list2.end()){
             res.push_back(*iter1);
-            advance(iter1, 2);
+            advance(iter1, min(2, (int) (distance(iter1, list1.end()) - 1));
             res.push_back(*iter2);
-            advance(iter2, 2);
+            advance(iter2, min(2, (int) distance(iter2, list2.end())));
         }
         return res;
     }
