@@ -30,10 +30,12 @@ class Mutator{
     string worker;
     int worker_insertion = 4;
     int maxTargetInsert = 5;
+    int amount = 0;
+    string target;
     
     public: 
     Mutator(){}
-    Mutator(vector<string> &multi, par &dep_info, RaceType r): multiple(&multi), p(&dep_info), race_flag(r) {
+    Mutator(vector<string> &multi, par &dep_info, RaceType r, int amount, string target): multiple(&multi), p(&dep_info), race_flag(r), amount(amount), target(target) {
         if(r == PROTOSS){
             worker = "probe";
         } else if(r == TERRAN){
@@ -67,6 +69,10 @@ class Mutator{
         int pos = rand() % length_min;
         auto it1 = list1.begin();
         auto it2 = list2.begin();
+        if(list2.size() != length_min){
+            it1 = list2.begin();
+            it2 = list1.begin();
+        }
         for(int i = 0; i < length_min; ++i, ++it1, ++it2){
             if(i < pos){
                 l.push_back(*it1);
@@ -186,7 +192,7 @@ class Mutator{
                 }else{
                     res = mutateOverwriteAtRandom(list1->first, target);
                 }
-                runAndInsertList(buildlists, res);
+                runAndInsertList(buildlists, res, rush);
             }
         }
 
@@ -215,13 +221,13 @@ class Mutator{
                 res = crossBreedSimple(list1->first, list2->first);
             } 
             else {
-                res = cross_breed(list1->first, list2->first);
+                //res = cross_breed(list1->first, list2->first);
             }   
-            runAndInsertList(buildlists, res);
+            runAndInsertList(buildlists, res, rush);
         }
     }
 
-    void runAndInsertList(list<pair<list<string>, int>>& buildlists, list<string> &bl){
+    void runAndInsertList(list<pair<list<string>, int>>& buildlists, list<string> &bl, bool rush){
         int time = MAX_TIME;
         bool valid = true;
         // TODO generalize to all races
@@ -244,6 +250,9 @@ class Mutator{
                 Protoss P(bl);
                 time = P.getEndTime(5000);
             }
+        }
+        if(!rush && amount != count_targets(bl)){
+            time == MAX_TIME;
         }
         buildlists.push_back(make_pair(bl, time));        
     }
@@ -285,5 +294,13 @@ class Mutator{
         }
         *it_to = to_insert;
         return l;
+    }
+
+    int count_targets(list<string> lst){
+        int c = 0;
+        for(string u: lst){
+            if (u == target) ++c;            
+        }
+        return c;
     }
 };

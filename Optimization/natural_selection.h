@@ -43,7 +43,7 @@ class natural_selector{
         // TODO calculate median and cut all lists above. (ignore all INT_MAX times) (performes well on outliers)
     }
 
-    void cutNBest(list<pair<list<string>, int>> &buildlists, int n, bool median_cut = false){
+    void cutNBest(list<pair<list<string>, int>> &buildlists, int n,int amount ,bool median_cut = false){
         if(rush){
             // overwrites second integer with number of targets * -1 (to be able to differenciate between time and amount)
             sort_wrt_amout(buildlists);
@@ -82,4 +82,5 @@ class natural_selector{
         }
         return c;
     }
+
 };
