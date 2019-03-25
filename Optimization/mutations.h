@@ -52,13 +52,19 @@ class Mutator{
         list<string>::iterator iter1 = list1.begin();
         ++iter1;
         list<string>::iterator iter2 = list2.begin();
-
+        int distance_to_last = -1;
         list<string> res = {};
-        while(iter1 != list1.end() && iter2 != list2.end()){
+
+        while(distance_to_last != 0){
+            distance_to_last = (int) (distance(iter1, list1.end()) - 1);
             res.push_back(*iter1);
-            //advance(iter1, min(2, (int) (distance(iter1, list1.end()) - 1)));
+            advance(iter1, (int) min(2, distance_to_last));
+
+            if (distance_to_last == 0) break;
+
+            distance_to_last = (int) (distance(iter2, list2.end()) - 1);
             res.push_back(*iter2);
-            advance(iter2, min(2, (int) distance(iter2, list2.end())));
+            advance(iter2, (int) min(2, distance_to_last));
         }
         return res;
     }
@@ -221,6 +227,7 @@ class Mutator{
                 res = crossBreedSimple(list1->first, list2->first);
             } 
             else {
+                //cout << "should never be reached now";
                 res = cross_breed(list1->first, list2->first);
             }   
             runAndInsertList(buildlists, res, rush);
