@@ -26,7 +26,7 @@ int rushpush_max_time = 5000;
 int seed = 1;
 
 // helps to compile away analytics (writing out avg and best statistics every epoch)
-const bool analytics = true;
+bool analytics = true;
 
 string path_techtree_terran = "../../Optimization/techtree_terran.csv";
 string path_techtree_protoss = "../../Optimization/techtree_protoss.csv";
