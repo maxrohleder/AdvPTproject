@@ -44,13 +44,14 @@ public:
         Opt(const Opt& o){}
         ~Opt(){}
 
-        void setHyper(int ep, int it, int noc, int stag){
+        void setHyper(int ep, int it, int nc, int stag, int nb = 10, int nm = 50, int seed_ = 1){
             epochs = ep;
             iterations_per_epoch = it;
-            number_to_create_to = noc;
+            number_to_create_to = nc;
             stagnation_abbruch = stag;
-            number_best = max((int)((double)noc/10), 2);
-            number_to_mutate_to = max((int)((double)noc/2), 5);
+            number_best = nb;
+            number_to_mutate_to = nm;
+            seed = seed_;
         }
         
         void optimize(bool sort = true){
@@ -142,6 +143,7 @@ public:
             }
             cout << endl;
             cout << target_count << endl;
+            cout << "seed: " << seed << endl;
         }
 
         void runWinner(){
@@ -159,6 +161,26 @@ public:
             }
         }
 
+        void find_best_hyper(int num_seeds){
+            analytics = false;
+            ofstream hyperFile;
+            hyperFile.open("ga_analytics.log");
+            int nc=100; int nb=25; int nm=50; int ep=50; int stag=30; int it=20; int seed_=1;
+            for(int i = 1; i < num_seeds; i++)
+            {
+                setHyper(ep, it, nc, stag, nb, nm, seed_+5*i);
+                hyperFile << "seed: " << seed_+5*i << endl;
+                optimize();
+
+                hyperFile <<"achieved time: " << buildlists.begin()->second;
+                int target_count = 0;
+                for(auto& i : buildlists.begin()->first){
+                    hyperFile << i << " ";
+                    if (i == target) ++target_count;
+                }
+            }
+        }
+
         int countIllegalLists(){
             int count = 0;
             for(auto & i : buildlists){
@@ -168,5 +190,4 @@ public:
             }
             return count;
         }
-
 };
