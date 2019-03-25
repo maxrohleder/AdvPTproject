@@ -64,7 +64,7 @@ public:
             // init natural selector (under construction, dont comment in before it works)
             natural_selector ns(r, rush, target);
             // init mating and mutations (under construction)
-            Mutator mu(lb.getMultiple(), lb.getParser(), r, rush, target);
+            Mutator mu(lb.getMultiple(), lb.getParser(), r, amount, target);
             if (analytics){
                 // these blocks get compiled away if analytics is false
                 analyticsfile.open(analyticsfilepath);
@@ -73,7 +73,7 @@ public:
             int best_runtime = -1;
      
             for(size_t i = 0; i < epochs; i++){
-                cout << "epoch: " << i << endl; // test
+                //cout << "epoch: " << i << endl; // test
                 for(int j = 0; j < iterations_per_epoch; j++){
                     //seed += 69;
                     //srand(seed);
@@ -105,7 +105,7 @@ public:
                 // break if best time doesnt change for 20 iterations
                 if(stagnation >= stagnation_abbruch){
                     break;  
-                } 
+                }
             }
             // close analytics
             if(rush){
@@ -157,6 +157,16 @@ public:
                 Protoss p(winner.first);
                 p.run(5000);
             }
+        }
+
+        int countIllegalLists(){
+            int count = 0;
+            for(auto & i : buildlists){
+                if(i.second == MAX_TIME){
+                    ++count;
+                }
+            }
+            return count;
         }
 
 };

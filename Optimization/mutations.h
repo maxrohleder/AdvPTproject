@@ -90,7 +90,11 @@ class Mutator{
     }
 
     list<string> singleSwap(list<string> list1, list<string> list2, string target){
-        int pos1 = rand() % (list1.size() - 1);
+        int s1 = list1.size();
+        if(s1 < 2){
+            return list1;
+        }
+        int pos1 = rand() % (s1 - 1);
         int pos2 = rand() % list2.size();
         auto it1 = list1.begin();
         auto it2 = list2.begin();
@@ -108,7 +112,11 @@ class Mutator{
     }
 
     list<string> cutOneOut(list<string> l){
-        int pos = rand() % (l.size() - 1);
+        int s = l.size();
+        if(s < 2){
+            return l;
+        }
+        int pos = rand() % (s - 1);
         auto it = l.begin();
         for(size_t i = 0; i < pos; ++i){
             ++it; 
@@ -204,7 +212,7 @@ class Mutator{
 
         for(int i = 0; i < n; i++)
         {
-            int chance = rand() % 5;
+            int chance = rand() % 6;
             //cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
@@ -214,6 +222,12 @@ class Mutator{
             int l2 = rand() % buildlists.size();
             auto list2 = buildlists.begin();
             advance(list2, l2);
+            int use_only_first = rand() % 6;
+            if(use_only_first < 1){
+                list1 = buildlists.begin();
+                list2 = buildlists.begin();
+                ++list2;
+            }
             if(chance == 0){
                 res = singleSwap(list1->first, list2->first, target);
             }
@@ -226,6 +240,9 @@ class Mutator{
             else if(chance == 3){
                 res = crossBreedSimple(list1->first, list2->first);
             } 
+            else if(chance == 4){
+                res = mutateCopyToRandom(list1->first);
+            }
             else {
                 //cout << "should never be reached now";
                 res = cross_breed(list1->first, list2->first);
@@ -285,6 +302,9 @@ class Mutator{
     //overwrite element at random position
     list<string> mutateOverwriteAtRandom(list<string> l, string target){
         size_t length = l.size();
+        if(length < 2){
+            return l;
+        }
         size_t pos_from = rand() % length;
         size_t pos_to = rand() % (length - 1);
         auto it_to = l.begin();
