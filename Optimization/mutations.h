@@ -56,7 +56,7 @@ class Mutator{
         list<string> res = {};
         while(iter1 != list1.end() && iter2 != list2.end()){
             res.push_back(*iter1);
-            advance(iter1, min(2, (int) (distance(iter1, list1.end()) - 1));
+            //advance(iter1, min(2, (int) (distance(iter1, list1.end()) - 1)));
             res.push_back(*iter2);
             advance(iter2, min(2, (int) distance(iter2, list2.end())));
         }
@@ -198,7 +198,7 @@ class Mutator{
 
         for(int i = 0; i < n; i++)
         {
-            int chance = rand() % 4;
+            int chance = rand() % 5;
             //cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
@@ -221,7 +221,7 @@ class Mutator{
                 res = crossBreedSimple(list1->first, list2->first);
             } 
             else {
-                //res = cross_breed(list1->first, list2->first);
+                res = cross_breed(list1->first, list2->first);
             }   
             runAndInsertList(buildlists, res, rush);
         }
@@ -251,8 +251,8 @@ class Mutator{
                 time = P.getEndTime(5000);
             }
         }
-        if(!rush && amount != count_targets(bl)){
-            time == MAX_TIME;
+        if(!rush && (amount != count_targets(bl))){
+            time = MAX_TIME;
         }
         buildlists.push_back(make_pair(bl, time));        
     }
