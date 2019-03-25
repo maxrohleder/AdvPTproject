@@ -169,17 +169,15 @@ public:
             for(int i = 1; i < num_seeds; i++)
             {
                 setHyper(ep, it, nc, stag, nb, nm, seed_+5*i);
+                hyperFile << "seed: " << seed_+5*i << endl;
                 optimize();
 
-                hyperFile << buildlists.begin()->second << ": ";
+                hyperFile <<"achieved time: " << buildlists.begin()->second;
                 int target_count = 0;
                 for(auto& i : buildlists.begin()->first){
-                    cout << i << " ";
+                    hyperFile << i << " ";
                     if (i == target) ++target_count;
                 }
-                hyperFile << endl;
-                hyperFile << target_count << endl;
-                hyperFile << "seed: " << seed << endl;
             }
         }
 };
