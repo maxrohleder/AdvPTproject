@@ -44,7 +44,7 @@ public:
         Opt(const Opt& o){}
         ~Opt(){}
 
-        void setHyper(int ep, int it, int nc, int stag, int nb = 10, int nm = 50, int seed_ = 1){
+        void setHyper(int ep, int it, int nc, int stag, int nb = 10, int nm = 50, int seed_ = seed){
             epochs = ep;
             iterations_per_epoch = it;
             number_to_create_to = nc;
@@ -61,6 +61,7 @@ public:
                 amount = 1;
             }
             srand(seed);
+            cout << seed << endl;
             list_builder lb(target, techtree, amount, r);
             // init natural selector (under construction, dont comment in before it works)
             natural_selector ns(r, rush, target);
@@ -161,23 +162,33 @@ public:
             }
         }
 
+        int getWinnerTime(){
+            return buildlists.begin()->second;
+        }
+
         void find_best_hyper(int num_seeds){
             analytics = false;
             ofstream hyperFile;
             hyperFile.open("ga_analytics.log");
-            int nc=100; int nb=25; int nm=50; int ep=50; int stag=30; int it=20; int seed_=1;
-            for(int i = 1; i < num_seeds; i++)
-            {
-                setHyper(ep, it, nc, stag, nb, nm, seed_+5*i);
-                hyperFile << "seed: " << seed_+5*i << endl;
-                optimize();
+            try{
+                int nc=100; int nb=25; int nm=50; int ep=50; int stag=30; int it=20; int seed_=1;
+                for(int i = 1; i < num_seeds; i++)
+                {
+                    setHyper(ep, it, nc, stag, nb, nm, seed_+5*i);
+                    hyperFile << "seed: " << seed_+5*i << endl;
+                    optimize();
 
-                hyperFile <<"achieved time: " << buildlists.begin()->second;
-                int target_count = 0;
-                for(auto& i : buildlists.begin()->first){
-                    hyperFile << i << " ";
-                    if (i == target) ++target_count;
+                    hyperFile <<"achieved time: " << buildlists.begin()->second << endl;
+                    int target_count = 0;
+                    for(auto& i : buildlists.begin()->first){
+                        hyperFile << i << " ";
+                        if (i == target) ++target_count;
+                    }
+                    hyperFile << endl;
                 }
+            }catch(exception& e){
+                cout << e.what() << endl;
+                hyperFile.close();
             }
         }
 

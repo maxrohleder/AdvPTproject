@@ -23,7 +23,7 @@ typedef enum list_status{
 
 int rushpush_max_time = 5000;
 
-int seed = 3;
+int seed = 6;
 
 // helps to compile away analytics (writing out avg and best statistics every epoch)
 bool analytics = true;

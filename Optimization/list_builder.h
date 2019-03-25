@@ -87,7 +87,7 @@ class list_builder{
         //multiple.push_back("queen");
         once.push_back("extractor");
         once.push_back("extractor");
-        prob_mult = 20;
+        prob_mult = 15;
         prob_once = prob_mult + 5;
     }
 
