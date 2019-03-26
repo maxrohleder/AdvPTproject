@@ -22,32 +22,40 @@ using namespace std;
 // cross breeding
 // wenn zeit knapp drüber ist eine einheit entfernen
 // mutation (zufällige mod an einer liste)
-class Mutator{
-    private:
+class Mutator
+{
+  private:
     vector<string> *multiple = NULL;
     par *p = NULL;
     RaceType race_flag;
     string worker;
-    int worker_insertion = 4;
+    int worker_insertion = 10;
     int maxTargetInsert = 5;
     int amount = 0;
     string target;
-    
-    public: 
-    Mutator(){}
-    Mutator(vector<string> &multi, par &dep_info, RaceType r, int amount, string target): multiple(&multi), p(&dep_info), race_flag(r), amount(amount), target(target) {
-        if(r == PROTOSS){
+
+  public:
+    Mutator() {}
+    Mutator(vector<string> &multi, par &dep_info, RaceType r, int amount, string target) : multiple(&multi), p(&dep_info), race_flag(r), amount(amount), target(target)
+    {
+        if (r == PROTOSS)
+        {
             worker = "probe";
-        } else if(r == TERRAN){
+        }
+        else if (r == TERRAN)
+        {
             worker = "scv";
-        }else{
+        }
+        else
+        {
             worker = "drone";
         }
     }
-    Mutator(const Mutator &m){}
-    ~Mutator(){}
+    Mutator(const Mutator &m) {}
+    ~Mutator() {}
 
-    list<string> cross_breed(list<string> list1, list<string> list2){
+    list<string> cross_breed(list<string> list1, list<string> list2)
+    {
         // taking one from each list alternatingly
         list<string>::iterator iter1 = list1.begin();
         ++iter1;
@@ -55,81 +63,117 @@ class Mutator{
         int distance_to_last = -1;
         list<string> res = {};
 
-        while(distance_to_last != 0){
-            distance_to_last = (int) (distance(iter1, list1.end()) - 1);
+        while (distance_to_last != 0)
+        {
+            distance_to_last = (int)(distance(iter1, list1.end()) - 1);
             res.push_back(*iter1);
-            advance(iter1, (int) min(2, distance_to_last));
+            advance(iter1, (int)min(2, distance_to_last));
 
-            if (distance_to_last == 0) break;
+            if (distance_to_last == 0)
+                break;
 
-            distance_to_last = (int) (distance(iter2, list2.end()) - 1);
+            distance_to_last = (int)(distance(iter2, list2.end()) - 1);
             res.push_back(*iter2);
-            advance(iter2, (int) min(2, distance_to_last));
+            advance(iter2, (int)min(2, distance_to_last));
         }
         return res;
     }
 
-    list<string> crossBreedSimple(list<string> list1, list<string> list2){
+    // takes a portion from one list and inserts it into the other keeping the size
+    list<string> swap_parts(list<string> list1, list<string> list2)
+    {
+        size_t length_min = min(list1.size(), list2.size());
+        int pos = rand() % length_min;
+        int pos_start = pos - (rand() % pos);
+        // taking one from each list alternatingly
+        list<string>::iterator iter1 = list1.begin();
+        list<string>::iterator iter2 = list2.begin();
+        advance(iter2, pos_start);
+        advance(iter1, pos_start);
+        for (int i = 0; i < pos - pos_start; ++i, ++iter2)
+        {
+            iter1 = list1.erase(iter1);
+            list1.insert(iter1, *iter2);
+        }
+        return list1;
+    }
+
+    list<string> crossBreedSimple(list<string> list1, list<string> list2)
+    {
         size_t length_min = min(list1.size(), list2.size());
         list<string> l = {};
         int pos = rand() % length_min;
         auto it1 = list1.begin();
         auto it2 = list2.begin();
-        if(list2.size() != length_min){
+        if (list2.size() != length_min)
+        {
             it1 = list2.begin();
             it2 = list1.begin();
         }
-        for(int i = 0; i < length_min; ++i, ++it1, ++it2){
-            if(i < pos){
+        for (int i = 0; i < length_min; ++i, ++it1, ++it2)
+        {
+            if (i < pos)
+            {
                 l.push_back(*it1);
-            }else{
+            }
+            else
+            {
                 l.push_back(*it2);
             }
         }
         return l;
     }
 
-    list<string> singleSwap(list<string> list1, list<string> list2, string target){
+    list<string> singleSwap(list<string> list1, list<string> list2, string target)
+    {
         int s1 = list1.size();
-        if(s1 < 2){
+        if (s1 < 2)
+        {
             return list1;
         }
         int pos1 = rand() % (s1 - 1);
         int pos2 = rand() % list2.size();
         auto it1 = list1.begin();
         auto it2 = list2.begin();
-        for(size_t i = 0; i < pos1; ++i){
-            ++it1; 
+        for (size_t i = 0; i < pos1; ++i)
+        {
+            ++it1;
         }
-        for(size_t i = 0; i < pos2; ++i){
-            ++it2; 
+        for (size_t i = 0; i < pos2; ++i)
+        {
+            ++it2;
         }
-        if(*it1 == target || *it2 == target){
+        if (*it1 == target || *it2 == target)
+        {
             return list1;
         }
         *it1 = *it2;
-        return list1;        
+        return list1;
     }
 
-    list<string> cutOneOut(list<string> l){
+    list<string> cutOneOut(list<string> l)
+    {
         int s = l.size();
-        if(s < 2){
+        if (s < 2)
+        {
             return l;
         }
         int pos = rand() % (s - 1);
         auto it = l.begin();
-        for(size_t i = 0; i < pos; ++i){
-            ++it; 
+        for (size_t i = 0; i < pos; ++i)
+        {
+            ++it;
         }
         l.erase(it);
         return l;
     }
 
-    list<string> mutate(list<string> list1){
+    list<string> mutate(list<string> list1)
+    {
         // TODO insert an item from multiple at a random position TOIMPLEMENT
         int pos = rand() % multiple->size();
         string insert_unit = multiple->at(pos);
-        int pos2 = rand()%list1.size();
+        int pos2 = rand() % list1.size();
         auto init_pos = list1.begin();
         advance(init_pos, pos2);
         list1.insert(init_pos, worker);
@@ -137,29 +181,40 @@ class Mutator{
     }
 
     // dedicated to maximize rush scenario
-    list<string> moreWorkersAtRandomPositions(list<string> list1){
-        int workers_to_insert = rand()%worker_insertion;
-        for(int i = 0; i < workers_to_insert; i++){
-            int pos2 = rand()%list1.size();
-            auto init_pos = list1.begin();
-            advance(init_pos, pos2);
-            list1.insert(init_pos, worker);
+    list<string> moreWorkersAtRandomPositions(list<string> list1)
+    {
+        int pos2 = rand() % list1.size();
+        auto init_pos = list1.begin();
+        advance(init_pos, pos2);
+        list1.insert(init_pos, worker);
+        return list1;
+    }
+
+    // more workers more luck
+    list<string> spamWorkersAtRandomPositions(list<string> list1)
+    {
+        int number_to_insert = rand() % worker_insertion;
+        for (int i = 0; i < number_to_insert; i++)
+        {
+            list1 = moreWorkersAtRandomPositions(list1);
         }
         return list1;
     }
 
-    list<string> moreTargetUnitsAfterDependency(list<string> list1, string target){
+    list<string> moreTargetUnitsAfterDependency(list<string> list1, string target)
+    {
         // essential to a rush scenario
-        int numberOfTargetsToInsert = rand()%maxTargetInsert;
-        lineObj* lo = p->get_obj(target);
+        int numberOfTargetsToInsert = rand() % maxTargetInsert;
+        lineObj *lo = p->get_obj(target);
         // determine min position where its okay to insert (dependency etc)
         list<string>::iterator start = getMinInsertPosition(list1, lo->dependency, lo->produced_by);
         int maxOffset = distance(start, list1.end());
         // insert elements at random locations in range [start, list.end()]
-        for(int i = 0; i < numberOfTargetsToInsert; i++){
+        for (int i = 0; i < numberOfTargetsToInsert; i++)
+        {
             auto insertion_point = start;
             // range from [0, maxOffset-1] --> [1, maxOffset]
-            int rand_advance = rand()%maxOffset;
+            int rand_advance = rand() % maxOffset;
             advance(insertion_point, rand_advance + 1);
             list1.insert(insertion_point, target);
         }
@@ -167,52 +222,65 @@ class Mutator{
     }
 
     /// if this returns a .end() then some dependency or producer is not found!
-    list<string>::iterator getMinInsertPosition(list<string> &l, string d, string p){
+    list<string>::iterator getMinInsertPosition(list<string> &l, string d, string p)
+    {
         // if no dependency or producer is set. we can insert from beginning on
-        if(d == "NONE" && p == "NONE") return l.begin();
+        if (d == "NONE" && p == "NONE")
+            return l.begin();
 
         // return the most advanced, yet not .end() iterator
         list<string>::iterator d_location = find(l.begin(), l.end(), d);
         list<string>::iterator p_location = find(l.begin(), l.end(), p);
 
         // if one is NONE, then were looking for the other
-        if(d == "NONE") return p_location;
-        if(p == "NONE") return d_location;
+        if (d == "NONE")
+            return p_location;
+        if (p == "NONE")
+            return d_location;
 
         // if d is further advanced than p, yet not at .end() then return d
-        if(distance(p_location, d_location) >= 0){
+        if (distance(p_location, d_location) >= 0)
+        {
             return d_location;
         }
-        return p_location;        
+        return p_location;
     }
 
-    void append_n_mutations(list<pair<list<string>, int>> &buildlists, int n, bool rush, string target){
+    void append_n_mutations(list<pair<list<string>, int>> &buildlists, int n, bool rush, string target)
+    {
 
         // always needed in a rush scenario, as "as many as possible" is not covered by list_builder
-        if(rush){ 
-            int ndrittel = (int)((double) n / 3);
-            n = n-ndrittel;
-            for(int i = 0; i < ndrittel; i++){
+        if (rush)
+        {
+            int ndrittel = (int)((double)n / 3);
+            n = n - ndrittel;
+            for (int i = 0; i < ndrittel; i++)
+            {
                 int l1 = rand() % buildlists.size();
                 list<pair<list<string>, int>>::iterator list1 = buildlists.begin();
                 advance(list1, l1);
                 //list<string> res = moreTargetUnitsAfterDependency(list1->first, target);
                 int choose = rand() % 3;
                 list<string> res = {};
-                if(choose == 0){
+                if (choose == 0)
+                {
                     res = mutateCopyToRandom(list1->first);
-                }else if(choose == 1){
+                }
+                else if (choose == 1)
+                {
                     res = cutOneOut(list1->first);
-                }else{
+                }
+                else
+                {
                     res = mutateOverwriteAtRandom(list1->first, target);
                 }
                 runAndInsertList(buildlists, res, rush);
             }
         }
 
-        for(int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
-            int chance = rand() % 6;
+            int chance = rand() % 8;
             //cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
@@ -223,76 +291,104 @@ class Mutator{
             auto list2 = buildlists.begin();
             advance(list2, l2);
             int use_only_first = rand() % 6;
-            if(use_only_first < 1){
+            if (use_only_first < 1)
+            {
                 list1 = buildlists.begin();
                 list2 = buildlists.begin();
                 ++list2;
             }
-            if(chance == 0){
+            if (chance == 0)
+            {
                 res = singleSwap(list1->first, list2->first, target);
             }
-            else if(chance == 1){
+            else if (chance == 1)
+            {
                 res = mutate(list1->first);
             }
-            else if(chance == 2){
+            else if (chance == 2 || chance == 5)
+            {
                 res = moreWorkersAtRandomPositions(list1->first);
             }
-            else if(chance == 3){
+            else if (chance == 5)
+            {
+                res = swap_parts(list1->first, list2->first);
+            }
+            else if (chance == 6)
+            {
+                res = spamWorkersAtRandomPositions(list1->first);
+            }
+            else if (chance == 3)
+            {
                 res = crossBreedSimple(list1->first, list2->first);
-            } 
-            else if(chance == 4){
+            }
+            else if (chance == 4)
+            {
                 res = mutateCopyToRandom(list1->first);
             }
-            else {
+            else
+            {
                 //cout << "should never be reached now";
                 res = cross_breed(list1->first, list2->first);
-            }   
+            }
             runAndInsertList(buildlists, res, rush);
         }
     }
 
-    void runAndInsertList(list<pair<list<string>, int>>& buildlists, list<string> &bl, bool rush){
+    void runAndInsertList(list<pair<list<string>, int>> &buildlists, list<string> &bl, bool rush)
+    {
         int time = MAX_TIME;
         bool valid = true;
         // TODO generalize to all races
-        if(race_flag == ZERG){
+        if (race_flag == ZERG)
+        {
             ZergChecker zc = ZergChecker();
             valid = zc.run(bl);
-            if(valid){
+            if (valid)
+            {
                 Zerg z(bl);
                 time = z.getEndTime(5000);
             }
-        }else if(race_flag == TERRAN){
-            parser_terran p (path_techtree_terran, bl, false);
-            if(!validate(p, false)){
+        }
+        else if (race_flag == TERRAN)
+        {
+            parser_terran p(path_techtree_terran, bl, false);
+            if (!validate(p, false))
+            {
                 Terran t(bl);
                 time = t.getEndTime(5000);
             }
-        }else {
-            parser p (path_techtree_protoss, bl, false);
-            if(!validate(p, false)){
+        }
+        else
+        {
+            parser p(path_techtree_protoss, bl, false);
+            if (!validate(p))
+            {
                 Protoss P(bl);
                 time = P.getEndTime(5000);
             }
         }
-        if(!rush && (amount != count_targets(bl))){
+        if (!rush && (amount != count_targets(bl)))
+        {
             time = MAX_TIME;
         }
-        buildlists.push_back(make_pair(bl, time));        
+        buildlists.push_back(make_pair(bl, time));
     }
 
     //copy one element to random position
-    list<string> mutateCopyToRandom(list<string> l){
+    list<string> mutateCopyToRandom(list<string> l)
+    {
         size_t length = l.size();
         size_t pos_from = rand() % length;
         size_t pos_to = rand() % length;
         auto it_to = l.begin();
-        for(size_t i = 0; i < pos_to; ++i){
+        for (size_t i = 0; i < pos_to; ++i)
+        {
             ++it_to;
         }
         auto it_from = l.begin();
-        for(size_t i = 0; i < pos_from; ++i){
-            ++it_from; 
+        for (size_t i = 0; i < pos_from; ++i)
+        {
+            ++it_from;
         }
         string to_insert = *it_from;
         l.insert(it_to, to_insert);
@@ -300,33 +396,41 @@ class Mutator{
     }
 
     //overwrite element at random position
-    list<string> mutateOverwriteAtRandom(list<string> l, string target){
+    list<string> mutateOverwriteAtRandom(list<string> l, string target)
+    {
         size_t length = l.size();
-        if(length < 2){
+        if (length < 2)
+        {
             return l;
         }
         size_t pos_from = rand() % length;
         size_t pos_to = rand() % (length - 1);
         auto it_to = l.begin();
-        for(size_t i = 0; i < pos_to; ++i){
+        for (size_t i = 0; i < pos_to; ++i)
+        {
             ++it_to;
         }
         auto it_from = l.begin();
-        for(size_t i = 0; i < pos_from; ++i){
-            ++it_from; 
+        for (size_t i = 0; i < pos_from; ++i)
+        {
+            ++it_from;
         }
         string to_insert = *it_from;
-        if(to_insert == target){
+        if (to_insert == target)
+        {
             return l;
         }
         *it_to = to_insert;
         return l;
     }
 
-    int count_targets(list<string> lst){
+    int count_targets(list<string> lst)
+    {
         int c = 0;
-        for(string u: lst){
-            if (u == target) ++c;            
+        for (string u : lst)
+        {
+            if (u == target)
+                ++c;
         }
         return c;
     }
