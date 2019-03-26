@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
     {
         Opt O(RaceType::ZERG, path_techtree_zerg, unit_to_build, amount, rush);
         O.setHyper(100, 20, 100, 15); //100, 20, 100, 30       
-        //O.optimize(); //must be in there
-        O.find_best_hyper_random(40); //hyper purpose
+        O.optimize(); //must be in there
+        //O.find_best_hyper_random(40); //hyper purpose
         //O.optimize_fake();       
         //O.printWinner();
         //O.runWinner();
-        //O.printWinner(); //test purpose 
+        O.printWinner(); //test purpose 
     }
     else if (find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n) { return n == unit_to_build; }) != terran_units.end())
     {

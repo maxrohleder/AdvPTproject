@@ -84,6 +84,9 @@ class Mutator
     {
         size_t length_min = min(list1.size(), list2.size());
         int pos = rand() % length_min;
+        if(pos == 0){
+            return list1;
+        }
         int pos_start = pos - (rand() % pos);
         // taking one from each list alternatingly
         list<string>::iterator iter1 = list1.begin();
@@ -209,6 +212,9 @@ class Mutator
         // determine min position where its okay to insert (dependency etc)
         list<string>::iterator start = getMinInsertPosition(list1, lo->dependency, lo->produced_by);
         int maxOffset = distance(start, list1.end());
+        if(maxOffset == 0){
+            return list1;
+        }
         // insert elements at random locations in range [start, list.end()]
         for (int i = 0; i < numberOfTargetsToInsert; i++)
         {
@@ -307,7 +313,7 @@ class Mutator
             {
                 res = mutate(list1->first);
             }
-            else if (chance == 2 || chance == 5)
+            else if (chance == 2)// || chance == 5)
             {
                 res = moreWorkersAtRandomPositions(list1->first);
             }
