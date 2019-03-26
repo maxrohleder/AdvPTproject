@@ -72,7 +72,7 @@ class natural_selector
             // overwrites second integer with number of targets * -1 (to be able to differenciate between time and amount)
             sort_wrt_amout(buildlists);
         }else{
-            buildlists.sort(comp);
+            buildlists.sort(compWithSize);
         }
         if (median_cut)
         {

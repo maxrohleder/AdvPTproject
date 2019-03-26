@@ -57,14 +57,14 @@ int main(int argc, char *argv[])
     else if (find_if(zerg_units.begin(), zerg_units.end(), [unit_to_build](const string n) { return n == unit_to_build; }) != zerg_units.end())
     {
         Opt O(RaceType::ZERG, path_techtree_zerg, unit_to_build, amount, rush);
-        O.setHyper(100, 20, 100, 15, 20, 70, 1); //100, 20, 100, 30       
+        O.setHyper(100, 20, 200, 15, 40, 160, 1); //100, 20, 100, 30       
         O.optimize(); //must be in there
         //O.find_best_hyper_random(10); //hyper purpose
         //O.optimize_fake();       
         //O.printWinner();
-        //O.runWinner();
+        O.runWinner();
         //O.printWinner(); //test purpose 
-        O.printXBestLists();
+        //O.printXBestLists();
     }
     else if (find_if(terran_units.begin(), terran_units.end(), [unit_to_build](const string n) { return n == unit_to_build; }) != terran_units.end())
     {

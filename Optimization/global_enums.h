@@ -45,3 +45,24 @@ bool rush_compare(const pair<list<string>, int> &list1, const pair<list<string>,
     // je negativer eine liste ist desto besser (abs(list1.second) == no_targets) as defined in natural selection
     return list1.second < list2.second;
 }
+
+bool compWithSize(const pair<list<string>, int> &list1, const pair<list<string>, int> & list2)
+{
+    if(list1.second == list2.second){
+        auto it1 = list1.first.begin();
+        auto it2 = list2.first.begin();
+        if(list1.first.size() != list2.first.size()){
+            return list1.first.size() < list2.first.size();
+        }
+        for(int i = 0; i < list1.first.size(); ++i, ++it1, ++it2){
+            if(*it1 != *it2){
+                return *it1 < *it2;
+            }
+        }
+        return true;
+    }else
+    {
+        return list1.second < list2.second;
+    }
+    
+}

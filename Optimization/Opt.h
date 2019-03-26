@@ -176,8 +176,13 @@ class Opt
 
     void runWinner()
     {
-        pair<list<string>, int> winner = buildlists.front();
+        auto it = buildlists.begin();
+        if(it->first.empty()){
+            ++it;
+        }
+        pair<list<string>, int> winner = *it;
         // winner must be valid as no validation is performed
+
         if (r == ZERG)
         {
             Zerg z(winner.first);

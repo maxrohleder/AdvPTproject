@@ -287,7 +287,7 @@ class Mutator
 
         for (int i = 0; i < n; i++)
         {   
-            int chance = rand() % 9;
+            int chance = rand() % 10;
             //cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
@@ -342,7 +342,10 @@ class Mutator
             {
                 res = cutOneOut(list1->first);
             }
-            else
+             else if (chance == 8){
+                 res = mutateOverwriteAtRandom(list1->first, target);
+            }
+             else
             {
                 //cout << "should never be reached now";
                 res = cross_breed(list1->first, list2->first);
