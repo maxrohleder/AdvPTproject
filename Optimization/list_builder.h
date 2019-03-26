@@ -97,7 +97,7 @@ class list_builder
         //multiple.push_back("queen");
         once.push_back("extractor");
         once.push_back("extractor");
-        prob_mult = 8;
+        prob_mult = 7;
         prob_once = prob_mult + 5;
     }
 

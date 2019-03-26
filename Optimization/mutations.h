@@ -130,12 +130,13 @@ class Mutator
     list<string> singleSwap(list<string> list1, list<string> list2, string target)
     {
         int s1 = list1.size();
-        if (s1 < 2)
+        int s2 = list2.size();
+        if (s1 < 2 || s2 < 2)
         {
             return list1;
         }
         int pos1 = rand() % (s1 - 1);
-        int pos2 = rand() % list2.size();
+        int pos2 = rand() % s2;
         auto it1 = list1.begin();
         auto it2 = list2.begin();
         for (size_t i = 0; i < pos1; ++i)
@@ -285,8 +286,8 @@ class Mutator
         }
 
         for (int i = 0; i < n; i++)
-        {
-            int chance = rand() % 8;
+        {   
+            int chance = rand() % 9;
             //cout << "made it";
             int l1 = rand() % buildlists.size();
             auto list1 = buildlists.begin();
@@ -296,6 +297,10 @@ class Mutator
             int l2 = rand() % buildlists.size();
             auto list2 = buildlists.begin();
             advance(list2, l2);
+            if(list2->first.empty() || list1->first.empty()){
+                --i;
+                continue;
+            }
             /*
             int use_only_first = rand() % 6;
             if (use_only_first < 1)
@@ -333,10 +338,18 @@ class Mutator
             {
                 res = mutateCopyToRandom(list1->first);
             }
+            else if (chance == 7)
+            {
+                res = cutOneOut(list1->first);
+            }
             else
             {
                 //cout << "should never be reached now";
                 res = cross_breed(list1->first, list2->first);
+            }
+            if(res.empty()){
+                --i;
+                continue;
             }
             runAndInsertList(buildlists, res, rush);
         }

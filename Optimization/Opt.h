@@ -200,6 +200,32 @@ class Opt
         return buildlists.begin()->second;
     }
 
+    void printXBestTimes(int x = 10){
+        int carry = 0;
+        for(auto & i : buildlists){
+            cout << i.second << endl;
+            ++carry;
+            if(carry > x){
+                break;
+            }
+        }
+    }
+
+    void printXBestLists(int x = 10){
+        int carry = 0;
+        for(auto & i : buildlists){
+            cout << i.second << ": ";
+            for(auto & j : i.first){
+                cout << j << " ";
+            }
+            cout << endl;
+            ++carry;
+            if(carry > x){
+                break;
+            }
+        }
+    }
+
     void find_best_hyper(int num_seeds)
     {
         analytics = false;

@@ -26,6 +26,10 @@ bool single(pair<list<string>, int> first, pair<list<string>, int> second)
     return true;
 }
 
+bool cutByTime(pair<list<string>, int> first, pair<list<string>, int> second){
+    return first.second == second.second;
+}
+
 // listen bewerten
 //      nach anderen kriterien als nur zeit zb
 //      rush anzahl der einheiten checken
@@ -48,7 +52,7 @@ class natural_selector
     //natural_selector(const &natural_selector n){}
     ~natural_selector() {}
 
-    void sortBuildLists(list<pair<list<string>, int>> &buildlists, string rushedUnit)
+    void sortBuildLists(list<pair<list<string>, int>> &buildlists)
     {
         for (auto const &i : buildlists)
         {
@@ -67,6 +71,8 @@ class natural_selector
         {
             // overwrites second integer with number of targets * -1 (to be able to differenciate between time and amount)
             sort_wrt_amout(buildlists);
+        }else{
+            buildlists.sort(comp);
         }
         if (median_cut)
         {
@@ -75,6 +81,7 @@ class natural_selector
         else
         {
             buildlists.unique(single);
+            //buildlists.unique(cutByTime);
             buildlists.resize(n);
         }
     }
