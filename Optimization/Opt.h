@@ -4,6 +4,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include <time.h>
 
 #include "list_builder.h"
 #include "natural_selection.h"
@@ -61,7 +62,6 @@ public:
                 amount = 1;
             }
             srand(seed);
-            cout << seed << endl;
             list_builder lb(target, techtree, amount, r);
             // init natural selector (under construction, dont comment in before it works)
             natural_selector ns(r, rush, target);
@@ -185,6 +185,36 @@ public:
                         if (i == target) ++target_count;
                     }
                     hyperFile << endl;
+                    resetBuildLists();
+                }
+            }catch(exception& e){
+                cout << e.what() << endl;
+                hyperFile.close();
+            }
+        }
+
+        void find_best_hyper_random(int num_seeds){
+            analytics = false;
+            ofstream hyperFile;
+            hyperFile.open("ga_analytics.log");
+            srand(time(NULL));
+            try{
+                int nc=100; int nb=10; int nm=50; int ep=100; int stag=15; int it=20; int seed_=1;
+                for(int i = 0; i < num_seeds; ++i)
+                {
+                    seed_ = rand();
+                    setHyper(ep, it, nc, stag, nb, nm, seed_);
+                    hyperFile << "seed: " << seed_ << endl;
+                    optimize();
+
+                    hyperFile <<"achieved time: " << buildlists.begin()->second << endl;
+                    int target_count = 0;
+                    for(auto& i : buildlists.begin()->first){
+                        hyperFile << i << " ";
+                        if (i == target) ++target_count;
+                    }
+                    hyperFile << endl;
+                    resetBuildLists();
                 }
             }catch(exception& e){
                 cout << e.what() << endl;
@@ -200,5 +230,9 @@ public:
                 }
             }
             return count;
+        }
+
+        void resetBuildLists(){
+            buildlists.clear();
         }
 };

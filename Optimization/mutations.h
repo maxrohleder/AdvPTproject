@@ -222,12 +222,14 @@ class Mutator{
             int l2 = rand() % buildlists.size();
             auto list2 = buildlists.begin();
             advance(list2, l2);
+            /*
             int use_only_first = rand() % 6;
             if(use_only_first < 1){
                 list1 = buildlists.begin();
                 list2 = buildlists.begin();
                 ++list2;
             }
+            */
             if(chance == 0){
                 res = singleSwap(list1->first, list2->first, target);
             }
