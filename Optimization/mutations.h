@@ -56,6 +56,10 @@ class Mutator
 
     list<string> cross_breed(list<string> list1, list<string> list2)
     {
+        //get rid of weird error at 00:31
+        if(list1.size() < 2 || list2.size() < 2){
+            return list1;
+        }
         // taking one from each list alternatingly
         list<string>::iterator iter1 = list1.begin();
         ++iter1;
@@ -258,7 +262,7 @@ class Mutator
 
         // always needed in a rush scenario, as "as many as possible" is not covered by list_builder
         if (rush)
-        {
+        {   
             int ndrittel = (int)((double)n / 3);
             n = n - ndrittel;
             for (int i = 0; i < ndrittel; i++)
@@ -310,43 +314,55 @@ class Mutator
                 ++list2;
             }
             */
+            //cout << "reset" << endl;
             if (chance == 0)
             {
+                //cout << "0" << endl;
                 res = singleSwap(list1->first, list2->first, target);
             }
             else if (chance == 1)
             {
+                //cout << "1" << endl;
                 res = mutate(list1->first);
             }
             else if (chance == 2)// || chance == 5)
             {
+                //cout << "2" << endl;
                 res = moreWorkersAtRandomPositions(list1->first);
             }
             else if (chance == 5)
             {
+                //cout << "5" << endl;
                 res = swap_parts(list1->first, list2->first);
             }
             else if (chance == 6)
             {
+                //cout << "6" << endl;
                 res = spamWorkersAtRandomPositions(list1->first);
             }
             else if (chance == 3)
             {
+                //cout << "3" << endl;
                 res = crossBreedSimple(list1->first, list2->first);
             }
             else if (chance == 4)
             {
+                //cout << "4" << endl;
                 res = mutateCopyToRandom(list1->first);
             }
             else if (chance == 7)
             {
+                //cout << "7" << endl;
                 res = cutOneOut(list1->first);
             }
              else if (chance == 8){
+                 //cout << "8" << endl;
                  res = mutateOverwriteAtRandom(list1->first, target);
             }
              else
             {
+                //cout << "else" << endl;
+                //cout << list1->first.size() << " " << list2->first.size() << endl;
                 //cout << "should never be reached now";
                 res = cross_breed(list1->first, list2->first);
             }
@@ -356,6 +372,7 @@ class Mutator
             }
             runAndInsertList(buildlists, res, rush);
         }
+
     }
 
     void runAndInsertList(list<pair<list<string>, int>> &buildlists, list<string> &bl, bool rush)
